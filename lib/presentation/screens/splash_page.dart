@@ -28,10 +28,10 @@ class _SplashPageState extends State<SplashPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset('assets/images/logo.png'),
-              Text('TLU', style: Theme.of(context).textTheme.displayMedium),
+              Text('TLU', style: Theme.of(context).textTheme.displayLarge),
               Text(
                 'HỆ THỐNG QUẢN LÝ LỊCH TRÌNH',
-                style: Theme.of(context).textTheme.displayMedium,
+                style: Theme.of(context).textTheme.displayLarge,
                 textAlign: TextAlign.center,
               ),
             ],

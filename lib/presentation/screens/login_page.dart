@@ -65,6 +65,8 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState!.reset();
   }
 
+  void _showVerifyDialog() {}
+
   void _submitForm() {
     _formKey.currentState!.validate();
   }
