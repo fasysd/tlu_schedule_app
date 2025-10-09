@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dsGiangVien_page.dart';
-import 'dsHocPhan_page.dart';
-import 'dsDonXin_page.dart';
+import 'ds_giang_vien_page.dart';
+import 'ds_hoc_phan_page.dart';
+import 'ds_don_xin_page.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});

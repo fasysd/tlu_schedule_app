@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/textField_search.dart'; // Đảm bảo đường dẫn này là chính xác
+import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
+import 'package:tlu_schedule_app/data/services/lecturer_sevice.dart';
+import 'package:tlu_schedule_app/presentation/widgets/card_lecturer.dart';
+import '../widgets/text_field_search.dart'; // Đảm bảo đường dẫn này là chính xác
 
 class DsgiangvienPage extends StatefulWidget {
   const DsgiangvienPage({super.key});
@@ -11,6 +14,8 @@ class DsgiangvienPage extends StatefulWidget {
 class _DsgiangvienPageState extends State<DsgiangvienPage> {
   // FocusNode để bỏ focus khi chạm ra ngoài
   final FocusNode _searchFocusNode = FocusNode();
+  final List<LecturerModel> _listLecturer = LecturerService()
+      .generateSampleLecturers();
 
   @override
   void dispose() {
@@ -18,7 +23,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
     super.dispose();
   }
 
-  void onPressed_quayLai() {
+  void onPressedQuayLai() {
     Navigator.pop(context);
   }
 
@@ -61,7 +66,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                                 ),
                               ),
                             ),
-                            onPressed: onPressed_quayLai,
+                            onPressed: onPressedQuayLai,
                             child: Image.asset(
                               'assets/images/icons/back_icon.png',
                             ),
@@ -102,14 +107,16 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                 ),
               ),
 
-              // 3. Nội dung danh sách chính
               SliverToBoxAdapter(
-                child: Center(
-                  // Không nên đặt chiều cao cố định lớn trong SliverToBoxAdapter,
-                  // nhưng tôi giữ lại để mô phỏng nội dung dài
-                  child: SizedBox(
-                    height: 2000,
-                    child: const Text("Danh sách giảng viên"),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                  child: Column(
+                    children: _listLecturer.map((item) {
+                      return CardLecturer(
+                        lecturerModel: item,
+                        onPressed: () {},
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

@@ -39,7 +39,8 @@ class TextfieldSearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6.5),
+      height: 200,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
@@ -53,7 +54,6 @@ class TextfieldSearch extends StatelessWidget {
         minLines: minLines,
         onSubmitted: onSubmitted,
         textInputAction: textInputAction,
-
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: Theme.of(context).textTheme.bodyLarge,
