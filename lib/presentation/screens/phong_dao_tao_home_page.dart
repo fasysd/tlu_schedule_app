@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tlu_schedule_app/data/models/activity_log_model.dart';
+import 'package:tlu_schedule_app/data/services/activity_log_sevice.dart';
 import 'ds_giang_vien_page.dart';
 import 'ds_hoc_phan_page.dart';
 import 'ds_don_xin_page.dart';
@@ -22,6 +25,8 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   int _soLuongTietHocHoanThan = 0;
   int _soLuongTietHocNghiDay = 0;
   int _soLuongTietHocDayBu = 0;
+  List<ActivityLog> _listActivityLog = ActivityLogService()
+      .generateSampleLogs();
 
   @override
   void initState() {
@@ -38,6 +43,8 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
       _soLuongTietHocHoanThan = 15 * 45;
       _soLuongTietHocNghiDay = 30;
       _soLuongTietHocDayBu = 10;
+      List<ActivityLog> _listActivityLog = ActivityLogService()
+          .generateSampleLogs();
     });
   }
 
@@ -286,38 +293,13 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
                             child: SingleChildScrollView(
                               child: Column(
                                 spacing: 10,
-                                children: [
-                                  buildActivityLog(
+                                children: _listActivityLog.map((item) {
+                                  return buildActivityLog(
                                     context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                  buildActivityLog(
-                                    context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                  buildActivityLog(
-                                    context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                  buildActivityLog(
-                                    context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                  buildActivityLog(
-                                    context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                  buildActivityLog(
-                                    context,
-                                    '22:30 30/09/2025',
-                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                                  ),
-                                ],
+                                    item.time,
+                                    item.content,
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ),
@@ -447,24 +429,21 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
     );
   }
 
-  Widget buildActivityLog(BuildContext context, String time, String content) {
+  Widget buildActivityLog(BuildContext context, DateTime time, String content) {
+    // 👇 format: 06/10/2025 21:45
+    String formattedTime = DateFormat('HH:mm dd/MM/yyyy').format(time);
+
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '22:30 30/09/2025',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          Text(
-            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
+          Text(formattedTime, style: Theme.of(context).textTheme.labelMedium),
+          Text(content, style: Theme.of(context).textTheme.labelMedium),
         ],
       ),
     );

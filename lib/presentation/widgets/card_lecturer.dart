@@ -14,7 +14,7 @@ class CardLecturer extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12), // hiệu ứng ripple tròn đẹp
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         width: double.infinity,
         height: 120,
@@ -45,7 +45,6 @@ class CardLecturer extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 9),
-            // 👈 thêm Expanded ở đây
             Column(
               spacing: 0,
               crossAxisAlignment: CrossAxisAlignment.start,
