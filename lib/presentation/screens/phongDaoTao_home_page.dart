@@ -1,8 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'dsGiangVien_page.dart';
+import 'dsHocPhan_page.dart';
+import 'dsDonXin_page.dart';
 
-class PhongdaotaoHomePage extends StatelessWidget {
+class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});
+
+  @override
+  State<PhongdaotaoHomePage> createState() => _PhongdaotaoHomePageState();
+}
+
+class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
+  String _vaiTro = '';
+  String _hoTen = '';
+  int _soLuongGiangVien = 0;
+  int _hocPhanDangMo = 0;
+  int _donXinNghiDay = 0;
+  int _donXinDayBu = 0;
+  bool _kieuThongKe = false;
+  int _soLuongTietHoc = 0;
+  int _soLuongTietHocHoanThan = 0;
+  int _soLuongTietHocNghiDay = 0;
+  int _soLuongTietHocDayBu = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      //tạm dùng thay thế
+      _vaiTro = 'Phòng đào tạo';
+      _hoTen = 'Nguyễn Thị A';
+      _soLuongGiangVien = 130;
+      _hocPhanDangMo = 30;
+      _donXinNghiDay = 3;
+      _donXinDayBu = 4;
+      _soLuongTietHoc = 30 * 45;
+      _soLuongTietHocHoanThan = 15 * 45;
+      _soLuongTietHocNghiDay = 30;
+      _soLuongTietHocDayBu = 10;
+    });
+  }
+
+  void onPressed_dsGiangVien() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const DsgiangvienPage()));
+  }
+
+  void onPressed_dsHocPhan() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const DshocphanPage()));
+  }
+
+  void onPressed_dsDonXin() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const DsdonxinPage()));
+  }
+
+  void onPressed_thongKe() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const DshocphanPage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +74,7 @@ class PhongdaotaoHomePage extends StatelessWidget {
             SliverAppBar(
               expandedHeight: 100,
               floating: false,
-              pinned:
-                  false, // 👈 false để AppBar biến mất hoàn toàn khi kéo xuống
+              pinned: false,
               snap: false,
               flexibleSpace: FlexibleSpaceBar(
                 background: Center(
@@ -32,12 +92,12 @@ class PhongdaotaoHomePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Phòng đào tạo',
+                            _vaiTro,
                             style: Theme.of(context).textTheme.titleLarge!
                                 .copyWith(color: Colors.white),
                           ),
                           Text(
-                            'Nguyễn Thị A',
+                            _hoTen,
                             style: Theme.of(context).textTheme.bodyLarge!
                                 .copyWith(color: Colors.white),
                           ),
@@ -62,18 +122,22 @@ class PhongdaotaoHomePage extends StatelessWidget {
                         buildNavigationButton(
                           context,
                           'assets/images/icons/user_icon.png',
+                          onPressed_dsGiangVien,
                         ),
                         buildNavigationButton(
                           context,
                           'assets/images/icons/lesson_icon.png',
+                          onPressed_dsHocPhan,
                         ),
                         buildNavigationButton(
                           context,
                           'assets/images/icons/form_icon.png',
+                          onPressed_dsDonXin,
                         ),
                         buildNavigationButton(
                           context,
                           'assets/images/icons/stats_icon.png',
+                          onPressed_thongKe,
                         ),
                       ],
                     ),
@@ -83,25 +147,25 @@ class PhongdaotaoHomePage extends StatelessWidget {
                         buildShortStat1(
                           context,
                           'Giảng viên',
-                          '123',
+                          _soLuongGiangVien.toString(),
                           'assets/images/icons/user_icon.png',
                         ),
                         buildShortStat1(
                           context,
                           'Học phần đang mở',
-                          '34',
+                          _hocPhanDangMo.toString(),
                           'assets/images/icons/lesson_icon.png',
                         ),
                         buildShortStat1(
                           context,
-                          'Đơn xin nghỉ dạy',
-                          '2',
+                          'Đơn nghỉ dạy cần duyệt',
+                          _donXinNghiDay.toString(),
                           'assets/images/icons/form_icon.png',
                         ),
                         buildShortStat1(
                           context,
-                          'Đơn xin dạy bù',
-                          '4',
+                          'Đơn dạy bù cần duyệt',
+                          _donXinDayBu.toString(),
                           'assets/images/icons/form_icon.png',
                         ),
                       ],
@@ -133,14 +197,18 @@ class PhongdaotaoHomePage extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                'Thống kê',
+                                'Thống kê tổng quát',
                                 style: Theme.of(
                                   context,
                                 ).textTheme.headlineLarge,
                               ),
                               const Spacer(),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    _kieuThongKe = !_kieuThongKe;
+                                  });
+                                },
                                 icon: Image.asset(
                                   'assets/images/icons/change_icon.png',
                                   height: 23,
@@ -151,21 +219,24 @@ class PhongdaotaoHomePage extends StatelessWidget {
                           buildShortStat2(
                             context,
                             'Tỉ lệ hoàn thành',
-                            0.5,
+                            _soLuongTietHocHoanThan,
+                            _soLuongTietHoc,
                             Colors.blue,
                           ),
                           SizedBox(height: 15),
                           buildShortStat2(
                             context,
                             'Tỉ lệ nghỉ dạy',
-                            0.1,
+                            _soLuongTietHocNghiDay,
+                            _soLuongTietHoc,
                             Colors.red,
                           ),
                           SizedBox(height: 15),
                           buildShortStat2(
                             context,
                             'Tỉ lệ dạy bù',
-                            1,
+                            _soLuongTietHocDayBu,
+                            _soLuongTietHocNghiDay,
                             Colors.green,
                           ),
                           SizedBox(height: 15),
@@ -174,7 +245,7 @@ class PhongdaotaoHomePage extends StatelessWidget {
                     ),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                       decoration: BoxDecoration(
                         color: Theme.of(context).scaffoldBackgroundColor,
                         border: Border.all(
@@ -195,43 +266,60 @@ class PhongdaotaoHomePage extends StatelessWidget {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 10,
                         children: [
                           Container(
                             width: double.infinity,
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
                             decoration: const BoxDecoration(
-                              border: Border(bottom: BorderSide(width: 1)),
+                              border: Border(bottom: BorderSide(width: 2)),
                             ),
                             child: Text(
                               'Hoạt động gần đây',
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
                           ),
-                          buildNhatKyHoatDong(
-                            context,
-                            '22:30 30/09/2025',
-                            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                          ),
-                          buildNhatKyHoatDong(
-                            context,
-                            '22:30 30/09/2025',
-                            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                          ),
-                          buildNhatKyHoatDong(
-                            context,
-                            '22:30 30/09/2025',
-                            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                          ),
-                          buildNhatKyHoatDong(
-                            context,
-                            '22:30 30/09/2025',
-                            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
-                          ),
-                          buildNhatKyHoatDong(
-                            context,
-                            '22:30 30/09/2025',
-                            'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                          SizedBox(height: 10),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 400.0, // Chiều cao tối đa là 200
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                spacing: 10,
+                                children: [
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                  buildActivityLog(
+                                    context,
+                                    '22:30 30/09/2025',
+                                    'Giảng viên Nguyễn Văn A đã gửi yêu cầu nghỉ dạy',
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -246,13 +334,17 @@ class PhongdaotaoHomePage extends StatelessWidget {
     );
   }
 
-  Widget buildNavigationButton(BuildContext context, String pathIcon) {
+  Widget buildNavigationButton(
+    BuildContext context,
+    String pathIcon,
+    void onPressed(),
+  ) {
     return SizedBox(
       width: 75,
       height: 75,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(padding: EdgeInsets.all(10)),
-        onPressed: () {},
+        onPressed: onPressed,
         child: Image.asset(pathIcon),
       ),
     );
@@ -300,7 +392,8 @@ class PhongdaotaoHomePage extends StatelessWidget {
   Widget buildShortStat2(
     BuildContext context,
     String label,
-    double value,
+    int value1,
+    int value2,
     Color color,
   ) {
     return Container(
@@ -312,7 +405,9 @@ class PhongdaotaoHomePage extends StatelessWidget {
             children: [
               Text(label, style: Theme.of(context).textTheme.labelMedium),
               Text(
-                (value * 100).toInt().toString() + '%',
+                _kieuThongKe
+                    ? value1.toString() + '/' + value2.toString()
+                    : (100 * value1 / value2).floor().toString() + '%',
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ],
@@ -338,7 +433,7 @@ class PhongdaotaoHomePage extends StatelessWidget {
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
-              widthFactor: value,
+              widthFactor: value1 / value2,
               child: Container(
                 decoration: BoxDecoration(
                   color: color,
@@ -352,13 +447,10 @@ class PhongdaotaoHomePage extends StatelessWidget {
     );
   }
 
-  Widget buildNhatKyHoatDong(
-    BuildContext context,
-    String time,
-    String content,
-  ) {
+  Widget buildActivityLog(BuildContext context, String time, String content) {
     return Container(
       width: double.infinity,
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(width: 1)),
       ),
