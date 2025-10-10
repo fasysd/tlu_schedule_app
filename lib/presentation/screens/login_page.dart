@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'phongDaoTao_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -68,7 +69,10 @@ class _LoginPageState extends State<LoginPage> {
   void _showVerifyDialog() {}
 
   void _submitForm() {
-    _formKey.currentState!.validate();
+    // _formKey.currentState!.validate();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+    );
   }
 
   @override
