@@ -1,9 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-
 import '../../data/mock_data.dart';
 import 'home_giangvien.dart';
-// ---------------------------------
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -97,9 +95,9 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context) => HomeGiangVien(user: user),
           ),
         );
-      } else {
+      } else if (user.role == 'phongdaotao'){
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tài khoản không phải là giảng viên.')),
+          const SnackBar(content: Text('Chức năng đang được phát triển')),
         );
       }
     } catch (e) {
@@ -115,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
     // Giao diện được giữ nguyên
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView( // Thêm SingleChildScrollView để tránh lỗi tràn màn hình
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Stack(
@@ -130,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container(
                 width: 300,
-                padding: const EdgeInsets.only(top: 20), // Thêm padding để không bị quá sát
+                padding: const EdgeInsets.only(top: 20),
                 child: Form(
                   key: _formKey,
                   child: Column(

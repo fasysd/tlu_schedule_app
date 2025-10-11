@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
 import '../../data/mock_data.dart';
+import 'weekly_schedule_page.dart';
 
 class ScheduleData {
   final Map<String, List<ScheduleEntry>> groupedSchedules;
@@ -44,7 +46,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
     String? featuredId = userSchedules.first.id;
 
     final Map<String, List<ScheduleEntry>> grouped = {};
-    final DateFormat formatter = DateFormat("E, 'Ngày' dd/MM/y", 'vi_VN');
+    final DateFormat formatter = DateFormat("EEEE, 'Ngày' dd/MM/y", 'vi_VN');
 
     for (var schedule in userSchedules) {
       final String dateKey = formatter.format(schedule.date);
@@ -54,19 +56,12 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
       grouped[dateKey]!.add(schedule);
     }
 
-    if (userSchedules.isNotEmpty) {
-      final nextDay = userSchedules.last.date.add(const Duration(days: 1));
-      final String nextDayKey = formatter.format(nextDay);
-      if (grouped[nextDayKey] == null) {
-        grouped[nextDayKey] = [];
-      }
-    }
-
     return ScheduleData(groupedSchedules: grouped, featuredScheduleId: featuredId);
   }
 
   @override
   Widget build(BuildContext context) {
+
     final pages = [
       _HomeContent(user: widget.user, scheduleDataFuture: _scheduleDataFuture),
       const Center(child: Text("Lịch giảng viên")),
@@ -83,12 +78,12 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFFD32F2F),
-        unselectedItemColor: Colors.black54,
+        unselectedItemColor: Theme.of(context).disabledColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Lịch'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Thống kê'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Cá nhân'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Học phần'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Đơn phê duyệt'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Hồ sơ'),
         ],
       ),
     );
@@ -108,7 +103,7 @@ class _HomeContent extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            color: const Color(0xFF0D47A1),
+            color: Theme.of(context).primaryColor,
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
@@ -118,20 +113,32 @@ class _HomeContent extends StatelessWidget {
                   backgroundColor: Colors.white,
                 ),
                 const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text( "Giảng viên", style: TextStyle(color: Colors.white70, fontSize: 13),),
-                    Text( user.fullName, style: const TextStyle( color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18, ),),
-                    const SizedBox(height: 4),
-                    const Row(
-                      children: [
-                        Icon(Icons.circle, color: Colors.greenAccent, size: 12),
-                        SizedBox(width: 4),
-                        Text( "Không có cảnh báo", style: TextStyle(color: Colors.white, fontSize: 12),),
-                      ],
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text( "Giảng viên", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),),
+                      Text( user.fullName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.circle, color: Colors.greenAccent, size: 12),
+                          const SizedBox(width: 4),
+                          Text( "Không có cảnh báo", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WeeklySchedulePage(user: user)),
+                    );
+                  },
+                  tooltip: 'Xem lịch theo tuần',
                 ),
               ],
             ),
@@ -168,12 +175,7 @@ class _HomeContent extends StatelessWidget {
                       children: [
                         _DateHeader(date: date),
                         const SizedBox(height: 12),
-                        if (schedulesForDay.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text("Không có lịch dạy", style: TextStyle(color: Colors.grey)),
-                          )
-                        else
+                        if (schedulesForDay.isNotEmpty)
                           ...schedulesForDay.map((schedule) {
                             final bool isFeatured = schedule.id == featuredId;
 
@@ -249,6 +251,24 @@ class _DetailedScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<List<Widget>> infoRows = [
+      [
+        _InfoItem(
+            icon: Icons.access_time,
+            text: "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
+            color: Colors.red),
+        _InfoItem(icon: Icons.location_on_outlined, text: schedule.roomId),
+      ],
+      [
+        _InfoItem(icon: Icons.calendar_today_outlined, text: "Tiết ${schedule.periods.join('-')}"),
+        _buildStatusItem(schedule.status),
+      ],
+      [
+        _InfoItem(icon: Icons.person_outline, text: user.fullName),
+        _InfoItem(icon: Icons.school_outlined, text: "${schedule.studentCount}"),
+      ],
+    ];
+
     return Card(
       color: const Color(0xFFE3F2FD),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -263,33 +283,17 @@ class _DetailedScheduleCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _InfoItem(
-                    icon: Icons.access_time,
-                    text: "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
-                    color: Colors.red),
-                _InfoItem(icon: Icons.location_on_outlined, text: schedule.roomId),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _InfoItem(icon: Icons.calendar_today_outlined, text: "Tiết ${schedule.periods.join('-')}"),
-                _buildStatusItem(schedule.status),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _InfoItem(icon: Icons.person_outline, text: user.fullName),
-                _InfoItem(icon: Icons.school_outlined, text: schedule.studentCount.toString()),
-              ],
-            ),
-            const SizedBox(height: 10),
+
+            ...infoRows.map((rowItems) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  Expanded(flex: 6, child: rowItems[0]),
+                  Expanded(flex: 4, child: rowItems[1]),
+                ],
+              ),
+            )),
+
             const Center(
               child: Text(
                 "Bấm để xem chi tiết",
@@ -305,7 +309,6 @@ class _DetailedScheduleCard extends StatelessWidget {
 
 class _SimpleScheduleCard extends StatelessWidget {
   final ScheduleEntry schedule;
-
   const _SimpleScheduleCard({required this.schedule});
 
   @override
@@ -315,28 +318,47 @@ class _SimpleScheduleCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(DateFormat('HH:mm').format(schedule.startTime),
-                style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(schedule.subjectName,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis,),
-                  const SizedBox(height: 4),
-                  Text("${schedule.roomId}   Tiết ${schedule.periods.join('-')}",
-                      style: const TextStyle(color: Colors.black87)),
-                ],
-              ),
-            )
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: SizedBox(
+                    width: 100,
+                    child: Text(
+                      DateFormat('HH:mm').format(schedule.startTime),
+                      style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${schedule.subjectName} (${schedule.className})",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${schedule.roomId}   Tiết ${schedule.periods.join('-')}",
+                        style: const TextStyle(color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -353,20 +375,18 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: color ?? Colors.black87),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(color: color ?? Colors.black87),
-              overflow: TextOverflow.ellipsis,
-            ),
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: color ?? Colors.black87),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(color: color ?? Colors.black87),
+            overflow: TextOverflow.ellipsis,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

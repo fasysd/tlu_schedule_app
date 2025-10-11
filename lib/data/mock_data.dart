@@ -6,6 +6,7 @@ final List<UserAccount> userAccounts = [
     id: 'gv01',
     username: 'gv01',
     password: '123',
+    email: 'gv@01',
     role: 'giangvien',
     fullName: 'Nguyễn Thị A',
     avatarPath: 'assets/images/teacher_logo.jpg',
@@ -15,6 +16,7 @@ final List<UserAccount> userAccounts = [
     id: 'dt01',
     username: 'dt01',
     password: '123',
+    email: 'dt@01',
     role: 'phongdaotao',
     fullName: 'Phòng đào tạo TLU',
     avatarPath: 'assets/images/tlu_logo.png',
@@ -90,9 +92,9 @@ final List<ScheduleEntry> mockSchedules = [
     courseId: 'course_ctdl_01',
     subjectName: 'Cấu trúc dữ liệu',
     className: '64KTPM4',
-    date: DateTime(2025, 9, 30), // Cùng ngày với "Học máy"
-    startTime: DateTime(2025, 9, 30, 10, 0),
-    endTime: DateTime(2025, 9, 30, 11, 45),
+    date: DateTime(2025, 9, 31), // Cùng ngày với "Học máy"
+    startTime: DateTime(2025, 9, 31, 10, 0),
+    endTime: DateTime(2025, 9, 31, 11, 45),
     periods: [5, 6],
     roomId: '401-A2',
     instructorId: 'gv01',
