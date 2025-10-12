@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tlu_schedule_app/core/themes/light_theme.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
 import '../../data/mock_data.dart';
@@ -67,63 +68,75 @@ class WeeklySchedulePage extends StatelessWidget {
       "CN",
     ];
     final List<Map<String, String>> periods = [
-      {"name": "Tiết 1", "time": "7:00-7:50"},
-      {"name": "Tiết 2", "time": "7:55-8:45"},
-      {"name": "Tiết 3", "time": "8:50-9:40"},
-      {"name": "Tiết 4", "time": "9:45-10:35"},
-      {"name": "Tiết 5", "time": "10:40-11:30"},
-      {"name": "Tiết 6", "time": "11:35-12:25"},
+      {"name": "Tiết 1", "time": "(7:00 - 7:50)"},
+      {"name": "Tiết 2", "time": "(7:55 - 8:45)"},
+      {"name": "Tiết 3", "time": "(8:50 - 9:40)"},
+      {"name": "Tiết 4", "time": "(9:45 - 10:35)"},
+      {"name": "Tiết 5", "time": "(10:40 - 11:30)"},
+      {"name": "Tiết 6", "time": "(11:35 - 12:25)"},
+      {"name": "Tiết 7", "time": "(12:55 - 13:45)"},
+      {"name": "Tiết 8", "time": "(13:50 - 14:40)"},
+      {"name": "Tiết 9", "time": "(14:45 - 15:35)"},
+      {"name": "Tiết 10", "time": "(15:40 - 16:30)"},
+      {"name": "Tiết 11", "time": "(16:35 - 17:25)"},
+      {"name": "Tiết 12", "time": "(17:30 - 18:20)"},
     ];
 
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Lịch dạy theo tuần'),
-          // backgroundColor: Color(0xFF4286C1),
+          backgroundColor: lightTheme.primaryColor,
         ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+        body: SafeArea(
           child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Table(
-                border: TableBorder.all(color: Colors.grey.shade400, width: 1),
-                columnWidths: const {
-                  0: IntrinsicColumnWidth(),
-                  1: FixedColumnWidth(150.0),
-                  2: FixedColumnWidth(150.0),
-                  3: FixedColumnWidth(150.0),
-                  4: FixedColumnWidth(150.0),
-                  5: FixedColumnWidth(150.0),
-                  6: FixedColumnWidth(150.0),
-                  7: FixedColumnWidth(150.0),
-                },
-                children: [
-                  TableRow(
-                    children: days.map((day) => _buildHeaderCell(day)).toList(),
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Table(
+                  border: TableBorder.all(
+                    color: Colors.grey.shade400,
+                    width: 1,
                   ),
-                  ...List.generate(periods.length, (periodIndex) {
-                    int currentPeriod = periodIndex + 1;
-                    return TableRow(
-                      children: List.generate(8, (dayIndex) {
-                        if (dayIndex == 0) {
-                          return _buildPeriodCell(
-                            periods[periodIndex]['name']!,
-                            periods[periodIndex]['time']!,
-                          );
-                        }
-                        final cellData = scheduleData[currentPeriod]?[dayIndex];
-                        return _buildScheduleCell(cellData);
-                      }),
-                    );
-                  }),
-                ],
+                  columnWidths: const {
+                    0: IntrinsicColumnWidth(),
+                    1: FixedColumnWidth(150.0),
+                    2: FixedColumnWidth(150.0),
+                    3: FixedColumnWidth(150.0),
+                    4: FixedColumnWidth(150.0),
+                    5: FixedColumnWidth(150.0),
+                    6: FixedColumnWidth(150.0),
+                    7: FixedColumnWidth(150.0),
+                  },
+                  children: [
+                    TableRow(
+                      children: days
+                          .map((day) => _buildHeaderCell(day))
+                          .toList(),
+                    ),
+                    ...List.generate(periods.length, (periodIndex) {
+                      int currentPeriod = periodIndex + 1;
+                      return TableRow(
+                        children: List.generate(8, (dayIndex) {
+                          if (dayIndex == 0) {
+                            return _buildPeriodCell(
+                              periods[periodIndex]['name']!,
+                              periods[periodIndex]['time']!,
+                            );
+                          }
+                          final cellData =
+                              scheduleData[currentPeriod]?[dayIndex];
+                          return _buildScheduleCell(cellData);
+                        }),
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
