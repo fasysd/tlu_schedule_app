@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
@@ -98,13 +97,17 @@ class _HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
+    return Column(
         children: [
           Container(
             width: double.infinity,
             color: Theme.of(context).primaryColor,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top,
+              bottom: 16,
+              left: 16,
+              right: 16,
+            ),
             child: Row(
               children: [
                 CircleAvatar(
@@ -200,7 +203,6 @@ class _HomeContent extends StatelessWidget {
             ),
           ),
         ],
-      ),
     );
   }
 }
