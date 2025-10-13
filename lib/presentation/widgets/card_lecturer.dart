@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
+import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 
 class CardLecturer extends StatelessWidget {
   final LecturerModel lecturerModel;
@@ -29,20 +30,8 @@ class CardLecturer extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              height: 90,
               width: 90,
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(195, 217, 233, 1),
-                borderRadius: BorderRadius.circular(21),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(21),
-                child: Image.asset(
-                  lecturerModel.duongDanAvatar,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              child: BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar),
             ),
             const SizedBox(width: 9),
             Column(
