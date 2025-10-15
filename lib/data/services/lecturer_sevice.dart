@@ -4,6 +4,10 @@ import '../models/lecturer_model.dart';
 //Sevice test thử
 
 class LecturerService {
+  Future<List<LecturerModel>> fetchLecturersFromApi() async {
+    return generateSampleLecturers();
+  }
+
   final Random _random = Random();
   final List<String> _firstNames = [
     'Nguyễn',
@@ -58,6 +62,8 @@ class LecturerService {
         id: id,
         tenTaiKhoan: 'gv_${fullName.replaceAll(' ', '').toLowerCase()}',
         hoVaTen: fullName,
+        email:
+            'gv_${fullName.replaceAll(' ', '').toLowerCase()}@university.edu.vn',
         ngaySinh: _generateRandomDateOfBirth(),
         soDienThoai: _generateRandomPhoneNumber(),
         soHocPhanDangDay: _random.nextInt(5) + 1, // Từ 1 đến 5 học phần

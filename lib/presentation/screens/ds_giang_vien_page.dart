@@ -16,8 +16,21 @@ class DsgiangvienPage extends StatefulWidget {
 class _DsgiangvienPageState extends State<DsgiangvienPage> {
   // FocusNode để bỏ focus khi chạm ra ngoài
   final FocusNode _searchFocusNode = FocusNode();
-  final List<LecturerModel> _listLecturer = LecturerService()
-      .generateSampleLecturers();
+  late final List<LecturerModel> _listLecturer;
+
+  @override
+  void initState() {
+    super.initState();
+    loadLecturers(); // gọi hàm async
+  }
+
+  Future<void> loadLecturers() async {
+    final lecturers = await LecturerService().fetchLecturersFromApi();
+
+    setState(() {
+      _listLecturer = lecturers;
+    });
+  }
 
   @override
   void dispose() {
@@ -25,10 +38,12 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
     super.dispose();
   }
 
-  void onPressedXemGiangVien() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const XemChiTietGiangVienPage()));
+  void onPressedXemGiangVien(LecturerModel lecture) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => XemChiTietGiangVienPage(lecturerModel: lecture),
+      ),
+    );
   }
 
   void onPressedQuayLai() {
@@ -79,7 +94,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                     children: _listLecturer.map((item) {
                       return CardLecturer(
                         lecturerModel: item,
-                        onPressed: onPressedXemGiangVien,
+                        onPressed: () => onPressedXemGiangVien(item),
                       );
                     }).toList(),
                   ),

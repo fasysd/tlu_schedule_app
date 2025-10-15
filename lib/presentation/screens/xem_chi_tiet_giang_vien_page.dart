@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
 
 class XemChiTietGiangVienPage extends StatefulWidget {
-  const XemChiTietGiangVienPage({super.key});
+  final LecturerModel lecturerModel;
+  const XemChiTietGiangVienPage({super.key, required this.lecturerModel});
 
   @override
   State<XemChiTietGiangVienPage> createState() =>
@@ -12,6 +15,14 @@ class XemChiTietGiangVienPage extends StatefulWidget {
 
 class _XemChiTietGiangVienPageState extends State<XemChiTietGiangVienPage> {
   bool _kieuThongKe = false;
+  late LecturerModel lecturerInformation;
+  @override
+  void initState() {
+    setState(() {
+      lecturerInformation = widget.lecturerModel;
+    });
+  }
+
   void onPressedQuayLai() {
     Navigator.pop(context);
   }
@@ -56,19 +67,23 @@ class _XemChiTietGiangVienPageState extends State<XemChiTietGiangVienPage> {
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           Text(
-                            'Họ và tên: Nguyễn Văn A',
+                            'Họ và tên: ' +
+                                lecturerInformation.hoVaTen.toString(),
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                           Text(
-                            'Ngày sinh: 11/07/2005',
+                            'Ngày sinh: ' +
+                                DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(lecturerInformation.ngaySinh),
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                           Text(
-                            'Email: abc123@gmail.com',
+                            'Email: ' + lecturerInformation.email,
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                           Text(
-                            'SDT: 0975846375',
+                            'SDT: ' + lecturerInformation.soDienThoai,
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                         ],
