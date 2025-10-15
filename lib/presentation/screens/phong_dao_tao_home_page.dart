@@ -25,14 +25,21 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   int _soLuongTietHocHoanThan = 0;
   int _soLuongTietHocNghiDay = 0;
   int _soLuongTietHocDayBu = 0;
-  List<ActivityLog> _listActivityLog = ActivityLogService()
-      .generateSampleLogs();
+  late List<ActivityLog> _listActivityLog;
 
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    // Gọi API trước
+    final fetchedActivityLogs = await ActivityLogService()
+        .fetchActivityLogSFromApi();
+
+    // Cập nhật state sau khi có dữ liệu
     setState(() {
-      //tạm dùng thay thế
       _vaiTro = 'Phòng đào tạo';
       _hoTen = 'Nguyễn Thị A';
       _soLuongGiangVien = 130;
@@ -43,8 +50,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
       _soLuongTietHocHoanThan = 15 * 45;
       _soLuongTietHocNghiDay = 30;
       _soLuongTietHocDayBu = 10;
-      List<ActivityLog> _listActivityLog = ActivityLogService()
-          .generateSampleLogs();
+      _listActivityLog = fetchedActivityLogs;
     });
   }
 

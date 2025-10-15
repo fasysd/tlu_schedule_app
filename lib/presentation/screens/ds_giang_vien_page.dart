@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/data/services/lecturer_sevice.dart';
 import 'package:tlu_schedule_app/presentation/widgets/card_lecturer.dart';
+import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
+import 'xem_chi_tiet_giang_vien_page.dart';
 import '../widgets/text_field_search.dart'; // Đảm bảo đường dẫn này là chính xác
 
 class DsgiangvienPage extends StatefulWidget {
@@ -14,13 +16,34 @@ class DsgiangvienPage extends StatefulWidget {
 class _DsgiangvienPageState extends State<DsgiangvienPage> {
   // FocusNode để bỏ focus khi chạm ra ngoài
   final FocusNode _searchFocusNode = FocusNode();
-  final List<LecturerModel> _listLecturer = LecturerService()
-      .generateSampleLecturers();
+  late final List<LecturerModel> _listLecturer;
+
+  @override
+  void initState() {
+    super.initState();
+    loadLecturers(); // gọi hàm async
+  }
+
+  Future<void> loadLecturers() async {
+    final lecturers = await LecturerService().fetchLecturersFromApi();
+
+    setState(() {
+      _listLecturer = lecturers;
+    });
+  }
 
   @override
   void dispose() {
     _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void onPressedXemGiangVien(LecturerModel lecture) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => XemChiTietGiangVienPage(lecturerModel: lecture),
+      ),
+    );
   }
 
   void onPressedQuayLai() {
@@ -39,52 +62,9 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
         child: Scaffold(
           body: CustomScrollView(
             slivers: [
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                expandedHeight: 80,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(
-                                195,
-                                217,
-                                233,
-                                1,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(15),
-                                ),
-                              ),
-                            ),
-                            onPressed: onPressedQuayLai,
-                            child: Image.asset(
-                              'assets/images/icons/back_icon.png',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Text(
-                          'Danh sách giảng viên',
-                          style: Theme.of(context).textTheme.titleLarge!
-                              .copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              SliverAppbarBackpage(
+                textTittle: 'Danh sách giảng viên',
+                onPressedBack: onPressedQuayLai,
               ),
 
               SliverAppBar(
@@ -114,7 +94,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                     children: _listLecturer.map((item) {
                       return CardLecturer(
                         lecturerModel: item,
-                        onPressed: () {},
+                        onPressed: () => onPressedXemGiangVien(item),
                       );
                     }).toList(),
                   ),

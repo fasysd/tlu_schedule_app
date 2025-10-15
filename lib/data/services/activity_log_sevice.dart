@@ -5,6 +5,10 @@ import '../models/activity_log_model.dart';
 // import 'đường_dẫn_của_bạn/activity_log.dart';
 
 class ActivityLogService {
+  Future<List<ActivityLog>> fetchActivityLogSFromApi() async {
+    return generateSampleLogs();
+  }
+
   final Random _random = Random();
 
   // Danh sách các hành động mẫu
