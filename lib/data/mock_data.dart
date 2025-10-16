@@ -1,5 +1,6 @@
 import 'models/user_model.dart';
 import 'models/schedule_model.dart';
+import 'models/student_model.dart';
 
 final List<UserAccount> userAccounts = [
   UserAccount(
@@ -19,7 +20,7 @@ final List<UserAccount> userAccounts = [
     email: 'dt@01',
     role: 'phongdaotao',
     fullName: 'Phòng đào tạo TLU',
-    avatarPath: 'assets/images/tlu_logo.png',
+    avatarPath: 'assets/images/defaultAvatar.png',
   ),
 ];
 
@@ -33,10 +34,18 @@ final List<ScheduleEntry> mockSchedules = [
     startTime: DateTime(2025, 9, 29, 7, 0),
     endTime: DateTime(2025, 9, 29, 8, 45),
     periods: [1, 2],
+    numberOfPeriods: 2, 
     roomId: '329-A2',
     instructorId: 'gv01',
-    status: 'scheduled',
+    status: 'missed',
     studentCount: 45,
+    lessonContent: 'Giới thiệu tổng quan về lập trình di động. Lịch sử phát triển và các nền tảng phổ biến.',
+    documents: [],
+    leaveDocuments: [],
+    makeupDate: null,
+    makeupPeriods: [],
+    makeupRoomId: null,
+    makeupStatus: null,
   ),
   ScheduleEntry(
     id: 'sched_002',
@@ -47,12 +56,19 @@ final List<ScheduleEntry> mockSchedules = [
     startTime: DateTime(2025, 9, 29, 8, 50),
     endTime: DateTime(2025, 9, 29, 10, 35),
     periods: [3, 4],
+    numberOfPeriods: 2, 
     roomId: '325-A2',
     instructorId: 'gv01',
     status: 'scheduled',
     studentCount: 50,
+    lessonContent: null,
+    documents: [],
+    leaveDocuments: [],
+    makeupDate: null, 
+    makeupPeriods: [], 
+    makeupRoomId: null, 
+    makeupStatus: null, 
   ),
-
   ScheduleEntry(
     id: 'sched_003',
     courseId: 'course_hm_01',
@@ -62,39 +78,48 @@ final List<ScheduleEntry> mockSchedules = [
     startTime: DateTime(2025, 9, 30, 7, 0),
     endTime: DateTime(2025, 9, 30, 9, 35),
     periods: [1, 2, 3],
+    numberOfPeriods: 3, 
     roomId: '325-A2',
     instructorId: 'gv01',
-    status: 'scheduled',
+    status: 'missed', // Đổi để test
     studentCount: 40,
+    lessonContent: null,
+    documents: [],
+    leaveDocuments: [], 
+    makeupDate: null, 
+    makeupPeriods: [], 
+    makeupRoomId: null, 
+    makeupStatus: null, 
   ),
-
-  ScheduleEntry(
-    id: 'sched_003',
-    courseId: 'course_hm_01',
-    subjectName: 'Học máy',
-    className: '63KTPM2',
-    date: DateTime(2025, 9, 30),
-    startTime: DateTime(2025, 9, 30, 7, 0),
-    endTime: DateTime(2025, 9, 30, 9, 35),
-    periods: [1, 2, 3],
-    roomId: '325-A2',
-    instructorId: 'gv01',
-    status: 'scheduled',
-    studentCount: 40,
-  ),
-
   ScheduleEntry(
     id: 'sched_004',
     courseId: 'course_ctdl_01',
     subjectName: 'Cấu trúc dữ liệu',
     className: '64KTPM4',
-    date: DateTime(2025, 9, 31),
-    startTime: DateTime(2025, 9, 31, 10, 0),
-    endTime: DateTime(2025, 9, 31, 11, 45),
-    periods: [5, 6],
+    date: DateTime(2025, 9, 30),
+    startTime: DateTime(2025, 9, 30, 12, 55),
+    endTime: DateTime(2025, 9, 30, 15, 35),
+    periods: [7, 8, 9],
+    numberOfPeriods: 3, 
     roomId: '401-A2',
     instructorId: 'gv01',
     status: 'scheduled',
     studentCount: 55,
+    lessonContent: null,
+    documents: [],
+    leaveDocuments: [],
+    makeupDate: null, 
+    makeupPeriods: [], 
+    makeupRoomId: null, 
+    makeupStatus: null, 
   ),
 ];
+
+final List<Student> mockStudents = List.generate(
+  45,
+      (index) => Student(
+    id: '64${123456 + index}',
+    fullName: 'Nguyễn Văn ${String.fromCharCode(65 + (index % 26))}${index + 1}',
+    dateOfBirth: DateTime(2004, 5, 10 + index),
+  ),
+);

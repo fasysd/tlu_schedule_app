@@ -1,16 +1,25 @@
 class ScheduleEntry {
-  final String id;
-  final String courseId;
-  final DateTime date;
-  final DateTime startTime;
-  final DateTime endTime;
-  final String roomId;
-  final String instructorId;
-  final String subjectName;
-  final String className;
-  final List<int> periods;
-  final String status;
-  final int studentCount;
+  String id;
+  String courseId;
+  DateTime date;
+  DateTime startTime;
+  DateTime endTime;
+  String roomId;
+  String instructorId;
+  String subjectName;
+  String className;
+  List<int> periods;
+  String status;
+  int studentCount;
+  int numberOfPeriods;
+  String? lessonContent;
+  List<String>? documents;
+  String? leaveReason;
+  List<String>? leaveDocuments;
+  DateTime? makeupDate;
+  List<int>? makeupPeriods;
+  String? makeupRoomId;
+  String? makeupStatus;
 
   ScheduleEntry({
     required this.id,
@@ -25,6 +34,15 @@ class ScheduleEntry {
     required this.periods,
     required this.status,
     required this.studentCount,
+    required this.numberOfPeriods,
+    this.lessonContent,
+    this.documents,
+    this.leaveReason,
+    this.leaveDocuments,
+    this.makeupDate,
+    this.makeupPeriods,
+    this.makeupRoomId,
+    this.makeupStatus,
   });
 }
 

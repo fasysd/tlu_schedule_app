@@ -84,7 +84,6 @@ class WeeklySchedulePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Lịch dạy theo tuần'),
-          backgroundColor: lightTheme.primaryColor,
         ),
         body: SafeArea(
           child: SingleChildScrollView(

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../data/mock_data.dart';
 import 'home_giangvien.dart';
+import 'phong_dao_tao_home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -96,8 +97,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       } else if (user.role == 'phongdaotao'){
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Chức năng đang được phát triển')),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PhongdaotaoHomePage(),
+          ),
         );
       }
     } catch (e) {
@@ -106,11 +110,9 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-  // ---------------------------------------------
 
   @override
   Widget build(BuildContext context) {
-    // Giao diện được giữ nguyên
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -198,4 +200,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

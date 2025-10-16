@@ -4,6 +4,9 @@ import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
 import '../../data/mock_data.dart';
 import 'ds_lich_day_tuan.dart';
+import '../widgets/schedule_status_widget.dart';
+import 'chi_tiet_buoi_hoc_page.dart';
+import '../widgets/info_item_widget.dart';
 
 class ScheduleData {
   final Map<String, List<ScheduleEntry>> groupedSchedules;
@@ -25,6 +28,12 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
   int _currentIndex = 0;
   late Future<ScheduleData> _scheduleDataFuture;
 
+  void _refreshSchedules() {
+    setState(() {
+      _scheduleDataFuture = _loadAndGroupSchedules(widget.user.id);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +51,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
 
     userSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    String? featuredId = userSchedules.first.id;
+    String? featuredId = userSchedules.isNotEmpty ? userSchedules.first.id : null;
 
     final Map<String, List<ScheduleEntry>> grouped = {};
     final DateFormat formatter = DateFormat("EEEE, 'Ngày' dd/MM/y", 'vi_VN');
@@ -62,10 +71,14 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
   Widget build(BuildContext context) {
 
     final pages = [
-      _HomeContent(user: widget.user, scheduleDataFuture: _scheduleDataFuture),
-      const Center(child: Text("Lịch giảng viên")),
-      const Center(child: Text("Thống kê")),
-      const Center(child: Text("Thông tin cá nhân")),
+      _HomeContent(
+          user: widget.user,
+          scheduleDataFuture: _scheduleDataFuture,
+          onGoBack: _refreshSchedules,
+      ),
+      const Center(child: Text("Học phần")),
+      const Center(child: Text("Đơn phê duyệt")),
+      const Center(child: Text("Hồ sơ")),
     ];
 
     return Scaffold(
@@ -92,117 +105,122 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
 class _HomeContent extends StatelessWidget {
   final UserAccount user;
   final Future<ScheduleData> scheduleDataFuture;
+  final VoidCallback onGoBack;
 
-  const _HomeContent({required this.user, required this.scheduleDataFuture});
+  const _HomeContent({
+    required this.user,
+    required this.scheduleDataFuture,
+    required this.onGoBack,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: [
-          Container(
-            width: double.infinity,
-            color: Theme.of(context).primaryColor,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-              bottom: 16,
-              left: 16,
-              right: 16,
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: AssetImage(user.avatarPath),
-                  backgroundColor: Colors.white,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text( "Giảng viên", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),),
-                      Text( user.fullName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.circle, color: Colors.greenAccent, size: 12),
-                          const SizedBox(width: 4),
-                          Text( "Không có cảnh báo", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => WeeklySchedulePage(user: user)),
-                    );
-                  },
-                  tooltip: 'Xem lịch theo tuần',
-                ),
-              ],
-            ),
+      children: [
+        Container(
+          width: double.infinity,
+          color: Color.fromRGBO(89, 141, 192, 1),
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            bottom: 16,
+            left: 16,
+            right: 16,
           ),
-          // Body
-          Expanded(
-            child: FutureBuilder<ScheduleData>(
-              future: scheduleDataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
-                }
-                if (!snapshot.hasData || snapshot.data!.groupedSchedules.isEmpty) {
-                  return const Center(child: Text("Không có lịch trình."));
-                }
-
-                final scheduleData = snapshot.data!;
-                final groupedData = scheduleData.groupedSchedules;
-                final featuredId = scheduleData.featuredScheduleId;
-                final dateKeys = groupedData.keys.toList();
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: dateKeys.length,
-                  itemBuilder: (context, index) {
-                    final date = dateKeys[index];
-                    final schedulesForDay = groupedData[date]!;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 25,
+                backgroundImage: AssetImage(user.avatarPath),
+                backgroundColor: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text( "Giảng viên", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),),
+                    Text( user.fullName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
+                    const SizedBox(height: 4),
+                    Row(
                       children: [
-                        _DateHeader(date: date),
-                        const SizedBox(height: 12),
-                        if (schedulesForDay.isNotEmpty)
-                          ...schedulesForDay.map((schedule) {
-                            final bool isFeatured = schedule.id == featuredId;
-
-                            if (isFeatured) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: _DetailedScheduleCard(schedule: schedule, user: user),
-                              );
-                            } else {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: _SimpleScheduleCard(schedule: schedule),
-                              );
-                            }
-                          }),
-                        const SizedBox(height: 8),
+                        const Icon(Icons.circle, color: Colors.greenAccent, size: 12),
+                        const SizedBox(width: 4),
+                        Text( "Không có cảnh báo", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
                       ],
-                    );
-                  },
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WeeklySchedulePage(user: user)),
+                  );
+                },
+                tooltip: 'Xem lịch theo tuần',
+              ),
+            ],
           ),
-        ],
+        ),
+        // Body
+        Expanded(
+          child: FutureBuilder<ScheduleData>(
+            future: scheduleDataFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
+              }
+              if (!snapshot.hasData || snapshot.data!.groupedSchedules.isEmpty) {
+                return const Center(child: Text("Không có lịch trình."));
+              }
+
+              final scheduleData = snapshot.data!;
+              final groupedData = scheduleData.groupedSchedules;
+              final featuredId = scheduleData.featuredScheduleId;
+              final dateKeys = groupedData.keys.toList();
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: dateKeys.length,
+                itemBuilder: (context, index) {
+                  final date = dateKeys[index];
+                  final schedulesForDay = groupedData[date]!;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _DateHeader(date: date),
+                      const SizedBox(height: 12),
+                      if (schedulesForDay.isNotEmpty)
+                        ...schedulesForDay.map((schedule) {
+                          final bool isFeatured = schedule.id == featuredId;
+
+                          if (isFeatured) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: _DetailedScheduleCard(schedule: schedule, user: user, onGoBack: onGoBack),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: _SimpleScheduleCard(schedule: schedule, user: user, onGoBack: onGoBack),
+                            );
+                          }
+                        }),
+                      const SizedBox(height: 8),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -226,83 +244,82 @@ class _DateHeader extends StatelessWidget {
 class _DetailedScheduleCard extends StatelessWidget {
   final ScheduleEntry schedule;
   final UserAccount user;
-  const _DetailedScheduleCard({required this.schedule, required this.user});
+  final VoidCallback onGoBack;
 
-  Widget _buildStatusItem(String status) {
-    switch (status) {
-      case 'scheduled':
-      case 'held':
-        return const _InfoItem(
-            icon: Icons.check_circle_outline,
-            text: "Có dạy",
-            color: Colors.green);
-      case 'missed':
-        return const _InfoItem(
-            icon: Icons.cancel_outlined,
-            text: "Nghỉ dạy",
-            color: Colors.red);
-      case 'pending_leave':
-        return _InfoItem(
-            icon: Icons.hourglass_top_outlined,
-            text: "Chờ duyệt nghỉ",
-            color: Colors.orange.shade700);
-      default:
-        return const _InfoItem(icon: Icons.more_horiz, text: "Không xác định");
-    }
-  }
+  const _DetailedScheduleCard({
+    required this.schedule,
+    required this.user,
+    required this.onGoBack,
+  });
 
   @override
   Widget build(BuildContext context) {
     final List<List<Widget>> infoRows = [
       [
-        _InfoItem(
+        InfoItemWidget(
             icon: Icons.access_time,
             text: "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
             color: Colors.red),
-        _InfoItem(icon: Icons.location_on_outlined, text: schedule.roomId),
+        InfoItemWidget(icon: Icons.location_on_outlined, text: schedule.roomId),
       ],
       [
-        _InfoItem(icon: Icons.calendar_today_outlined, text: "Tiết ${schedule.periods.join('-')}"),
-        _buildStatusItem(schedule.status),
+        InfoItemWidget(icon: Icons.calendar_today_outlined, text: "Tiết ${schedule.periods.join('-')}"),
+        ScheduleStatusWidget(status: schedule.status),
       ],
       [
-        _InfoItem(icon: Icons.person_outline, text: user.fullName),
-        _InfoItem(icon: Icons.school_outlined, text: "${schedule.studentCount}"),
+        InfoItemWidget(icon: Icons.person_outline, text: user.fullName),
+        InfoItemWidget(icon: Icons.school_outlined, text: "${schedule.studentCount}"),
       ],
     ];
 
-    return Card(
-      color: const Color(0xFFE3F2FD),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "${schedule.subjectName} (${schedule.className})",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChiTietBuoiHocPage(
+              schedule: schedule,
+              user: user,
             ),
-            const SizedBox(height: 16),
-
-            ...infoRows.map((rowItems) => Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                children: [
-                  Expanded(flex: 6, child: rowItems[0]),
-                  Expanded(flex: 4, child: rowItems[1]),
-                ],
+          ),
+        );
+        onGoBack();
+      },
+      child: Card(
+        color: const Color(0xFFE3F2FD),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${schedule.subjectName} (${schedule.className})",
+                style:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-            )),
-
-            const Center(
-              child: Text(
-                "Bấm để xem chi tiết",
-                style: TextStyle(fontSize: 11, color: Colors.black54),
+              const SizedBox(height: 16),
+              ...infoRows.map((rowItems) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(flex: 6, child: rowItems[0]),
+                    Expanded(flex: 4, child: rowItems[1]),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 4),
+              const Center(
+                child: Text(
+                  "Bấm để xem chi tiết",
+                  style: TextStyle(fontSize: 11, color: Colors.black54),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -311,84 +328,89 @@ class _DetailedScheduleCard extends StatelessWidget {
 
 class _SimpleScheduleCard extends StatelessWidget {
   final ScheduleEntry schedule;
-  const _SimpleScheduleCard({required this.schedule});
+  final UserAccount user;
+  final VoidCallback onGoBack;
+
+  const _SimpleScheduleCard({
+    required this.schedule,
+    required this.user,
+    required this.onGoBack,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFE3F2FD),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: SizedBox(
-                    width: 100,
-                    child: Text(
-                      DateFormat('HH:mm').format(schedule.startTime),
-                      style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChiTietBuoiHocPage(
+              schedule: schedule,
+              user: user,
+            ),
+          ),
+        );
+        onGoBack();
+      },
+      child: Card(
+        color: const Color(0xFFE3F2FD),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: SizedBox(
+                      width: 100,
+                      child: Text(
+                        DateFormat('HH:mm').format(schedule.startTime),
+                        style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
+                  const SizedBox(width: 10),
 
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${schedule.subjectName} (${schedule.className})",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${schedule.roomId}   Tiết ${schedule.periods.join('-')}",
-                        style: const TextStyle(color: Colors.black87),
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${schedule.subjectName} (${schedule.className})",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${schedule.roomId}   Tiết ${schedule.periods.join('-')}",
+                          style: const TextStyle(color: Colors.black87),
+                        ),
+                      ],
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              const Center(
+                child: Text(
+                  "Bấm để xem chi tiết",
+                  style: TextStyle(fontSize: 11, color: Colors.black54),
                 ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoItem extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Color? color;
-
-  const _InfoItem({required this.icon, required this.text, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: color ?? Colors.black87),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(color: color ?? Colors.black87),
-            overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

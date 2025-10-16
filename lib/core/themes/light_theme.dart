@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
-final Color _xanhDuongDam = Color.fromRGBO(0, 55, 126, 100);
-final Color _xanhDuong = Color.fromRGBO(89, 141, 192, 100);
-final Color _xanhDuongNhat = Color.fromRGBO(195, 217, 233, 100);
-final Color _xamDam = Color.fromRGBO(158, 158, 158, 100);
-final Color _xamNhat = Color.fromRGBO(216, 216, 216, 100);
-final Color _vang = Color.fromRGBO(255, 204, 0, 100);
-final Color _do = Color.fromRGBO(255, 85, 88, 100);
-final Color _trang = Color.fromRGBO(255, 255, 255, 100);
-final Color _den = Color.fromRGBO(51, 51, 51, 100);
+final Color xanhDuongDam = Color.fromRGBO(0, 55, 126, 1);
+final Color xanhDuong = Color.fromRGBO(89, 141, 192, 1);
+final Color xanhDuongNhat = Color.fromRGBO(195, 217, 233, 1);
+final Color xamDam = Color.fromRGBO(158, 158, 158, 1);
+final Color xamNhat = Color.fromRGBO(216, 216, 216, 1);
+final Color vang = Color.fromRGBO(255, 204, 0, 1);
+final Color mauDo = Color.fromRGBO(255, 85, 88, 1);
+final Color trang = Color.fromRGBO(255, 255, 255, 1);
+final Color den = Color.fromRGBO(51, 51, 51, 1);
 
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-  scaffoldBackgroundColor: Colors.grey[100],
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.indigo,
+  scaffoldBackgroundColor: trang,
+  appBarTheme: AppBarTheme(
+    backgroundColor: xanhDuong,
     foregroundColor: Colors.white,
     elevation: 2,
   ),
@@ -33,15 +33,25 @@ final ThemeData lightTheme = ThemeData(
     titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
 
     // Dành cho nội dung chính
-    bodyLarge: TextStyle(fontSize: 20, color: Colors.black54, height: 1.5),
+    bodyLarge: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      height: 1.5,
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.normal,
+      height: 1.5,
+    ),
 
     // Dành cho nhãn, nút, chú thích
-    labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+    labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
   ),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: _xanhDuong,
+      backgroundColor: xanhDuong,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(21)),
@@ -50,15 +60,15 @@ final ThemeData lightTheme = ThemeData(
       textStyle: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w500,
-        color: _trang,
+        color: trang,
       ),
     ),
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(_xanhDuongDam), // màu chữ
+      foregroundColor: WidgetStatePropertyAll(xanhDuongDam), // màu chữ
       backgroundColor: WidgetStatePropertyAll(Colors.transparent), // nền
-      overlayColor: WidgetStatePropertyAll(_xanhDuongNhat), // khi nhấn
+      overlayColor: WidgetStatePropertyAll(xanhDuongNhat), // khi nhấn
       textStyle: WidgetStatePropertyAll(
         TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
@@ -72,7 +82,7 @@ final ThemeData lightTheme = ThemeData(
       fontSize: 16,
       fontWeight: FontWeight.w500,
     ),
-    hintStyle: TextStyle(color: _den, fontSize: 16),
+    hintStyle: TextStyle(color: den, fontSize: 16),
     helperStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
     errorStyle: TextStyle(
       color: Colors.red,
@@ -82,7 +92,7 @@ final ThemeData lightTheme = ThemeData(
 
     // ================= Fill & Background =================
     filled: true,
-    fillColor: Colors.grey[100],
+    fillColor: Colors.grey[1],
 
     // ================= Border =================
     border: OutlineInputBorder(
