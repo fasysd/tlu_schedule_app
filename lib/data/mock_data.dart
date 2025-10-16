@@ -23,10 +23,7 @@ final List<UserAccount> userAccounts = [
   ),
 ];
 
-// --- DỮ-LIỆU LỊCH GIẢNG DẠY ---
-// Dữ-liệu này mô-phỏng các buổi-học (ScheduleEntry) được lấy về cho giảng-viên 'gv01'
 final List<ScheduleEntry> mockSchedules = [
-  // Thứ 2, Ngày 29/9/2025
   ScheduleEntry(
     id: 'sched_001',
     courseId: 'course_pm_01',
@@ -56,7 +53,6 @@ final List<ScheduleEntry> mockSchedules = [
     studentCount: 50,
   ),
 
-  // Thứ 3, Ngày 30/9/2025
   ScheduleEntry(
     id: 'sched_003',
     courseId: 'course_hm_01',
@@ -86,13 +82,13 @@ final List<ScheduleEntry> mockSchedules = [
     status: 'scheduled',
     studentCount: 40,
   ),
-  // THÊM BUỔI HỌC MỚI VÀO CÙNG NGÀY
+
   ScheduleEntry(
     id: 'sched_004',
     courseId: 'course_ctdl_01',
     subjectName: 'Cấu trúc dữ liệu',
     className: '64KTPM4',
-    date: DateTime(2025, 9, 31), // Cùng ngày với "Học máy"
+    date: DateTime(2025, 9, 31),
     startTime: DateTime(2025, 9, 31, 10, 0),
     endTime: DateTime(2025, 9, 31, 11, 45),
     periods: [5, 6],

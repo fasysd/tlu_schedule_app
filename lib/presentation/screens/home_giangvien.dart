@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
 import '../../data/mock_data.dart';
-import 'weekly_schedule_page.dart';
+import 'ds_lich_day_tuan.dart';
 
 class ScheduleData {
   final Map<String, List<ScheduleEntry>> groupedSchedules;

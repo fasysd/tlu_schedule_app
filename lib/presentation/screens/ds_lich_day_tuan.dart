@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:tlu_schedule_app/core/themes/light_theme.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
@@ -96,7 +95,6 @@ class WeeklySchedulePage extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Table(
                   border: TableBorder.all(
-                    color: Colors.grey.shade400,
                     width: 1,
                   ),
                   columnWidths: const {
@@ -125,8 +123,7 @@ class WeeklySchedulePage extends StatelessWidget {
                               periods[periodIndex]['time']!,
                             );
                           }
-                          final cellData =
-                              scheduleData[currentPeriod]?[dayIndex];
+                          final cellData = scheduleData[currentPeriod]?[dayIndex];
                           return _buildScheduleCell(cellData);
                         }),
                       );
