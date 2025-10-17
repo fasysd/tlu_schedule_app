@@ -17,6 +17,8 @@ class DangKyNghiPage extends StatefulWidget {
 }
 
 class _DangKyNghiPageState extends State<DangKyNghiPage> {
+  // --- THÊM MỚI: Biến để lưu thông tin học phần ---
+  late Course _course;
   final _reasonController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final List<File> _selectedFiles = [];
@@ -24,6 +26,19 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
   @override
   void initState() {
     super.initState();
+
+    // --- THAY ĐỔI: Tìm học phần tương ứng khi khởi tạo ---
+    try {
+      _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+    } catch (e) {
+      // Xử lý lỗi nếu không tìm thấy Course, mặc dù điều này không nên xảy ra
+      _course = Course(
+        id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
+        className: 'N/A', instructorId: '', semesterId: '', courseType: '',
+        totalPeriods: 0, credits: 0, studentCount: 0,
+      );
+    }
+
     // Luôn tải lý do và file đã có (nếu có) để người dùng có thể xem và sửa
     _reasonController.text = widget.schedule.leaveReason ?? '';
     if (widget.schedule.leaveDocuments != null) {
@@ -45,7 +60,7 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     return days[date.weekday - 1];
   }
 
-  // --- CÁC HÀM XỬ LÝ FILE (THÊM MỚI) ---
+  // --- CÁC HÀM XỬ LÝ FILE ---
   Future<void> _pickFile() async {
     FocusScope.of(context).unfocus();
     try {
@@ -83,7 +98,6 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          // Nút xóa file luôn hiển thị
           Padding(
             padding: const EdgeInsets.only(left: 4.0),
             child: InkWell(
@@ -149,15 +163,10 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
+      // NOTE: Đây là nơi bạn sẽ gọi service để cập nhật dữ liệu trên server (Firebase)
+      // Tạm thời, chúng ta chỉ cập nhật trên đối tượng widget.schedule
+      // để UI trang trước đó có thể cập nhật khi pop về.
       setState(() {
-        final index = mockSchedules.indexWhere((s) => s.id == widget.schedule.id);
-        if (index != -1) {
-          mockSchedules[index].status = 'pending_leave';
-          mockSchedules[index].leaveReason = _reasonController.text;
-          mockSchedules[index].leaveDocuments = _selectedFiles
-              .map((file) => file.path.split(Platform.pathSeparator).last)
-              .toList();
-        }
         widget.schedule.status = 'pending_leave';
         widget.schedule.leaveReason = _reasonController.text;
         widget.schedule.leaveDocuments = _selectedFiles
@@ -176,6 +185,7 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final bool isUpdate = widget.schedule.status == 'pending_leave';
@@ -190,8 +200,9 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // --- THAY ĐỔI: Lấy thông tin từ _course ---
               Text(
-                'Học phần: ${widget.schedule.subjectName} (${widget.schedule.className})',
+                'Học phần: ${_course.subjectName} (${_course.className})',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -238,7 +249,6 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                   controller: _reasonController,
                   maxLines: 5,
                   minLines: 3,
-                  // Không còn `readOnly`
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.grey[100],

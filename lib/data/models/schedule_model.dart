@@ -1,17 +1,41 @@
+class Course {
+  final String id;
+  final String courseCode;
+  final String subjectName;
+  final String className;
+  final String instructorId;
+  final String semesterId;
+  final String courseType;
+  final int totalPeriods;
+  final int credits;
+  final int studentCount;
+
+  Course({
+    required this.id,
+    required this.courseCode,
+    required this.subjectName,
+    required this.className,
+    required this.instructorId,
+    required this.semesterId,
+    required this.courseType,
+    required this.totalPeriods,
+    required this.credits,
+    required this.studentCount,
+  });
+}
+
 class ScheduleEntry {
-  String id;
-  String courseId;
-  DateTime date;
-  DateTime startTime;
-  DateTime endTime;
-  String roomId;
-  String instructorId;
-  String subjectName;
-  String className;
-  List<int> periods;
+  final String id;
+  final String courseId;
+  final DateTime date;
+  final DateTime startTime;
+  final DateTime endTime;
+  final List<int> periods;
+  final int numberOfPeriods;
+  final String roomId;
+
+  // Các trường có thể thay đổi
   String status;
-  int studentCount;
-  int numberOfPeriods;
   String? lessonContent;
   List<String>? documents;
   String? leaveReason;
@@ -27,14 +51,10 @@ class ScheduleEntry {
     required this.date,
     required this.startTime,
     required this.endTime,
-    required this.roomId,
-    required this.instructorId,
-    required this.subjectName,
-    required this.className,
     required this.periods,
-    required this.status,
-    required this.studentCount,
     required this.numberOfPeriods,
+    required this.roomId,
+    required this.status,
     this.lessonContent,
     this.documents,
     this.leaveReason,
@@ -46,22 +66,17 @@ class ScheduleEntry {
   });
 }
 
-class Course {
+// --- MODEL HỌC KỲ (SEMESTER) - GIỮ NGUYÊN ---
+class Semester {
   final String id;
-  final String subjectName;
-  final String className;
-  final String semesterId;
-  final String instructorId;
-  final int studentCount;
-  final int requiredSessions;
+  final String name;
+  final DateTime startDate;
+  final DateTime endDate;
 
-  Course({
+  Semester({
     required this.id,
-    required this.subjectName,
-    required this.className,
-    required this.semesterId,
-    required this.instructorId,
-    required this.studentCount,
-    required this.requiredSessions,
+    required this.name,
+    required this.startDate,
+    required this.endDate,
   });
 }

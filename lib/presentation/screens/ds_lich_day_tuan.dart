@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tlu_schedule_app/core/themes/light_theme.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
 import '../../data/mock_data.dart';
 
+// ... class ScheduleCell giữ nguyên ...
 class ScheduleCell {
   final String subjectName;
   final String room;
@@ -17,9 +17,13 @@ class ScheduleCell {
     required this.dayOfWeek,
   });
 
-  factory ScheduleCell.fromScheduleEntry(ScheduleEntry entry, int period) {
+  factory ScheduleCell.fromScheduleEntry(
+    ScheduleEntry entry,
+    Course course,
+    int period,
+  ) {
     return ScheduleCell(
-      subjectName: entry.subjectName,
+      subjectName: course.subjectName,
       room: entry.roomId,
       period: period,
       dayOfWeek: entry.date.weekday,
@@ -27,25 +31,54 @@ class ScheduleCell {
   }
 }
 
-class WeeklySchedulePage extends StatelessWidget {
+class WeeklySchedulePage extends StatefulWidget {
+  // <-- Chuyển thành StatefulWidget
   final UserAccount user;
 
   const WeeklySchedulePage({super.key, required this.user});
 
-  Map<int, Map<int, ScheduleCell>> _processSchedules() {
-    final userSchedules = mockSchedules
-        .where((s) => s.instructorId == user.id)
+  @override
+  State<WeeklySchedulePage> createState() => _WeeklySchedulePageState();
+}
+
+class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
+  // <-- Tạo State
+  late Future<Map<int, Map<int, ScheduleCell>>> _scheduleMatrixFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleMatrixFuture = _processSchedules(); // Gọi hàm bất đồng bộ
+  }
+
+  // SỬA HÀM NÀY THÀNH ASYNC
+  Future<Map<int, Map<int, ScheduleCell>>> _processSchedules() async {
+    final instructorCourseIds = mockCourses
+        .where((c) => c.instructorId == widget.user.id)
+        .map((c) => c.id)
+        .toSet();
+
+    // GỌI SERVICE TẠI ĐÂY
+    final allSchedules = await scheduleService.getAllSchedules();
+
+    final userSchedules = allSchedules
+        .where((s) => instructorCourseIds.contains(s.courseId))
         .toList();
+
     final Map<int, Map<int, ScheduleCell>> scheduleMatrix = {};
 
     for (final schedule in userSchedules) {
+      final course = mockCourses.firstWhere((c) => c.id == schedule.courseId);
+
       for (final period in schedule.periods) {
         if (scheduleMatrix[period] == null) {
           scheduleMatrix[period] = {};
         }
         final day = schedule.date.weekday;
+
         scheduleMatrix[period]![day] = ScheduleCell.fromScheduleEntry(
           schedule,
+          course,
           period,
         );
       }
@@ -55,7 +88,7 @@ class WeeklySchedulePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheduleData = _processSchedules();
+    // ... Phần định nghĩa `days` và `periods` giữ nguyên
     final List<String> days = [
       "",
       "Thứ 2",
@@ -82,57 +115,74 @@ class WeeklySchedulePage extends StatelessWidget {
     ];
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Lịch dạy theo tuần'),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+      appBar: AppBar(title: const Text('Lịch dạy theo tuần')),
+      // BỌC BODY BẰNG FUTUREBUILDER
+      body: FutureBuilder<Map<int, Map<int, ScheduleCell>>>(
+        future: _scheduleMatrixFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text("Lỗi: ${snapshot.error}"));
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Không có lịch trình."));
+          }
+
+          final scheduleData = snapshot.data!;
+
+          // Phần UI còn lại giữ nguyên và dùng scheduleData
+          return SafeArea(
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Table(
-                  border: TableBorder.all(
-                    width: 1,
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Table(
+                    //... table content
+                    border: TableBorder.all(width: 1),
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: FixedColumnWidth(150.0),
+                      2: FixedColumnWidth(150.0),
+                      3: FixedColumnWidth(150.0),
+                      4: FixedColumnWidth(150.0),
+                      5: FixedColumnWidth(150.0),
+                      6: FixedColumnWidth(150.0),
+                      7: FixedColumnWidth(150.0),
+                    },
+                    children: [
+                      TableRow(
+                        children: days
+                            .map((day) => _buildHeaderCell(day))
+                            .toList(),
+                      ),
+                      ...List.generate(periods.length, (periodIndex) {
+                        int currentPeriod = periodIndex + 1;
+                        return TableRow(
+                          children: List.generate(8, (dayIndex) {
+                            if (dayIndex == 0) {
+                              return _buildPeriodCell(
+                                periods[periodIndex]['name']!,
+                                periods[periodIndex]['time']!,
+                              );
+                            }
+                            final cellData =
+                                scheduleData[currentPeriod]?[dayIndex];
+                            return _buildScheduleCell(cellData);
+                          }),
+                        );
+                      }),
+                    ],
                   ),
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: FixedColumnWidth(150.0),
-                    2: FixedColumnWidth(150.0),
-                    3: FixedColumnWidth(150.0),
-                    4: FixedColumnWidth(150.0),
-                    5: FixedColumnWidth(150.0),
-                    6: FixedColumnWidth(150.0),
-                    7: FixedColumnWidth(150.0),
-                  },
-                  children: [
-                    TableRow(
-                      children: days
-                          .map((day) => _buildHeaderCell(day))
-                          .toList(),
-                    ),
-                    ...List.generate(periods.length, (periodIndex) {
-                      int currentPeriod = periodIndex + 1;
-                      return TableRow(
-                        children: List.generate(8, (dayIndex) {
-                          if (dayIndex == 0) {
-                            return _buildPeriodCell(
-                              periods[periodIndex]['name']!,
-                              periods[periodIndex]['time']!,
-                            );
-                          }
-                          final cellData = scheduleData[currentPeriod]?[dayIndex];
-                          return _buildScheduleCell(cellData);
-                        }),
-                      );
-                    }),
-                  ],
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
+      ),
     );
   }
 

@@ -15,6 +15,12 @@ class DangKyBuPage extends StatefulWidget {
 }
 
 class _DangKyBuPageState extends State<DangKyBuPage> {
+  // --- THÊM MỚI: State để quản lý dữ liệu bất đồng bộ ---
+  late Future<List<ScheduleEntry>> _schedulesFuture;
+  List<ScheduleEntry> _allSchedules = []; // Cache lại danh sách lịch
+
+  late Course _course;
+
   DateTime? _selectedDate;
   List<int>? _selectedPeriods;
   String? _selectedRoomId;
@@ -25,22 +31,19 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   List<List<int>> _availablePeriodOptions = [];
   List<String> _availableRoomOptions = [];
 
-  bool _isFindingSuggestion = false; // State để hiển thị loading
+  bool _isFindingSuggestion = false;
 
   @override
   void initState() {
     super.initState();
+    _schedulesFuture = scheduleService.getAllSchedules();
+    _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
     _generatePossiblePeriods();
 
     if (widget.schedule.makeupDate != null) {
       _selectedDate = widget.schedule.makeupDate;
       _selectedPeriods = widget.schedule.makeupPeriods;
       _selectedRoomId = widget.schedule.makeupRoomId;
-      _filterAvailablePeriods();
-      _filterAvailableRooms();
-    } else {
-      _availablePeriodOptions = [];
-      _availableRoomOptions = [];
     }
   }
 
@@ -55,6 +58,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     _allPossiblePeriodOptions = possiblePeriods;
   }
 
+  // Sửa hàm này để dùng _allSchedules thay vì mockSchedules
   void _filterAvailablePeriods() {
     if (_selectedDate == null) {
       setState(() {
@@ -65,10 +69,15 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       return;
     }
 
-    final occupiedPeriodsOnSelectedDate = mockSchedules
+    final instructorCourseIds = mockCourses
+        .where((c) => c.instructorId == widget.user.id)
+        .map((c) => c.id)
+        .toSet();
+
+    final occupiedPeriodsOnSelectedDate = _allSchedules
         .where(
           (s) =>
-              s.instructorId == widget.user.id &&
+              instructorCourseIds.contains(s.courseId) &&
               s.date.year == _selectedDate!.year &&
               s.date.month == _selectedDate!.month &&
               s.date.day == _selectedDate!.day,
@@ -93,6 +102,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     _filterAvailableRooms();
   }
 
+  // Sửa hàm này để dùng _allSchedules
   void _filterAvailableRooms() {
     if (_selectedDate == null || _selectedPeriods == null) {
       setState(() {
@@ -102,7 +112,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       return;
     }
 
-    final occupiedRooms = mockSchedules
+    final occupiedRooms = _allSchedules
         .where(
           (s) =>
               s.date.year == _selectedDate!.year &&
@@ -124,41 +134,28 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     });
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 30)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _filterAvailablePeriods();
-      });
-    }
-  }
-
-  /// Tự động tìm và điền lịch trống gần nhất
+  // Sửa hàm này để dùng _allSchedules
   Future<void> _findAndSetSuggestion() async {
     setState(() {
       _isFindingSuggestion = true;
     });
 
-    await Future.delayed(const Duration(milliseconds: 300)); // Giả lập loading
-
+    await Future.delayed(const Duration(milliseconds: 300));
     DateTime checkDate = DateTime.now().add(const Duration(days: 1));
 
     for (int i = 0; i < 30; i++) {
-      // Tìm trong 30 ngày tới
       DateTime currentDate = checkDate.add(Duration(days: i));
-      if (currentDate.weekday == DateTime.sunday) continue; // Bỏ qua Chủ Nhật
+      if (currentDate.weekday == DateTime.sunday) continue;
 
-      // Lọc ca trống cho giảng viên vào ngày này
-      final occupiedPeriodsOnDate = mockSchedules
+      final instructorCourseIds = mockCourses
+          .where((c) => c.instructorId == widget.user.id)
+          .map((c) => c.id)
+          .toSet();
+
+      final occupiedPeriodsOnDate = _allSchedules
           .where(
             (s) =>
-                s.instructorId == widget.user.id &&
+                instructorCourseIds.contains(s.courseId) &&
                 s.date.year == currentDate.year &&
                 s.date.month == currentDate.month &&
                 s.date.day == currentDate.day,
@@ -170,12 +167,10 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
         return !option.any((p) => occupiedPeriodsOnDate.contains(p));
       }).toList();
 
-      if (availablePeriodsForDay.isEmpty)
-        continue; // Nếu ngày này hết ca trống -> bỏ qua
+      if (availablePeriodsForDay.isEmpty) continue;
 
-      // Với mỗi ca trống, tìm phòng trống
       for (final periodOption in availablePeriodsForDay) {
-        final occupiedRooms = mockSchedules
+        final occupiedRooms = _allSchedules
             .where(
               (s) =>
                   s.date.year == currentDate.year &&
@@ -191,13 +186,12 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
             .toList();
 
         if (availableRoomForPeriod.isNotEmpty) {
-          // ĐÃ TÌM THẤY!
           setState(() {
             _selectedDate = currentDate;
             _selectedPeriods = periodOption;
             _selectedRoomId = availableRoomForPeriod.first;
-            _filterAvailablePeriods(); // Cập nhật lại UI list ca học
-            _filterAvailableRooms(); // Cập nhật lại UI list phòng
+            _filterAvailablePeriods();
+            _filterAvailableRooms();
             _isFindingSuggestion = false;
           });
 
@@ -211,8 +205,6 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
         }
       }
     }
-
-    // Nếu không tìm thấy
     setState(() {
       _isFindingSuggestion = false;
     });
@@ -226,6 +218,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     );
   }
 
+  // Hàm gửi yêu cầu, cần được cập nhật để gọi service
   void _submitMakeupRequest() {
     if (_selectedDate == null ||
         _selectedPeriods == null ||
@@ -239,14 +232,13 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       return;
     }
 
+    // NOTE: Đây là nơi bạn sẽ gọi service để cập nhật dữ liệu trên server (Firebase)
+    // Tạm thời, chúng ta chỉ cập nhật trên widget.schedule để UI trang trước đó có thể cập nhật
     setState(() {
-      final index = mockSchedules.indexWhere((s) => s.id == widget.schedule.id);
-      if (index != -1) {
-        mockSchedules[index].makeupDate = _selectedDate;
-        mockSchedules[index].makeupPeriods = _selectedPeriods;
-        mockSchedules[index].makeupRoomId = _selectedRoomId;
-        mockSchedules[index].makeupStatus = 'pending_makeup';
-      }
+      widget.schedule.makeupDate = _selectedDate;
+      widget.schedule.makeupPeriods = _selectedPeriods;
+      widget.schedule.makeupRoomId = _selectedRoomId;
+      widget.schedule.makeupStatus = 'pending_makeup';
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -256,6 +248,22 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       ),
     );
     Navigator.of(context).pop();
+  }
+
+  // --- Các hàm build giữ nguyên, chỉ bọc phần body bằng FutureBuilder ---
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 30)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _filterAvailablePeriods();
+      });
+    }
   }
 
   String _getVietnameseDayOfWeek(DateTime date) {
@@ -273,326 +281,146 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isPending = widget.schedule.makeupStatus == 'pending_makeup';
-    final String pageTitle = isPending
-        ? 'Chi tiết đơn dạy bù'
-        : 'Đăng ký dạy bù';
-    final String buttonLabel = isPending ? 'Cập nhật đơn' : 'Gửi yêu cầu';
-
     return Scaffold(
-      appBar: AppBar(title: Text(pageTitle)),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Học phần: ${widget.schedule.subjectName} (${widget.schedule.className})',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildInfoRow(
-                context,
-                icon: Icons.access_time,
-                label: 'Thời gian:',
-                child: Text(
-                  ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
-                  style: const TextStyle(color: Colors.red, fontSize: 21),
-                ),
-              ),
-              _buildInfoRow(
-                context,
-                icon: Icons.location_on_outlined,
-                label: 'Phòng học:',
-                child: Text(' ${widget.schedule.roomId}'),
-              ),
-              _buildInfoRow(
-                context,
-                icon: Icons.calendar_today_outlined,
-                child: Text(
-                  'Tiết ${widget.schedule.periods.join('-')}, ${_getVietnameseDayOfWeek(widget.schedule.date)}, Ngày ${DateFormat('dd/MM/yyyy').format(widget.schedule.date)}',
-                ),
-              ),
-              _buildInfoRow(
-                context,
-                icon: Icons.person_outline,
-                label: 'Giảng viên:',
-                child: Text(
-                  ' ${widget.user.fullName} - ${widget.user.id.toUpperCase()}',
-                ),
-              ),
-              const Divider(height: 32, thickness: 1),
-              // THÊM NÚT GỢI Ý VÀO ĐÂY
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildSectionTitle(
-                    context,
-                    'Thông tin dạy bù',
-                    Icons.edit_calendar,
-                  ),
-                  TextButton.icon(
-                    onPressed: _isFindingSuggestion
-                        ? null
-                        : _findAndSetSuggestion,
-                    icon: _isFindingSuggestion
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(
-                            Icons.auto_awesome,
-                            size: 20,
-                            color: Colors.orange,
-                          ),
-                    label: Text(
-                      'Gợi ý',
-                      style: TextStyle(
-                        color: _isFindingSuggestion
-                            ? Colors.grey
-                            : Colors.orange,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildDatePicker(),
-              const SizedBox(height: 24),
-              _buildAnimatedPeriodSelector(),
-              const SizedBox(height: 24),
-              _buildAnimatedRoomSelector(),
-              const SizedBox(height: 40),
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: _submitMakeupRequest,
-                  icon: const Icon(Icons.send),
-                  label: Text(buttonLabel),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 12,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        title: Text(
+          widget.schedule.makeupStatus == 'pending_makeup'
+              ? 'Chi tiết đơn dạy bù'
+              : 'Đăng ký dạy bù',
         ),
+      ),
+      // Bọc body bằng FutureBuilder
+      body: FutureBuilder<List<ScheduleEntry>>(
+        future: _schedulesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Lỗi tải dữ liệu lịch: ${snapshot.error}"),
+            );
+          }
+
+          if (snapshot.hasData && _allSchedules.isEmpty) {
+            _allSchedules = snapshot.data!;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                if (_selectedDate != null) {
+                  _filterAvailablePeriods();
+                  _filterAvailableRooms();
+                }
+              }
+            });
+          }
+          return _buildContent();
+        },
       ),
     );
   }
 
-  Widget _buildDatePicker() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Ngày học:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: () => _selectDate(context),
-          child: InputDecorator(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
-              ),
-              isDense: true,
+  Widget _buildContent() {
+    final bool isPending = widget.schedule.makeupStatus == 'pending_makeup';
+    final String buttonLabel = isPending ? 'Cập nhật đơn' : 'Gửi yêu cầu';
+
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Học phần: ${_course.subjectName} (${_course.className})',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
-            child: Row(
+            const SizedBox(height: 16),
+            _buildInfoRow(
+              context,
+              icon: Icons.access_time,
+              label: 'Thời gian:',
+              child: Text(
+                ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
+                style: const TextStyle(color: Colors.red, fontSize: 21),
+              ),
+            ),
+            _buildInfoRow(
+              context,
+              icon: Icons.location_on_outlined,
+              label: 'Phòng học:',
+              child: Text(' ${widget.schedule.roomId}'),
+            ),
+            _buildInfoRow(
+              context,
+              icon: Icons.calendar_today_outlined,
+              child: Text(
+                'Tiết ${widget.schedule.periods.join('-')}, ${_getVietnameseDayOfWeek(widget.schedule.date)}, Ngày ${DateFormat('dd/MM/yyyy').format(widget.schedule.date)}',
+              ),
+            ),
+            _buildInfoRow(
+              context,
+              icon: Icons.person_outline,
+              label: 'Giảng viên:',
+              child: Text(
+                ' ${widget.user.fullName} - ${widget.user.id.toUpperCase()}',
+              ),
+            ),
+            const Divider(height: 32, thickness: 1),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  _selectedDate == null
-                      ? 'Chọn ngày'
-                      : DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                  style: const TextStyle(fontSize: 16),
+                _buildSectionTitle(
+                  context,
+                  'Thông tin dạy bù',
+                  Icons.edit_calendar,
                 ),
-                const Icon(Icons.calendar_today, size: 20),
+                TextButton.icon(
+                  onPressed: _isFindingSuggestion
+                      ? null
+                      : _findAndSetSuggestion,
+                  icon: _isFindingSuggestion
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(
+                          Icons.auto_awesome,
+                          size: 20,
+                          color: Colors.orange,
+                        ),
+                  label: Text(
+                    'Gợi ý',
+                    style: TextStyle(
+                      color: _isFindingSuggestion ? Colors.grey : Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                ),
               ],
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAnimatedPeriodSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Ca học:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 8),
-        if (_selectedDate == null)
-          const Text(
-            'Vui lòng chọn ngày trước',
-            style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-          ),
-        if (_selectedDate != null && _availablePeriodOptions.isEmpty)
-          const Text(
-            'Không có ca học nào phù hợp còn trống trong ngày này.',
-            style: TextStyle(color: Colors.red),
-          ),
-        if (_selectedDate != null && _availablePeriodOptions.isNotEmpty)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: _availablePeriodOptions.map((periodOption) {
-                final isSelected =
-                    _selectedPeriods != null &&
-                    _selectedPeriods!.join() == periodOption.join();
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedPeriods = isSelected ? null : periodOption;
-                        _filterAvailableRooms();
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(25),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withAlpha((255 * 0.3).round()),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Text(
-                        'Tiết ${periodOption.join('-')}',
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+            const SizedBox(height: 16),
+            _buildDateTimePicker(),
+            const SizedBox(height: 16),
+            _buildPeriodPicker(),
+            const SizedBox(height: 16),
+            _buildRoomPicker(),
+            const SizedBox(height: 32),
+            Center(
+              child: ElevatedButton(
+                onPressed: _submitMakeupRequest,
+                child: Text(buttonLabel),
+              ),
             ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildAnimatedRoomSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Phòng học:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ],
         ),
-        const SizedBox(height: 8),
-        if (_selectedPeriods == null)
-          const Text(
-            'Vui lòng chọn ca học trước',
-            style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-          ),
-        if (_selectedPeriods != null && _availableRoomOptions.isEmpty)
-          const Text(
-            'Không có phòng học nào còn trống vào ca này.',
-            style: TextStyle(color: Colors.red),
-          ),
-        if (_selectedPeriods != null && _availableRoomOptions.isNotEmpty)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: _availableRoomOptions.map((room) {
-                final isSelected = _selectedRoomId == room;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedRoomId = isSelected ? null : room;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: Theme.of(
-                                    context,
-                                  ).primaryColor.withAlpha((255 * 0.3).round()),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Text(
-                        room,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-      ],
+      ),
     );
   }
 
@@ -600,31 +428,38 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     BuildContext context, {
     required IconData icon,
     String? label,
-    required Widget child,
+    Widget? child,
   }) {
-    final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 15.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 22,
-            color: textTheme.bodySmall?.color?.withAlpha((255 * 0.7).round()),
-          ),
-          const SizedBox(width: 16),
-          if (label != null)
-            Text(label, style: textTheme.bodyMedium?.copyWith(fontSize: 18)),
-          Expanded(
-            child: DefaultTextStyle(
-              style: textTheme.bodyMedium!.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-              child: child,
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Icon(
+              icon,
+              size: 25,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
+          const SizedBox(width: 12),
+          if (label != null)
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 20),
+            ),
+          if (child != null)
+            Expanded(
+              child: DefaultTextStyle(
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                child: child,
+              ),
+            ),
         ],
       ),
     );
@@ -634,10 +469,120 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 22, color: Theme.of(context).primaryColor),
+        Icon(
+          icon,
+          size: 25,
+          color: Theme.of(context).textTheme.bodySmall?.color,
+        ),
         const SizedBox(width: 8),
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
+        ),
       ],
+    );
+  }
+
+  Widget _buildDateTimePicker() {
+    return InkWell(
+      onTap: () => _selectDate(context),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Ngày dạy bù',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 16,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              _selectedDate == null
+                  ? 'Chọn ngày'
+                  : DateFormat('dd/MM/yyyy').format(_selectedDate!),
+            ),
+            const Icon(Icons.calendar_today, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPeriodPicker() {
+    // --- SỬA LỖI ---
+    // Kiểm tra xem giá trị đã chọn có thực sự tồn tại trong danh sách các lựa chọn hay không.
+    final bool isValueInItems =
+        _selectedPeriods != null &&
+        _availablePeriodOptions.any(
+          (p) => p.join(',') == _selectedPeriods!.join(','),
+        );
+
+    return DropdownButtonFormField<List<int>>(
+      value: isValueInItems ? _selectedPeriods : null,
+      items: _availablePeriodOptions.map<DropdownMenuItem<List<int>>>((
+        List<int> value,
+      ) {
+        return DropdownMenuItem<List<int>>(
+          value: value,
+          child: Text(
+            'Tiết ${value.join('-')}',
+            style: const TextStyle(
+              fontSize: 20,
+            ), // <-- Sửa lại size chữ cho nhất quán
+          ),
+        );
+      }).toList(),
+      onChanged: _selectedDate == null
+          ? null
+          : (List<int>? newValue) {
+              setState(() {
+                _selectedPeriods = newValue;
+                _filterAvailableRooms();
+              });
+            },
+      decoration: InputDecoration(
+        labelText: 'Tiết dạy',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        enabled: _selectedDate != null,
+        fillColor: Colors.white,
+        filled: true,
+      ),
+    );
+  }
+
+  Widget _buildRoomPicker() {
+    // Kiểm tra xem giá trị hiện tại có nằm trong danh sách lựa chọn không
+    final bool isValueInItems =
+        _selectedRoomId != null &&
+            _availableRoomOptions.contains(_selectedRoomId);
+
+    return DropdownButtonFormField<String>(
+      value: isValueInItems ? _selectedRoomId : null,
+      items: _availableRoomOptions.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value, style: const TextStyle(fontSize: 20)),
+        );
+      }).toList(),
+      onChanged: _selectedPeriods == null
+          ? null
+          : (String? newValue) {
+        setState(() {
+          _selectedRoomId = newValue;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: 'Phòng học',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        enabled: _selectedPeriods != null,
+        fillColor: Colors.white,
+        filled: true,
+      ),
     );
   }
 }

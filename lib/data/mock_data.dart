@@ -1,125 +1,25 @@
+// E:/Apps/Flutter/project/tlu_schedule_app/lib/data/mock_data.dart
+// FILE NÀY ĐÓNG VAI TRÒ TẬP HỢP DỮ LIỆU TỪ CÁC NGUỒN
+
 import 'models/user_model.dart';
 import 'models/schedule_model.dart';
 import 'models/student_model.dart';
+import 'services/static_data.dart'; // Import dữ liệu tĩnh
+import 'services/schedule_service.dart'; // Import service để lấy dữ liệu động
 
-final List<UserAccount> userAccounts = [
-  UserAccount(
-    id: 'gv01',
-    username: 'gv01',
-    password: '123',
-    email: 'gv@01',
-    role: 'giangvien',
-    fullName: 'Nguyễn Thị A',
-    avatarPath: 'assets/images/teacher_logo.jpg',
-    departmentId: 'dept_cs',
-  ),
-  UserAccount(
-    id: 'dt01',
-    username: 'dt01',
-    password: '123',
-    email: 'dt@01',
-    role: 'phongdaotao',
-    fullName: 'Phòng đào tạo TLU',
-    avatarPath: 'assets/images/defaultAvatar.png',
-  ),
-];
+// =================================================================================
+// XUẤT RA CÁC BIẾN DỮ LIỆU ĐỂ UI SỬ DỤNG
+// =================================================================================
 
-final List<ScheduleEntry> mockSchedules = [
-  ScheduleEntry(
-    id: 'sched_001',
-    courseId: 'course_pm_01',
-    subjectName: 'Phát triển ứng dụng cho các thiết bị di động',
-    className: '64KTPM3 + 64KTPM.NB',
-    date: DateTime(2025, 9, 29),
-    startTime: DateTime(2025, 9, 29, 7, 0),
-    endTime: DateTime(2025, 9, 29, 8, 45),
-    periods: [1, 2],
-    numberOfPeriods: 2, 
-    roomId: '329-A2',
-    instructorId: 'gv01',
-    status: 'missed',
-    studentCount: 45,
-    lessonContent: 'Giới thiệu tổng quan về lập trình di động. Lịch sử phát triển và các nền tảng phổ biến.',
-    documents: [],
-    leaveDocuments: [],
-    makeupDate: null,
-    makeupPeriods: [],
-    makeupRoomId: null,
-    makeupStatus: null,
-  ),
-  ScheduleEntry(
-    id: 'sched_002',
-    courseId: 'course_nmlt_01',
-    subjectName: 'Nhập môn lập trình',
-    className: '64KTPM1',
-    date: DateTime(2025, 9, 29),
-    startTime: DateTime(2025, 9, 29, 8, 50),
-    endTime: DateTime(2025, 9, 29, 10, 35),
-    periods: [3, 4],
-    numberOfPeriods: 2, 
-    roomId: '325-A2',
-    instructorId: 'gv01',
-    status: 'scheduled',
-    studentCount: 50,
-    lessonContent: null,
-    documents: [],
-    leaveDocuments: [],
-    makeupDate: null, 
-    makeupPeriods: [], 
-    makeupRoomId: null, 
-    makeupStatus: null, 
-  ),
-  ScheduleEntry(
-    id: 'sched_003',
-    courseId: 'course_hm_01',
-    subjectName: 'Học máy',
-    className: '63KTPM2',
-    date: DateTime(2025, 9, 30),
-    startTime: DateTime(2025, 9, 30, 7, 0),
-    endTime: DateTime(2025, 9, 30, 9, 35),
-    periods: [1, 2, 3],
-    numberOfPeriods: 3, 
-    roomId: '325-A2',
-    instructorId: 'gv01',
-    status: 'missed', // Đổi để test
-    studentCount: 40,
-    lessonContent: null,
-    documents: [],
-    leaveDocuments: [], 
-    makeupDate: null, 
-    makeupPeriods: [], 
-    makeupRoomId: null, 
-    makeupStatus: null, 
-  ),
-  ScheduleEntry(
-    id: 'sched_004',
-    courseId: 'course_ctdl_01',
-    subjectName: 'Cấu trúc dữ liệu',
-    className: '64KTPM4',
-    date: DateTime(2025, 9, 30),
-    startTime: DateTime(2025, 9, 30, 12, 55),
-    endTime: DateTime(2025, 9, 30, 15, 35),
-    periods: [7, 8, 9],
-    numberOfPeriods: 3, 
-    roomId: '401-A2',
-    instructorId: 'gv01',
-    status: 'scheduled',
-    studentCount: 55,
-    lessonContent: null,
-    documents: [],
-    leaveDocuments: [],
-    makeupDate: null, 
-    makeupPeriods: [], 
-    makeupRoomId: null, 
-    makeupStatus: null, 
-  ),
-];
+// Dữ liệu tĩnh
+final List<Course> mockCourses = staticCourses;
+final List<Semester> mockSemesters = staticSemesters;
+final List<UserAccount> userAccounts = staticUsers;
+final List<Student> mockStudents = staticStudents;
 
-final List<Student> mockStudents = List.generate(
-  45,
-      (index) => Student(
-    id: '64${123456 + index}',
-    fullName: 'Nguyễn Văn ${String.fromCharCode(65 + (index % 26))}${index + 1}',
-    dateOfBirth: DateTime(2004, 5, 10 + index),
-  ),
-);
+// Dữ liệu động (sẽ được lấy từ service)
+// Khởi tạo một instance của service để các file khác có thể truy cập
+final ScheduleService scheduleService = ScheduleService();
+
+// BIẾN mockSchedules ĐÃ ĐƯỢC XÓA.
+// Mọi truy cập đến lịch học phải thông qua `scheduleService.getAllSchedules()`.

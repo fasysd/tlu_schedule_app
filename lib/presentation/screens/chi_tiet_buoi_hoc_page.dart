@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:tlu_schedule_app/data/mock_data.dart';
 import 'package:tlu_schedule_app/data/models/schedule_model.dart';
 import 'package:tlu_schedule_app/data/models/user_model.dart';
-import 'package:tlu_schedule_app/presentation/widgets/absent_dialog.dart';
 import 'package:tlu_schedule_app/presentation/widgets/schedule_status_widget.dart';
-import 'package:tlu_schedule_app/presentation/widgets/attendance_dialog.dart';
 import 'dang_ky_nghi_page.dart';
 import 'dang_ky_bu_page.dart';
+import 'ds_sinh_vien_page.dart'; // Sử dụng trang mới
 
 class ChiTietBuoiHocPage extends StatefulWidget {
   final ScheduleEntry schedule;
@@ -25,6 +25,7 @@ class ChiTietBuoiHocPage extends StatefulWidget {
 }
 
 class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
+  late Course _course;
   late String _originalLessonContent;
   late TextEditingController _contentController;
   bool _isContentChanged = false;
@@ -36,6 +37,16 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   @override
   void initState() {
     super.initState();
+    try {
+      _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+    } catch (e) {
+      _course = Course(
+        id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
+        className: 'N/A', instructorId: '', semesterId: '', courseType: '',
+        totalPeriods: 0, credits: 0, studentCount: 0,
+      );
+    }
+
     _originalLessonContent = widget.schedule.lessonContent ?? '';
     _contentController = TextEditingController(text: _originalLessonContent);
   }
@@ -47,24 +58,8 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   }
 
   String _getVietnameseDayOfWeek(DateTime date) {
-    switch (date.weekday) {
-      case 1:
-        return 'Thứ 2';
-      case 2:
-        return 'Thứ 3';
-      case 3:
-        return 'Thứ 4';
-      case 4:
-        return 'Thứ 5';
-      case 5:
-        return 'Thứ 6';
-      case 6:
-        return 'Thứ 7';
-      case 7:
-        return 'Chủ Nhật';
-      default:
-        return '';
-    }
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    return days[date.weekday - 1];
   }
 
   void _saveChanges() {
@@ -86,12 +81,16 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
     );
   }
 
-  void _showAttendanceDialog() async {
-    final updatedPresentIds = await showDialog<Set<String>>(
-      context: context,
-      builder: (BuildContext context) {
-        return AttendanceDialog(presentStudentIds: _presentStudentIds);
-      },
+  void _navigateToAttendancePage() async {
+    final updatedPresentIds = await Navigator.push<Set<String>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentListPage(
+          mode: StudentListPageMode.attendance,
+          presentStudentIds: _presentStudentIds,
+          totalStudentCount: _course.studentCount,
+        ),
+      ),
     );
 
     if (updatedPresentIds != null) {
@@ -101,12 +100,16 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
     }
   }
 
-  void _showAbsentStudentsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AbsentStudentsDialog(presentStudentIds: _presentStudentIds);
-      },
+  void _navigateToAbsentListPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentListPage(
+          mode: StudentListPageMode.absentList,
+          presentStudentIds: _presentStudentIds,
+          totalStudentCount: _course.studentCount,
+        ),
+      ),
     );
   }
 
@@ -122,11 +125,10 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         setState(() {
           _selectedFiles.addAll(result.paths.map((path) => File(path!)));
         });
-      } else {}
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Lỗi khi chọn file: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Lỗi khi chọn file: $e')));
     }
   }
 
@@ -176,7 +178,6 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
     }
   }
 
-  //...
   void _showMakeupRequestDialog() {
     Navigator.push(
       context,
@@ -208,10 +209,11 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Học phần: ${widget.schedule.subjectName} (${widget.schedule.className})',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                'Học phần: ${_course.subjectName} (${_course.className})',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
@@ -222,13 +224,14 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                   padding: const EdgeInsets.only(left: 4.0),
                   child: RichText(
                     text: TextSpan(
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(fontSize: 21),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontSize: 21),
                       children: <TextSpan>[
                         TextSpan(
                           text:
-                              ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
+                          ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
                           style: const TextStyle(color: Colors.red),
                         ),
                       ],
@@ -276,6 +279,8 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                 ),
               ),
               const SizedBox(height: 10),
+              _buildStudentInfo(context),
+              const SizedBox(height: 10),
               _buildSectionTitle(
                 context,
                 'Nội dung buổi học:',
@@ -315,10 +320,12 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                     ),
                   ),
                 ),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.4),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontSize: 16, height: 1.4),
               ),
+              _buildAttachmentSection(),
               if (_isContentChanged)
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0),
@@ -341,11 +348,7 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                     ),
                   ),
                 ),
-              _buildAttachmentSection(),
-              const SizedBox(height: 16),
-              _buildStudentInfo(context),
               const SizedBox(height: 32),
-              // SỬ DỤNG HÀM MỚI TẠI ĐÂY
               _buildActionButtons(),
             ],
           ),
@@ -355,11 +358,11 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   }
 
   Widget _buildInfoRow(
-    BuildContext context, {
-    required IconData icon,
-    String? label,
-    Widget? child,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        String? label,
+        Widget? child,
+      }) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -391,9 +394,10 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(fontWeight: FontWeight.normal),
         ),
       ],
     );
@@ -411,17 +415,17 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         const Icon(Icons.school_outlined),
         const SizedBox(width: 8),
         Text(
-          'Sinh viên: ${_presentStudentIds.length}/${widget.schedule.studentCount}',
+          'Sinh viên: ${_presentStudentIds.length}/${_course.studentCount}',
         ),
         const Spacer(),
         ElevatedButton(
-          onPressed: _showAttendanceDialog,
+          onPressed: _navigateToAttendancePage,
           style: smallButtonStyle,
           child: const Text('Điểm danh'),
         ),
         const SizedBox(width: 8),
         ElevatedButton(
-          onPressed: _showAbsentStudentsDialog,
+          onPressed: _navigateToAbsentListPage,
           style: smallButtonStyle.copyWith(
             backgroundColor: WidgetStateProperty.all(Colors.orange),
           ),

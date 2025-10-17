@@ -7,6 +7,7 @@ class UserAccount {
   final String fullName;
   final String avatarPath;
   final String? departmentId;
+  final String warningStatus;
 
   UserAccount({
     required this.id,
@@ -17,5 +18,6 @@ class UserAccount {
     required this.fullName,
     required this.avatarPath,
     this.departmentId,
+    this.warningStatus = 'none',
   });
 }

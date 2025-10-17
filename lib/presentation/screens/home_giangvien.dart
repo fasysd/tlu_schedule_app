@@ -7,6 +7,8 @@ import 'ds_lich_day_tuan.dart';
 import '../widgets/schedule_status_widget.dart';
 import 'chi_tiet_buoi_hoc_page.dart';
 import '../widgets/info_item_widget.dart';
+import 'ds_hoc_phan_gv.dart';
+import '../widgets/warning_helper.dart';
 
 class ScheduleData {
   final Map<String, List<ScheduleEntry>> groupedSchedules;
@@ -41,9 +43,16 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
   }
 
   Future<ScheduleData> _loadAndGroupSchedules(String instructorId) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    final allSchedules = await scheduleService.getAllSchedules();
 
-    final userSchedules = mockSchedules.where((s) => s.instructorId == instructorId).toList();
+    final instructorCourseIds = mockCourses
+        .where((c) => c.instructorId == instructorId)
+        .map((c) => c.id)
+        .toSet();
+
+    final userSchedules = allSchedules
+        .where((s) => instructorCourseIds.contains(s.courseId))
+        .toList();
 
     if (userSchedules.isEmpty) {
       return ScheduleData(groupedSchedules: {}, featuredScheduleId: null);
@@ -52,6 +61,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
     userSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
     String? featuredId = userSchedules.isNotEmpty ? userSchedules.first.id : null;
+
 
     final Map<String, List<ScheduleEntry>> grouped = {};
     final DateFormat formatter = DateFormat("EEEE, 'Ngày' dd/MM/y", 'vi_VN');
@@ -64,19 +74,19 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
       grouped[dateKey]!.add(schedule);
     }
 
-    return ScheduleData(groupedSchedules: grouped, featuredScheduleId: featuredId);
+    return ScheduleData(
+        groupedSchedules: grouped, featuredScheduleId: featuredId);
   }
 
   @override
   Widget build(BuildContext context) {
-
     final pages = [
       _HomeContent(
-          user: widget.user,
-          scheduleDataFuture: _scheduleDataFuture,
-          onGoBack: _refreshSchedules,
+        user: widget.user,
+        scheduleDataFuture: _scheduleDataFuture,
+        onGoBack: _refreshSchedules,
       ),
-      const Center(child: Text("Học phần")),
+      CourseListPage(user: widget.user),
       const Center(child: Text("Đơn phê duyệt")),
       const Center(child: Text("Hồ sơ")),
     ];
@@ -93,9 +103,12 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
         unselectedItemColor: Theme.of(context).disabledColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Học phần'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Đơn phê duyệt'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Hồ sơ'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month), label: 'Học phần'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart), label: 'Đơn phê duyệt'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Hồ sơ'),
         ],
       ),
     );
@@ -115,11 +128,15 @@ class _HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final warningDetails = getWarningDetails(user.warningStatus);
+    final warningText = warningDetails['text'];
+    final warningColor = warningDetails['color'];
+
     return Column(
       children: [
         Container(
           width: double.infinity,
-          color: Color.fromRGBO(89, 141, 192, 1),
+          color: const Color.fromRGBO(89, 141, 192, 1),
           padding: EdgeInsets.only(
             top: MediaQuery.of(context).padding.top,
             bottom: 16,
@@ -138,33 +155,47 @@ class _HomeContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text( "Giảng viên", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),),
-                    Text( user.fullName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),),
+                    Text("Giảng viên",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: Colors.white70)),
+                    Text(user.fullName,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.circle, color: Colors.greenAccent, size: 12),
+                        Icon(Icons.circle, color: warningColor, size: 12),
                         const SizedBox(width: 4),
-                        Text( "Không có cảnh báo", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),),
+                        Text(warningText,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: Colors.white)),
                       ],
                     ),
                   ],
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+                icon: const Icon(Icons.grid_on_rounded,
+                    color: Colors.white, size: 28),
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => WeeklySchedulePage(user: user)),
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WeeklySchedulePage(user: user)));
                 },
                 tooltip: 'Xem lịch theo tuần',
               ),
             ],
           ),
         ),
-        // Body
         Expanded(
           child: FutureBuilder<ScheduleData>(
             future: scheduleDataFuture,
@@ -173,9 +204,11 @@ class _HomeContent extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
-                return Center(child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
+                return Center(
+                    child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
               }
-              if (!snapshot.hasData || snapshot.data!.groupedSchedules.isEmpty) {
+              if (!snapshot.hasData ||
+                  snapshot.data!.groupedSchedules.isEmpty) {
                 return const Center(child: Text("Không có lịch trình."));
               }
 
@@ -203,12 +236,18 @@ class _HomeContent extends StatelessWidget {
                           if (isFeatured) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
-                              child: _DetailedScheduleCard(schedule: schedule, user: user, onGoBack: onGoBack),
+                              child: _DetailedScheduleCard(
+                                  schedule: schedule,
+                                  user: user,
+                                  onGoBack: onGoBack),
                             );
                           } else {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
-                              child: _SimpleScheduleCard(schedule: schedule, user: user, onGoBack: onGoBack),
+                              child: _SimpleScheduleCard(
+                                  schedule: schedule,
+                                  user: user,
+                                  onGoBack: onGoBack),
                             );
                           }
                         }),
@@ -254,21 +293,35 @@ class _DetailedScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Sửa lỗi: Tìm học phần tương ứng với buổi học
+    final course = mockCourses.firstWhere((c) => c.id == schedule.courseId,
+        orElse: () => Course(
+          id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
+          className: 'N/A', instructorId: '', semesterId: '', courseType: '',
+          totalPeriods: 0, credits: 0, studentCount: 0,
+        ));
+
     final List<List<Widget>> infoRows = [
       [
         InfoItemWidget(
             icon: Icons.access_time,
-            text: "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
+            text:
+            "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
             color: Colors.red),
-        InfoItemWidget(icon: Icons.location_on_outlined, text: schedule.roomId),
+        InfoItemWidget(
+            icon: Icons.location_on_outlined, text: schedule.roomId),
       ],
       [
-        InfoItemWidget(icon: Icons.calendar_today_outlined, text: "Tiết ${schedule.periods.join('-')}"),
+        InfoItemWidget(
+            icon: Icons.calendar_today_outlined,
+            text: "Tiết ${schedule.periods.join('-')}"),
         ScheduleStatusWidget(status: schedule.status),
       ],
       [
         InfoItemWidget(icon: Icons.person_outline, text: user.fullName),
-        InfoItemWidget(icon: Icons.school_outlined, text: "${schedule.studentCount}"),
+        // Sửa lỗi: Lấy sĩ số từ course
+        InfoItemWidget(
+            icon: Icons.school_outlined, text: "${course.studentCount}"),
       ],
     ];
 
@@ -294,8 +347,9 @@ class _DetailedScheduleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Sửa lỗi: Lấy tên học phần và lớp từ course
               Text(
-                "${schedule.subjectName} (${schedule.className})",
+                "${course.subjectName} (${course.className})",
                 style:
                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                 maxLines: 2,
@@ -339,6 +393,14 @@ class _SimpleScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Sửa lỗi: Tìm học phần tương ứng với buổi học
+    final course = mockCourses.firstWhere((c) => c.id == schedule.courseId,
+        orElse: () => Course(
+          id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
+          className: 'N/A', instructorId: '', semesterId: '', courseType: '',
+          totalPeriods: 0, credits: 0, studentCount: 0,
+        ));
+
     return InkWell(
       onTap: () async {
         await Navigator.push(
@@ -378,13 +440,13 @@ class _SimpleScheduleCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Sửa lỗi: Lấy tên học phần và lớp từ course
                         Text(
-                          "${schedule.subjectName} (${schedule.className})",
+                          "${course.subjectName} (${course.className})",
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                           maxLines: 2,
