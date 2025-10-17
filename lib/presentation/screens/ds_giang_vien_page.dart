@@ -3,7 +3,7 @@ import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/data/services/lecturer_sevice.dart';
 import 'package:tlu_schedule_app/presentation/widgets/card_lecturer.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
-import 'xem_chi_tiet_giang_vien_page.dart';
+import 'thong_tin_chi_tiet_giang_vien_page.dart';
 import '../widgets/text_field_search.dart'; // Đảm bảo đường dẫn này là chính xác
 
 class DsgiangvienPage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
   void onPressedXemGiangVien(LecturerModel lecture) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => XemChiTietGiangVienPage(lecturerModel: lecture),
+        builder: (_) => ThongTinChiTietGiangVienPage(lecturerModel: lecture),
       ),
     );
   }

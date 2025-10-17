@@ -47,7 +47,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
 
   void _unfocusTextField() => FocusScope.of(context).unfocus();
 
-  void onPressedXemDonXinDuyet() {}
+  void onPressedXemDonXinDuyet(TeachingRequestModel teachingRequest) {}
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,31 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                       horizontal: 16.0,
                       vertical: 8.0,
                     ),
-                    child: TextfieldSearch(focusNode: _searchFocusNode),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextfieldSearch(focusNode: _searchFocusNode),
+                        ),
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(10),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                            ),
+                            onPressed: _showBottomSheetFilter,
+                            child: Image.asset(
+                              'assets/images/icons/filter_icon.png',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -91,6 +115,320 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
     );
   }
 
+  void _showBottomSheetFilter() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.blue, // màu nền giống AppBar
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                ),
+                child: Text(
+                  'Lọc',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Giảng viên',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Spacer(),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.add,
+                            color: Colors.blue,
+                            size: 28,
+                          ),
+                        ),
+                        SizedBox(width: 13),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.person, color: Colors.blue),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'gv_g43y84 - Nguyễn Văn A',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.labelMedium,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      _showDialogDeleteLecturer(() {});
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Loại đơn',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Row(
+                      children: const [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Checkbox(value: false, onChanged: null),
+                              Text('Đơn xin nghỉ'),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Checkbox(value: false, onChanged: null),
+                              Text('Đơn dạy bù'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Trạng thái',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    // Dòng 1: Xác nhận và Từ chối
+                    Row(
+                      children: const [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Checkbox(value: false, onChanged: null),
+                              Text('Xác nhận'),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Checkbox(value: false, onChanged: null),
+                              Text('Từ chối'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: const [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Checkbox(value: false, onChanged: null),
+                              Text('Chưa xác nhận'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20, bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Học phần',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            // Thêm học phần
+                          },
+                          icon: const Icon(
+                            Icons.add,
+                            color: Colors.blue,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 13),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.book, color: Colors.orange),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'PHÁT TRIỂN ỨNG DỤNG DI ĐỘNG',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.labelMedium,
+                                        ),
+                                        Text(
+                                          'Mã HP: APP101 - 3 tín chỉ',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.labelSmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      _showDialogDeleteLecturer(() {});
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Thoát'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Xác nhận'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDialogDeleteLecturer(VoidCallback? onPressed) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xác nhận xóa'),
+        content: const Text(
+          'Bạn có chắc chắn muốn xóa giảng viên này khỏi lọc không?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Hủy'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onPressed!();
+            },
+            child: const Text('Xóa'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -103,7 +441,9 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
         children: _listTeachingRequests.map((item) {
           return CardRequest(
             teachingRequest: item,
-            onPressed: onPressedXemDonXinDuyet,
+            onPressed: () {
+              onPressedXemDonXinDuyet(item);
+            },
           );
         }).toList(),
       );

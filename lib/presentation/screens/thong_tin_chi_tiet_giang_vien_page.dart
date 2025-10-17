@@ -4,16 +4,17 @@ import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
 
-class XemChiTietGiangVienPage extends StatefulWidget {
+class ThongTinChiTietGiangVienPage extends StatefulWidget {
   final LecturerModel lecturerModel;
-  const XemChiTietGiangVienPage({super.key, required this.lecturerModel});
+  const ThongTinChiTietGiangVienPage({super.key, required this.lecturerModel});
 
   @override
-  State<XemChiTietGiangVienPage> createState() =>
-      _XemChiTietGiangVienPageState();
+  State<ThongTinChiTietGiangVienPage> createState() =>
+      _ThongTinChiTietGiangVienPageState();
 }
 
-class _XemChiTietGiangVienPageState extends State<XemChiTietGiangVienPage> {
+class _ThongTinChiTietGiangVienPageState
+    extends State<ThongTinChiTietGiangVienPage> {
   bool _kieuThongKe = false;
   late LecturerModel lecturerInformation;
   @override
