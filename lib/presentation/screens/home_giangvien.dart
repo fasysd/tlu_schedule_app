@@ -299,6 +299,7 @@ class _DetailedScheduleCard extends StatelessWidget {
           id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
           className: 'N/A', instructorId: '', semesterId: '', courseType: '',
           totalPeriods: 0, credits: 0, studentCount: 0,
+          numberOfPeriods: 0,
         ));
 
     final List<List<Widget>> infoRows = [
@@ -399,6 +400,7 @@ class _SimpleScheduleCard extends StatelessWidget {
           id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
           className: 'N/A', instructorId: '', semesterId: '', courseType: '',
           totalPeriods: 0, credits: 0, studentCount: 0,
+          numberOfPeriods: 0,
         ));
 
     return InkWell(

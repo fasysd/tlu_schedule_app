@@ -44,6 +44,7 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
         className: 'N/A', instructorId: '', semesterId: '', courseType: '',
         totalPeriods: 0, credits: 0, studentCount: 0,
+        numberOfPeriods: 0,
       );
     }
 

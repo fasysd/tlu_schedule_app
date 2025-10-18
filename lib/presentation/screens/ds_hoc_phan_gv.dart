@@ -8,10 +8,9 @@ import 'package:tlu_schedule_app/data/models/user_model.dart';
 import '../widgets/warning_helper.dart';
 import 'chi_tiet_hoc_phan_page.dart';
 
-// BỎ CLASS GROUPEDCOURSE VÌ DÙNG TRỰC TIẾP COURSE MODEL
-
 class CourseListPage extends StatefulWidget {
   final UserAccount user;
+
   const CourseListPage({super.key, required this.user});
 
   @override
@@ -52,7 +51,7 @@ class _CourseListPageState extends State<CourseListPage> {
     final now = DateTime.now();
 
     _selectedSemester = mockSemesters.firstWhere(
-          (s) => now.isAfter(s.startDate) && now.isBefore(s.endDate),
+      (s) => now.isAfter(s.startDate) && now.isBefore(s.endDate),
       orElse: () => mockSemesters.first,
     );
     _loadCoursesForSemester();
@@ -60,18 +59,23 @@ class _CourseListPageState extends State<CourseListPage> {
 
   void _loadCoursesForSemester() {
     if (_selectedSemester == null) {
-      if (mounted) setState(() {
-        _allCoursesInSemester = [];
-        _applyFilters();
-      });
+      if (mounted) {
+        setState(() {
+          _allCoursesInSemester = [];
+          _applyFilters();
+        });
+      }
       return;
     }
 
     // LẤY HỌC PHẦN DỰA TRÊN instructorId và semesterId
-    final semesterCourses = mockCourses.where((course) =>
-    course.instructorId == widget.user.id &&
-        course.semesterId == _selectedSemester!.id
-    ).toList();
+    final semesterCourses = mockCourses
+        .where(
+          (course) =>
+              course.instructorId == widget.user.id &&
+              course.semesterId == _selectedSemester!.id,
+        )
+        .toList();
 
     if (mounted) {
       setState(() {
@@ -88,7 +92,8 @@ class _CourseListPageState extends State<CourseListPage> {
       final query = _searchQuery.toLowerCase();
       tempCourses = tempCourses.where((course) {
         final subjectNameMatch = course.subjectName.toLowerCase().contains(
-            query);
+          query,
+        );
         final classNameMatch = course.className.toLowerCase().contains(query);
         return subjectNameMatch || classNameMatch;
       }).toList();
@@ -97,7 +102,6 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   String _getVietnameseDayOfWeek(DateTime date) {
-    // ... (Hàm này giữ nguyên)
     const days = [
       'Thứ 2',
       'Thứ 3',
@@ -105,12 +109,11 @@ class _CourseListPageState extends State<CourseListPage> {
       'Thứ 5',
       'Thứ 6',
       'Thứ 7',
-      'Chủ Nhật'
+      'Chủ Nhật',
     ];
     return days[date.weekday - 1];
   }
 
-  // ... (build, _buildHeader, _buildSearchBar, _buildSemesterFilterBar giữ nguyên)
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -123,20 +126,20 @@ class _CourseListPageState extends State<CourseListPage> {
           Expanded(
             child: _filteredCourses.isEmpty
                 ? Center(
-              child: Text(
-                _searchQuery.isNotEmpty
-                    ? 'Không tìm thấy kết quả phù hợp.'
-                    : 'Không có học phần nào trong kỳ này.',
-              ),
-            )
+                    child: Text(
+                      _searchQuery.isNotEmpty
+                          ? 'Không tìm thấy kết quả phù hợp.'
+                          : 'Không có học phần nào trong kỳ này.',
+                    ),
+                  )
                 : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              itemCount: _filteredCourses.length,
-              itemBuilder: (context, index) {
-                // TRUYỀN COURSE THAY VÌ GROUPEDCOURSE
-                return _buildCourseCard(_filteredCourses[index]);
-              },
-            ),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    itemCount: _filteredCourses.length,
+                    itemBuilder: (context, index) {
+                      // TRUYỀN COURSE THAY VÌ GROUPEDCOURSE
+                      return _buildCourseCard(_filteredCourses[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -144,7 +147,6 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   Widget _buildHeader() {
-    // ... (Giữ nguyên không đổi)
     final warningDetails = getWarningDetails(widget.user.warningStatus);
     final warningText = warningDetails['text'];
     final warningColor = warningDetails['color'];
@@ -153,10 +155,7 @@ class _CourseListPageState extends State<CourseListPage> {
       width: double.infinity,
       color: const Color.fromRGBO(89, 141, 192, 1),
       padding: EdgeInsets.only(
-        top: MediaQuery
-            .of(context)
-            .padding
-            .top,
+        top: MediaQuery.of(context).padding.top,
         bottom: 16,
         left: 16,
         right: 16,
@@ -175,20 +174,16 @@ class _CourseListPageState extends State<CourseListPage> {
               children: [
                 Text(
                   "Giảng viên",
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Colors.white70),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                 ),
                 Text(
                   widget.user.fullName,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -197,11 +192,9 @@ class _CourseListPageState extends State<CourseListPage> {
                     const SizedBox(width: 4),
                     Text(
                       warningText,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.white),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.white),
                     ),
                   ],
                 ),
@@ -214,7 +207,6 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   Widget _buildSearchBar() {
-    // ... (Giữ nguyên không đổi)
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: TextField(
@@ -224,16 +216,18 @@ class _CourseListPageState extends State<CourseListPage> {
           prefixIcon: const Icon(Icons.search, size: 20),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-            icon: const Icon(Icons.clear, size: 20),
-            onPressed: () {
-              _searchController.clear();
-            },
-          )
+                  icon: const Icon(Icons.clear, size: 20),
+                  onPressed: () {
+                    _searchController.clear();
+                  },
+                )
               : null,
           filled: true,
           fillColor: Colors.grey.shade100,
-          contentPadding:
-          const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: 10,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: BorderSide.none,
@@ -244,9 +238,7 @@ class _CourseListPageState extends State<CourseListPage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Theme
-                .of(context)
-                .primaryColor),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
           ),
         ),
       ),
@@ -254,15 +246,11 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   Widget _buildSemesterFilterBar() {
-    // ... (Giữ nguyên không đổi)
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
         children: [
-          Text("Kỳ:", style: Theme
-              .of(context)
-              .textTheme
-              .titleMedium),
+          Text("Kỳ:", style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(width: 8),
           Expanded(
             child: Container(
@@ -301,7 +289,6 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   Widget _buildCourseCard(Course course) {
-    // Dùng FutureBuilder để lấy dữ liệu lịch học từ service
     return FutureBuilder<List<ScheduleEntry>>(
       future: scheduleService.getAllSchedules(),
       builder: (context, snapshot) {
@@ -328,9 +315,8 @@ class _CourseListPageState extends State<CourseListPage> {
         }
 
         // Lấy tất cả buổi học của học phần này từ dữ liệu đã nhận được
-        final schedules = snapshot.data
-            ?.where((s) => s.courseId == course.id)
-            .toList() ?? [];
+        final schedules =
+            snapshot.data?.where((s) => s.courseId == course.id).toList() ?? [];
 
         if (schedules.isEmpty) {
           // Xử lý trường hợp học phần không có lịch học nào
@@ -343,14 +329,14 @@ class _CourseListPageState extends State<CourseListPage> {
           );
         }
 
-        // --- Phần logic còn lại giữ nguyên ---
         final Map<String, Set<String>> groupedSchedules = {};
         for (var schedule in schedules) {
           final dayOfWeek = _getVietnameseDayOfWeek(schedule.date);
           final periodsString = 'Tiết ${schedule.periods.join('-')}';
           final scheduleKey = '• $dayOfWeek: $periodsString';
-          groupedSchedules.putIfAbsent(scheduleKey, () => {}).add(
-              schedule.roomId);
+          groupedSchedules
+              .putIfAbsent(scheduleKey, () => {})
+              .add(schedule.roomId);
         }
 
         schedules.sort((a, b) => a.date.compareTo(b.date));
@@ -362,11 +348,11 @@ class _CourseListPageState extends State<CourseListPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                // Truyền cả danh sách lịch đã lọc để trang sau không cần gọi lại service
-                builder: (context) =>
-                    CourseDetailPage(course: course,
-                        user: widget.user,
-                        schedules: schedules),
+                builder: (context) => CourseDetailPage(
+                  course: course,
+                  user: widget.user,
+                  schedules: schedules,
+                ),
               ),
             );
           },
@@ -387,7 +373,9 @@ class _CourseListPageState extends State<CourseListPage> {
                   Text(
                     'Học phần: ${course.subjectName}',
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                   Text(
                     'Lớp: ${course.className}',
@@ -399,22 +387,30 @@ class _CourseListPageState extends State<CourseListPage> {
                     children: const [
                       Expanded(
                         flex: 3,
-                        child: Text('Thời gian:', style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 13)),
+                        child: Text(
+                          'Thời gian:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
                         flex: 2,
-                        child: Text('Phòng học:', style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 13)),
+                        child: Text(
+                          'Phòng học:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '(${DateFormat('dd/MM/yyyy').format(
-                        startDate)} -> ${DateFormat('dd/MM/yyyy').format(
-                        endDate)})',
+                    '(${DateFormat('dd/MM/yyyy').format(startDate)} -> ${DateFormat('dd/MM/yyyy').format(endDate)})',
                     style: const TextStyle(fontSize: 12),
                   ),
                   const SizedBox(height: 8),
@@ -428,14 +424,18 @@ class _CourseListPageState extends State<CourseListPage> {
                         children: [
                           Expanded(
                             flex: 3,
-                            child: Text(scheduleKey,
-                                style: const TextStyle(fontSize: 13)),
+                            child: Text(
+                              scheduleKey,
+                              style: const TextStyle(fontSize: 13),
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             flex: 2,
-                            child: Text('• ${rooms.join(', ')}',
-                                style: const TextStyle(fontSize: 13)),
+                            child: Text(
+                              '• ${rooms.join(', ')}',
+                              style: const TextStyle(fontSize: 13),
+                            ),
                           ),
                         ],
                       ),

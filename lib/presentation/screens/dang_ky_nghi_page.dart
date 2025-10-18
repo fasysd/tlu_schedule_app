@@ -27,22 +27,19 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
   void initState() {
     super.initState();
 
-    // --- THAY ĐỔI: Tìm học phần tương ứng khi khởi tạo ---
     try {
       _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
     } catch (e) {
-      // Xử lý lỗi nếu không tìm thấy Course, mặc dù điều này không nên xảy ra
       _course = Course(
         id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
         className: 'N/A', instructorId: '', semesterId: '', courseType: '',
         totalPeriods: 0, credits: 0, studentCount: 0,
+        numberOfPeriods: 0,
       );
     }
 
-    // Luôn tải lý do và file đã có (nếu có) để người dùng có thể xem và sửa
     _reasonController.text = widget.schedule.leaveReason ?? '';
     if (widget.schedule.leaveDocuments != null) {
-      // Tạo đối tượng File giả từ tên file đã lưu để hiển thị
       _selectedFiles.addAll(
         widget.schedule.leaveDocuments!.map((fileName) => File(fileName)),
       );

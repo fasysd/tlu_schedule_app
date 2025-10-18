@@ -2,10 +2,6 @@ import '../models/user_model.dart';
 import '../models/schedule_model.dart';
 import '../models/student_model.dart';
 
-// =================================================================================
-// DỮ LIỆU TĨNH - DÙNG CHO MỤC ĐÍCH GIẢ LẬP BAN ĐẦU
-// =================================================================================
-
 final List<Course> staticCourses = [
   Course(
     id: 'course_pm_01',
@@ -18,6 +14,7 @@ final List<Course> staticCourses = [
     totalPeriods: 45,
     credits: 3,
     studentCount: 45,
+    numberOfPeriods: 2,
   ),
   Course(
     id: 'course_nmlt_01',
@@ -30,6 +27,7 @@ final List<Course> staticCourses = [
     totalPeriods: 60,
     credits: 4,
     studentCount: 50,
+    numberOfPeriods: 2,
   ),
   Course(
     id: 'course_hm_01',
@@ -42,6 +40,20 @@ final List<Course> staticCourses = [
     totalPeriods: 45,
     credits: 3,
     studentCount: 40,
+    numberOfPeriods: 3,
+  ),
+  Course(
+    id: 'course_ctdl_01',
+    courseCode: 'CSE202',
+    subjectName: 'Cấu trúc dữ liệu',
+    className: '64KTPM4',
+    instructorId: 'gv01',
+    semesterId: '2_2024_2025',
+    courseType: 'Lý thuyết + Thực hành',
+    totalPeriods: 60,
+    credits: 4,
+    studentCount: 55,
+    numberOfPeriods: 2,
   ),
 ];
 
@@ -91,9 +103,10 @@ final List<UserAccount> staticUsers = [
 
 final List<Student> staticStudents = List.generate(
   55,
-      (index) => Student(
+  (index) => Student(
     id: '64${123456 + index}',
-    fullName: 'Nguyễn Văn ${String.fromCharCode(65 + (index % 26))}${index + 1}',
+    fullName:
+        'Nguyễn Văn ${String.fromCharCode(65 + (index % 26))}${index + 1}',
     dateOfBirth: DateTime(2004, 5, 10 + index),
   ),
 );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tlu_schedule_app/data/mock_data.dart';
 import 'package:tlu_schedule_app/data/models/schedule_model.dart';
 import 'package:tlu_schedule_app/data/models/user_model.dart';
 import 'package:tlu_schedule_app/presentation/screens/dang_ky_bu_page.dart';

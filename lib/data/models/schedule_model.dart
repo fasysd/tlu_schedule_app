@@ -9,6 +9,7 @@ class Course {
   final int totalPeriods;
   final int credits;
   final int studentCount;
+  final int numberOfPeriods;
 
   Course({
     required this.id,
@@ -21,6 +22,7 @@ class Course {
     required this.totalPeriods,
     required this.credits,
     required this.studentCount,
+    required this.numberOfPeriods,
   });
 }
 
@@ -34,7 +36,6 @@ class ScheduleEntry {
   final int numberOfPeriods;
   final String roomId;
 
-  // Các trường có thể thay đổi
   String status;
   String? lessonContent;
   List<String>? documents;
@@ -66,7 +67,6 @@ class ScheduleEntry {
   });
 }
 
-// --- MODEL HỌC KỲ (SEMESTER) - GIỮ NGUYÊN ---
 class Semester {
   final String id;
   final String name;
