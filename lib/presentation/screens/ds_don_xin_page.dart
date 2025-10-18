@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/data/models/teaching_request_model.dart';
 import 'package:tlu_schedule_app/data/services/teaching_request_service.dart';
+import 'package:tlu_schedule_app/presentation/screens/ds_lua_chon_giang_vien_page.dart';
+import 'package:tlu_schedule_app/presentation/screens/thong_tin_don_xin_nghi.dart';
 import 'package:tlu_schedule_app/presentation/widgets/card_request.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
 import '../widgets/text_field_search.dart';
@@ -47,7 +50,21 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
 
   void _unfocusTextField() => FocusScope.of(context).unfocus();
 
-  void onPressedXemDonXinDuyet(TeachingRequestModel teachingRequest) {}
+  void onPressedXemDonXinDuyet(TeachingRequestModel teachingRequest) {
+    if (teachingRequest.loaiDon == "Đơn xin nghỉ dạy") {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ThongTinDonXinNghi(requestModel: teachingRequest),
+        ),
+      );
+    } else if (teachingRequest.loaiDon == "Đơn xin dạy bù") {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ThongTinDonXinNghi(requestModel: teachingRequest),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +173,23 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                         ),
                         Spacer(),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final selectedLecturers = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DsLuaChonGiangVienPage(),
+                              ),
+                            );
+                            //tạm thời coi như đã lấy và cập nhật ds hiển thị
+                            if (selectedLecturers != null &&
+                                selectedLecturers.isNotEmpty) {
+                              print(
+                                'Đã chọn: ${selectedLecturers.map((e) => e.hoVaTen).join(', ')}',
+                              );
+                            } else {
+                              print('Chưa chọn giảng viên nào.');
+                            }
+                          },
                           icon: const Icon(
                             Icons.add,
                             color: Colors.blue,
@@ -185,7 +218,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.person, color: Colors.blue),
+                                  const Icon(Icons.person_outline),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
@@ -312,9 +345,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                         ),
                         const Spacer(),
                         IconButton(
-                          onPressed: () {
-                            // Thêm học phần
-                          },
+                          onPressed: () {},
                           icon: const Icon(
                             Icons.add,
                             color: Colors.blue,
@@ -343,7 +374,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.book, color: Colors.orange),
+                                  const Icon(Icons.book_outlined),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
@@ -351,16 +382,16 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'PHÁT TRIỂN ỨNG DỤNG DI ĐỘNG',
+                                          'Mã HP: APP101 - 3 tín chỉ',
                                           style: Theme.of(
                                             context,
                                           ).textTheme.labelMedium,
                                         ),
                                         Text(
-                                          'Mã HP: APP101 - 3 tín chỉ',
+                                          'PHÁT TRIỂN ỨNG DỤNG DI ĐỘNG PHÁT TRIỂN ỨNG DỤNG DI ĐỘNG',
                                           style: Theme.of(
                                             context,
-                                          ).textTheme.labelSmall,
+                                          ).textTheme.labelMedium,
                                         ),
                                       ],
                                     ),

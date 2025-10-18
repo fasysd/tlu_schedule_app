@@ -5,10 +5,13 @@ import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 class CardLecturer extends StatelessWidget {
   final LecturerModel lecturerModel;
   final VoidCallback? onPressed;
+  final bool selected; // bắt buộc, default false nếu muốn
+
   const CardLecturer({
     super.key,
     required this.lecturerModel,
     required this.onPressed,
+    this.selected = false,
   });
 
   @override
@@ -19,8 +22,11 @@ class CardLecturer extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: 120,
-        decoration: const BoxDecoration(
-          border: Border(
+        decoration: BoxDecoration(
+          color: selected
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+              : Colors.transparent,
+          border: const Border(
             bottom: BorderSide(
               width: 2,
               color: Color.fromRGBO(89, 141, 192, 1),
@@ -31,11 +37,24 @@ class CardLecturer extends StatelessWidget {
           children: [
             Container(
               width: 90,
-              child: BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar),
+              child: Stack(
+                children: [
+                  BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar),
+                  if (selected)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(width: 9),
             Column(
-              spacing: 0,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -43,7 +62,7 @@ class CardLecturer extends StatelessWidget {
                   child: Text(
                     'Tài khoản: ${lecturerModel.tenTaiKhoan}',
                     style: Theme.of(context).textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis, // 👈 tránh text tràn
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 SizedBox(
