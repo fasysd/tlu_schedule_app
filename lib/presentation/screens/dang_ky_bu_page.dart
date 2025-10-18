@@ -273,12 +273,6 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return possiblePeriods;
   }
 
-  String _getVietnameseDayOfWeek(DateTime date) {
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
-    return days[date.weekday - 1];
-  }
-
-
   @override
   Widget build(BuildContext context) {
     final bool isPending = widget.schedule.makeupStatus == 'pending_makeup';
