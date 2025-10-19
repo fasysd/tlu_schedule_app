@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import '../../data/models/teaching_statistics_model.dart';
-import '../../data/models/course_progress_model.dart';
-import '../../data/services/statistics_service.dart';
-import '../widgets/card_teaching_statistics.dart';
-import '../widgets/card_course_progress.dart';
-import 'bao_cao_thanh_toan_page.dart';
+import '../../data/models/mo_hinh_thong_ke_giang_day.dart';
+import '../../data/models/mo_hinh_tien_do_hoc_phan.dart';
+import '../../data/services/dich_vu_thong_ke.dart';
+import '../widgets/the_thong_ke_giang_day.dart';
+import '../widgets/the_tien_do_hoc_phan.dart';
+import 'trang_bao_cao_thanh_toan.dart';
 
-class ThongkegdiodayPage extends StatefulWidget {
-  const ThongkegdiodayPage({super.key});
+class TrangThongKeGioDay extends StatefulWidget {
+  const TrangThongKeGioDay({super.key});
 
   @override
-  State<ThongkegdiodayPage> createState() => _ThongkegdiodayPageState();
+  State<TrangThongKeGioDay> createState() => _TrangThongKeGioDayState();
 }
 
-class _ThongkegdiodayPageState extends State<ThongkegdiodayPage>
+class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final StatisticsService _statisticsService = StatisticsService();
+  final DichVuThongKe _statisticsService = DichVuThongKe();
 
   // Data
   List<TeachingStatisticsModel> _teachingStatistics = [];
@@ -478,11 +478,11 @@ class _ThongkegdiodayPageState extends State<ThongkegdiodayPage>
           const SizedBox(height: 30),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const BaoCaoThanhToanPage(),
-                ),
-              );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const TrangBaoCaoThanhToan(),
+                    ),
+                  );
             },
             icon: const Icon(Icons.arrow_forward),
             label: const Text('Xem báo cáo thanh toán'),

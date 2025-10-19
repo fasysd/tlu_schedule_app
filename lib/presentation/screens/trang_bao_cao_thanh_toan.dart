@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../data/models/payment_report_model.dart';
-import '../../data/services/statistics_service.dart';
-import '../widgets/card_payment_report.dart';
+import '../../data/models/mo_hinh_bao_cao_thanh_toan.dart';
+import '../../data/services/dich_vu_thong_ke.dart';
+import '../widgets/the_bao_cao_thanh_toan.dart';
 
-class BaoCaoThanhToanPage extends StatefulWidget {
-  const BaoCaoThanhToanPage({super.key});
+class TrangBaoCaoThanhToan extends StatefulWidget {
+  const TrangBaoCaoThanhToan({super.key});
 
   @override
-  State<BaoCaoThanhToanPage> createState() => _BaoCaoThanhToanPageState();
+  State<TrangBaoCaoThanhToan> createState() => _TrangBaoCaoThanhToanState();
 }
 
-class _BaoCaoThanhToanPageState extends State<BaoCaoThanhToanPage> {
-  final StatisticsService _statisticsService = StatisticsService();
+class _TrangBaoCaoThanhToanState extends State<TrangBaoCaoThanhToan> {
+  final DichVuThongKe _statisticsService = DichVuThongKe();
   
   List<PaymentReportModel> _paymentReports = [];
   bool _isLoading = true;
