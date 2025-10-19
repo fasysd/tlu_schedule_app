@@ -3,10 +3,12 @@ import 'package:tlu_schedule_app/data/models/lecturer_model.dart';
 import 'package:tlu_schedule_app/data/services/lecturer_sevice.dart';
 import 'package:tlu_schedule_app/presentation/widgets/card_lecturer.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
-import '../widgets/text_field_search.dart'; // Đảm bảo đường dẫn này là chính xác
+import '../widgets/text_field_search.dart';
 
 class DsLuaChonGiangVienPage extends StatefulWidget {
-  const DsLuaChonGiangVienPage({super.key});
+  final List<LecturerModel> selectedLecturers;
+
+  const DsLuaChonGiangVienPage({super.key, this.selectedLecturers = const []});
 
   @override
   State<DsLuaChonGiangVienPage> createState() => _DsLuaChonGiangVienPageState();
@@ -14,19 +16,30 @@ class DsLuaChonGiangVienPage extends StatefulWidget {
 
 class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
   final FocusNode _searchFocusNode = FocusNode();
-  late final List<LecturerModel> _listLecturer;
-  Set<LecturerModel> _selectedLecturers = {};
+
+  List<LecturerModel> _listLecturer = [];
+  Set<String> _selectedLecturerIds = {};
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
+    // ✅ Khởi tạo danh sách chọn ban đầu
+    _selectedLecturerIds = widget.selectedLecturers.map((e) => e.id).toSet();
     loadLecturers();
   }
 
   Future<void> loadLecturers() async {
-    final lecturers = await LecturerService().fetchLecturersFromApi();
+    final response = await LecturerService().fetchLecturers();
+
     setState(() {
-      _listLecturer = lecturers;
+      _isLoading = false;
+      if (response['statusCode'] == 200) {
+        _listLecturer = response['data'] as List<LecturerModel>;
+      } else {
+        _errorMessage = response['message'];
+      }
     });
   }
 
@@ -72,24 +85,29 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                   SliverToBoxAdapter(
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
-                      child: Column(
-                        children: _listLecturer.map((item) {
-                          final isSelected = _selectedLecturers.contains(item);
-                          return CardLecturer(
-                            lecturerModel: item,
-                            selected: isSelected,
-                            onPressed: () {
-                              setState(() {
-                                if (isSelected) {
-                                  _selectedLecturers.remove(item);
-                                } else {
-                                  _selectedLecturers.add(item);
-                                }
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
+                      child: _isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : _errorMessage != null
+                          ? Center(child: Text(_errorMessage!))
+                          : Column(
+                              children: _listLecturer.map((item) {
+                                final isSelected = _selectedLecturerIds
+                                    .contains(item.id);
+                                return CardLecturer(
+                                  lecturerModel: item,
+                                  selected: isSelected,
+                                  onPressed: () {
+                                    setState(() {
+                                      if (isSelected) {
+                                        _selectedLecturerIds.remove(item.id);
+                                      } else {
+                                        _selectedLecturerIds.add(item.id);
+                                      }
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            ),
                     ),
                   ),
                 ],
@@ -99,11 +117,14 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                 left: 16,
                 right: 16,
                 child: ElevatedButton(
-                  onPressed: _selectedLecturers.isEmpty
+                  onPressed: _selectedLecturerIds.isEmpty
                       ? null
-                      : () {
-                          Navigator.pop(context, _selectedLecturers.toList());
-                        },
+                      : () => Navigator.pop(
+                          context,
+                          _listLecturer
+                              .where((l) => _selectedLecturerIds.contains(l.id))
+                              .toList(),
+                        ),
                   child: const Text('Xác nhận'),
                 ),
               ),

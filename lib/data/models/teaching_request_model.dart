@@ -1,86 +1,113 @@
 class TeachingRequestModel {
+  // Thông tin chung
   final String maDon;
-  final String maLopHocPhan;
-  final String maGiangVien;
+  final String loaiDon; // "Đơn xin nghỉ dạy" hoặc "Đơn dạy bù"
   final String trangThai;
-  final String loaiDon; // "Đơn xin nghỉ" hoặc "Đơn dạy bù"
+
+  // Thông tin học phần
+  final String tenHocPhan;
+  final String maHocPhan;
+  final String tenGiangVien;
+  final String hocKy;
+
+  // Thông tin giảng viên (mới thêm)
+  final String tenTaiKhoan; // tài khoản đăng nhập
+  final String idGiangVien; // id giảng viên
 
   // Thông tin buổi học gốc
-  final String soPhong;
-  final DateTime ngayDay;
-  final String caDay;
+  final DateTime ngayBuoiHocNghi;
+  final String caHocNghi;
+  final String phongHocNghi;
+  final String buoiHocSo; // Ví dụ: "13/15"
 
-  // 🟢 Nếu là đơn xin nghỉ
-  final String? lyDo; // có thể null
-  final String? anhMinhChung; // đường dẫn ảnh minh chứng
+  // Thông tin đơn nghỉ dạy
+  final String nguoiGui;
+  final DateTime ngayGui;
+  final String? lyDo; // Có thể null
+  final List<String>? anhMinhChung;
 
-  // 🔵 Nếu là đơn dạy bù
-  final String? soPhongDayBu;
-  final DateTime? ngayDayBu;
-  final String? caDayBu;
+  // Thông tin buổi học dạy bù
+  final DateTime? ngayBuoiHocDayBu;
+  final String? caHocDayBu;
+  final String? phongHocDayBu;
 
   TeachingRequestModel({
     required this.maDon,
-    required this.maLopHocPhan,
-    required this.maGiangVien,
-    required this.trangThai,
     required this.loaiDon,
-    required this.soPhong,
-    required this.ngayDay,
-    required this.caDay,
+    required this.trangThai,
+    required this.tenHocPhan,
+    required this.maHocPhan,
+    required this.tenGiangVien,
+    required this.hocKy,
+    required this.tenTaiKhoan,
+    required this.idGiangVien,
+    required this.ngayBuoiHocNghi,
+    required this.caHocNghi,
+    required this.phongHocNghi,
+    required this.buoiHocSo,
+    required this.nguoiGui,
+    required this.ngayGui,
     this.lyDo,
     this.anhMinhChung,
-    this.soPhongDayBu,
-    this.ngayDayBu,
-    this.caDayBu,
+    this.ngayBuoiHocDayBu,
+    this.caHocDayBu,
+    this.phongHocDayBu,
   });
 
-  /// Chuyển từ JSON → Object
+  /// Từ JSON → Object
   factory TeachingRequestModel.fromJson(Map<String, dynamic> json) {
     return TeachingRequestModel(
       maDon: json['maDon'] ?? '',
-      maLopHocPhan: json['maLopHocPhan'] ?? '',
-      maGiangVien: json['maGiangVien'] ?? '',
+      loaiDon: json['loaiDon'] ?? 'Đơn xin nghỉ dạy',
       trangThai: json['trangThai'] ?? 'Chưa xác nhận',
-      loaiDon: json['loaiDon'] ?? 'Đơn nghỉ dạy',
-
-      soPhong: json['soPhong'] ?? '',
-      ngayDay: DateTime.parse(json['ngayDay']),
-      caDay: json['caDay'] ?? '',
-
-      // Nếu là đơn xin nghỉ
+      tenHocPhan: json['tenHocPhan'] ?? '',
+      maHocPhan: json['maHocPhan'] ?? '',
+      tenGiangVien: json['tenGiangVien'] ?? '',
+      hocKy: json['hocKy'] ?? '',
+      tenTaiKhoan: json['tenTaiKhoan'] ?? '',
+      idGiangVien: json['idGiangVien'] ?? '',
+      ngayBuoiHocNghi: DateTime.parse(json['ngayBuoiHoc']),
+      caHocNghi: json['caHoc'] ?? '',
+      phongHocNghi: json['phongHoc'] ?? '',
+      buoiHocSo: json['buoiHocSo'] ?? '',
+      nguoiGui: json['nguoiGui'] ?? '',
+      ngayGui: DateTime.parse(json['ngayGui']),
       lyDo: json['lyDo'],
-      anhMinhChung: json['anhMinhChung'],
-
-      // Nếu là đơn dạy bù
-      soPhongDayBu: json['soPhongDayBu'],
-      ngayDayBu: json['ngayDayBu'] != null
-          ? DateTime.tryParse(json['ngayDayBu'])
+      anhMinhChung: json['anhMinhChung'] != null
+          ? List<String>.from(json['anhMinhChung'])
           : null,
-      caDayBu: json['caDayBu'],
+      ngayBuoiHocDayBu: json['ngayBuoiHocDayBu'] != null
+          ? DateTime.tryParse(json['ngayBuoiHocDayBu'])
+          : null,
+      caHocDayBu: json['caHocDayBu'],
+      phongHocDayBu: json['phongHocDayBu'],
     );
   }
 
-  /// Chuyển từ Object → JSON
+  /// Object → JSON
   Map<String, dynamic> toJson() {
     return {
       'maDon': maDon,
-      'maLopHocPhan': maLopHocPhan,
-      'maGiangVien': maGiangVien,
-      'trangThai': trangThai,
       'loaiDon': loaiDon,
-      'soPhong': soPhong,
-      'ngayDay': ngayDay.toIso8601String(),
-      'caDay': caDay,
-
-      // Nếu là đơn xin nghỉ
+      'trangThai': trangThai,
+      'tenHocPhan': tenHocPhan,
+      'maHocPhan': maHocPhan,
+      'tenGiangVien': tenGiangVien,
+      'hocKy': hocKy,
+      'tenTaiKhoan': tenTaiKhoan,
+      'idGiangVien': idGiangVien,
+      'ngayBuoiHoc': ngayBuoiHocNghi.toIso8601String(),
+      'caHoc': caHocNghi,
+      'phongHoc': phongHocNghi,
+      'buoiHocSo': buoiHocSo,
+      'nguoiGui': nguoiGui,
+      'ngayGui': ngayGui.toIso8601String(),
       if (lyDo != null) 'lyDo': lyDo,
       if (anhMinhChung != null) 'anhMinhChung': anhMinhChung,
-
-      // Nếu là đơn dạy bù
-      if (soPhongDayBu != null) 'soPhongDayBu': soPhongDayBu,
-      if (ngayDayBu != null) 'ngayDayBu': ngayDayBu!.toIso8601String(),
-      if (caDayBu != null) 'caDayBu': caDayBu,
+      if (ngayBuoiHocDayBu != null)
+        'ngayBuoiHocDayBu': ngayBuoiHocDayBu!.toIso8601String(),
+      if (caHocDayBu != null) 'caHocDayBu': caHocDayBu,
+      if (phongHocDayBu != null) 'phongHocDayBu': phongHocDayBu,
     };
   }
 }

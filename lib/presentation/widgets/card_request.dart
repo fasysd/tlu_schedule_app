@@ -19,7 +19,7 @@ class CardRequest extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.only(left: 8),
         width: double.infinity,
-        height: 130,
+        height: 160,
         decoration: const BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -36,12 +36,19 @@ class CardRequest extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             Text(
+              'Người gửi: ' +
+                  teachingRequest.idGiangVien +
+                  ' - ' +
+                  teachingRequest.tenGiangVien,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Text(
               'Loại: ' + teachingRequest.loaiDon,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(
               'Ngày: ' +
-                  DateFormat('dd/MM/yyyy').format(teachingRequest.ngayDay),
+                  DateFormat('dd/MM/yyyy').format(teachingRequest.ngayGui),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(

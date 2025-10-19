@@ -60,7 +60,7 @@ class CardLecturer extends StatelessWidget {
                 SizedBox(
                   height: 27,
                   child: Text(
-                    'Tài khoản: ${lecturerModel.tenTaiKhoan}',
+                    'Mã giảng viên: ${lecturerModel.id}',
                     style: Theme.of(context).textTheme.bodyMedium,
                     overflow: TextOverflow.ellipsis,
                   ),
