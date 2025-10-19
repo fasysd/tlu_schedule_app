@@ -1,12 +1,12 @@
-import '../models/teaching_statistics_model.dart';
-import '../models/course_progress_model.dart';
-import '../models/teaching_schedule_model.dart';
-import '../models/attendance_report_model.dart';
-import '../models/payment_report_model.dart';
+import '../models/mo_hinh_thong_ke_giang_day.dart';
+import '../models/mo_hinh_tien_do_hoc_phan.dart';
+import '../models/mo_hinh_lich_trinh_giang_day.dart';
+import '../models/mo_hinh_bao_cao_diem_danh.dart';
+import '../models/sinh_vien_attendance_model.dart';
 
-class StatisticsService {
+class DichVuThongKe {
   /// Lấy danh sách thống kê giờ dạy của tất cả giảng viên
-  Future<List<TeachingStatisticsModel>> fetchTeachingStatistics({
+  Future<List<MoHinhThongKeGiangDay>> fetchTeachingStatistics({
     String? hocKy,
     String? namHoc,
   }) async {
@@ -15,7 +15,7 @@ class StatisticsService {
 
     // Dữ liệu mẫu
     return [
-      TeachingStatisticsModel(
+      MoHinhThongKeGiangDay(
         maGiangVien: 'GV001',
         hoVaTen: 'Nguyễn Văn A',
         email: 'nguyenvana@tlu.edu.vn',
@@ -28,9 +28,10 @@ class StatisticsService {
         namHoc: '2024-2025',
         gioGiangTheoChuanDinh: 60.0,
         gioGiangVuotChuanDinh: 0.0,
+        gioTangCa: 0.0,
         tongGioThanhToan: 60.0,
       ),
-      TeachingStatisticsModel(
+      MoHinhThongKeGiangDay(
         maGiangVien: 'GV002',
         hoVaTen: 'Trần Thị B',
         email: 'tranthib@tlu.edu.vn',
@@ -43,9 +44,10 @@ class StatisticsService {
         namHoc: '2024-2025',
         gioGiangTheoChuanDinh: 80.0,
         gioGiangVuotChuanDinh: 10.0,
+        gioTangCa: 0.0,
         tongGioThanhToan: 90.0,
       ),
-      TeachingStatisticsModel(
+      MoHinhThongKeGiangDay(
         maGiangVien: 'GV003',
         hoVaTen: 'Lê Văn C',
         email: 'levanc@tlu.edu.vn',
@@ -58,9 +60,10 @@ class StatisticsService {
         namHoc: '2024-2025',
         gioGiangTheoChuanDinh: 50.0,
         gioGiangVuotChuanDinh: 0.0,
+        gioTangCa: 0.0,
         tongGioThanhToan: 47.0,
       ),
-      TeachingStatisticsModel(
+      MoHinhThongKeGiangDay(
         maGiangVien: 'GV004',
         hoVaTen: 'Phạm Thị D',
         email: 'phamthid@tlu.edu.vn',
@@ -73,9 +76,10 @@ class StatisticsService {
         namHoc: '2024-2025',
         gioGiangTheoChuanDinh: 70.0,
         gioGiangVuotChuanDinh: 5.0,
+        gioTangCa: 0.0,
         tongGioThanhToan: 74.0,
       ),
-      TeachingStatisticsModel(
+      MoHinhThongKeGiangDay(
         maGiangVien: 'GV005',
         hoVaTen: 'Hoàng Văn E',
         email: 'hoangvane@tlu.edu.vn',
@@ -88,13 +92,14 @@ class StatisticsService {
         namHoc: '2024-2025',
         gioGiangTheoChuanDinh: 90.0,
         gioGiangVuotChuanDinh: 15.0,
+        gioTangCa: 0.0,
         tongGioThanhToan: 103.0,
       ),
     ];
   }
 
   /// Lấy danh sách báo cáo tiến độ theo học phần
-  Future<List<CourseProgressModel>> fetchCourseProgress({
+  Future<List<MoHinhTienDoHocPhan>> fetchCourseProgress({
     String? hocKy,
     String? namHoc,
     String? maGiangVien,
@@ -104,7 +109,7 @@ class StatisticsService {
 
     // Dữ liệu mẫu
     return [
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT001',
         tenHocPhan: 'Lập trình hướng đối tượng',
         maLopHocPhan: 'IT001.01',
@@ -118,7 +123,7 @@ class StatisticsService {
         soBuoiDayBu: 1,
         soBuoiConLai: 5,
       ),
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT002',
         tenHocPhan: 'Cấu trúc dữ liệu và giải thuật',
         maLopHocPhan: 'IT002.01',
@@ -132,7 +137,7 @@ class StatisticsService {
         soBuoiDayBu: 1,
         soBuoiConLai: 3,
       ),
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT003',
         tenHocPhan: 'Cơ sở dữ liệu',
         maLopHocPhan: 'IT003.02',
@@ -146,7 +151,7 @@ class StatisticsService {
         soBuoiDayBu: 2,
         soBuoiConLai: 2,
       ),
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT004',
         tenHocPhan: 'Mạng máy tính',
         maLopHocPhan: 'IT004.01',
@@ -160,7 +165,7 @@ class StatisticsService {
         soBuoiDayBu: 0,
         soBuoiConLai: 6,
       ),
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT005',
         tenHocPhan: 'Hệ điều hành',
         maLopHocPhan: 'IT005.03',
@@ -174,7 +179,7 @@ class StatisticsService {
         soBuoiDayBu: 2,
         soBuoiConLai: 4,
       ),
-      CourseProgressModel(
+      MoHinhTienDoHocPhan(
         maHocPhan: 'IT006',
         tenHocPhan: 'Trí tuệ nhân tạo',
         maLopHocPhan: 'IT006.01',
@@ -210,7 +215,7 @@ class StatisticsService {
   }
 
   /// Lấy danh sách lịch trình giảng dạy chi tiết
-  Future<List<TeachingScheduleModel>> fetchTeachingSchedules({
+  Future<List<MoHinhLichTrinhGiangDay>> fetchTeachingSchedules({
     String? hocKy,
     String? namHoc,
     String? maGiangVien,
@@ -220,7 +225,7 @@ class StatisticsService {
 
     // Dữ liệu mẫu
     return [
-      TeachingScheduleModel(
+      MoHinhLichTrinhGiangDay(
         maLichTrinh: 'LT001',
         maHocPhan: 'IT001',
         tenHocPhan: 'Lập trình hướng đối tượng',
@@ -242,7 +247,7 @@ class StatisticsService {
         soBuoiConLai: 5,
         trangThai: 'Đang diễn ra',
       ),
-      TeachingScheduleModel(
+      MoHinhLichTrinhGiangDay(
         maLichTrinh: 'LT002',
         maHocPhan: 'IT002',
         tenHocPhan: 'Cấu trúc dữ liệu và giải thuật',
@@ -268,7 +273,7 @@ class StatisticsService {
   }
 
   /// Lấy báo cáo điểm danh chi tiết
-  Future<List<AttendanceReportModel>> fetchAttendanceReports({
+  Future<List<MoHinhBaoCaoDiemDanh>> fetchAttendanceReports({
     String? hocKy,
     String? namHoc,
     String? maHocPhan,
@@ -277,7 +282,7 @@ class StatisticsService {
     await Future.delayed(const Duration(seconds: 1));
 
     return [
-      AttendanceReportModel(
+      MoHinhBaoCaoDiemDanh(
         maHocPhan: 'IT001',
         tenHocPhan: 'Lập trình hướng đối tượng',
         maLopHocPhan: 'IT001.01',
@@ -292,76 +297,19 @@ class StatisticsService {
         danhSachSinhVien: [
           SinhVienAttendanceModel(
             maSinhVien: 'SV001',
-            hoTen: 'Nguyễn Văn B',
+            hoVaTen: 'Nguyễn Văn B',
             lop: 'IT001.01',
             soBuoiCoMat: 9,
-            soBuoiVang: 1,
+            tongSoBuoi: 10,
             tiLeChuyenCan: 0.9,
-            trangThai: 'Đạt',
           ),
           SinhVienAttendanceModel(
             maSinhVien: 'SV002',
-            hoTen: 'Trần Thị C',
+            hoVaTen: 'Trần Thị C',
             lop: 'IT001.01',
             soBuoiCoMat: 7,
-            soBuoiVang: 3,
+            tongSoBuoi: 10,
             tiLeChuyenCan: 0.7,
-            trangThai: 'Cảnh báo',
-          ),
-        ],
-      ),
-    ];
-  }
-
-  /// Lấy báo cáo thanh toán giờ giảng
-  Future<List<PaymentReportModel>> fetchPaymentReports({
-    String? hocKy,
-    String? namHoc,
-    String? maGiangVien,
-  }) async {
-    // TODO: Thay thế bằng API call thực tế
-    await Future.delayed(const Duration(seconds: 1));
-
-    return [
-      PaymentReportModel(
-        maGiangVien: 'GV001',
-        hoVaTen: 'Nguyễn Văn A',
-        email: 'nguyenvana@tlu.edu.vn',
-        boMon: 'Công nghệ thông tin',
-        hocKy: 'HK1',
-        namHoc: '2024-2025',
-        gioGiangChuanDinh: 60.0,
-        gioGiangVuotChuanDinh: 0.0,
-        tongGioGiang: 60.0,
-        soBuoiNghi: 3,
-        soBuoiDayBu: 2,
-        tiLeDayBu: 0.67,
-        donGiaGioChuan: 50000.0,
-        donGiaGioVuotChuan: 75000.0,
-        tongTienThanhToan: 3000000.0,
-        trangThaiThanhToan: 'Chưa thanh toán',
-        danhSachHocPhan: [
-          HocPhanPaymentModel(
-            maHocPhan: 'IT001',
-            tenHocPhan: 'Lập trình hướng đối tượng',
-            maLopHocPhan: 'IT001.01',
-            tongSoTiet: 45,
-            soTietDaDay: 30,
-            soTietNghi: 6,
-            soTietDayBu: 3,
-            gioGiangThucTe: 30.0,
-            tienThanhToan: 1500000.0,
-          ),
-          HocPhanPaymentModel(
-            maHocPhan: 'IT002',
-            tenHocPhan: 'Cấu trúc dữ liệu và giải thuật',
-            maLopHocPhan: 'IT002.01',
-            tongSoTiet: 45,
-            soTietDaDay: 36,
-            soTietNghi: 3,
-            soTietDayBu: 3,
-            gioGiangThucTe: 30.0,
-            tienThanhToan: 1500000.0,
           ),
         ],
       ),

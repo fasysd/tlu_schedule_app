@@ -1,4 +1,4 @@
-class CourseProgressModel {
+class MoHinhTienDoHocPhan {
   // Thông tin học phần
   final String maHocPhan;
   final String tenHocPhan;
@@ -10,17 +10,17 @@ class CourseProgressModel {
   final String maGiangVien;
   final String tenGiangVien;
 
-  // Thông tin tiến độ
-  final int tongSoBuoi; // Tổng số buổi học theo kế hoạch
-  final int soBuoiHoanThanh; // Số buổi đã hoàn thành
-  final int soBuoiNghi; // Số buổi nghỉ
-  final int soBuoiDayBu; // Số buổi đã dạy bù
-  final int soBuoiConLai; // Số buổi còn lại chưa dạy
+  // Thống kê tiến độ
+  final int tongSoBuoi;
+  final int soBuoiHoanThanh;
+  final int soBuoiNghi;
+  final int soBuoiDayBu;
+  final int soBuoiConLai;
 
-  // Thông tin chi tiết
-  final List<BuoiHocDetail>? danhSachBuoiHoc; // Danh sách chi tiết các buổi học
+  // Chi tiết buổi học (optional)
+  final List<dynamic>? danhSachBuoiHoc;
 
-  CourseProgressModel({
+  MoHinhTienDoHocPhan({
     required this.maHocPhan,
     required this.tenHocPhan,
     required this.maLopHocPhan,
@@ -37,8 +37,8 @@ class CourseProgressModel {
   });
 
   /// Từ JSON → Object
-  factory CourseProgressModel.fromJson(Map<String, dynamic> json) {
-    return CourseProgressModel(
+  factory MoHinhTienDoHocPhan.fromJson(Map<String, dynamic> json) {
+    return MoHinhTienDoHocPhan(
       maHocPhan: json['maHocPhan'] ?? '',
       tenHocPhan: json['tenHocPhan'] ?? '',
       maLopHocPhan: json['maLopHocPhan'] ?? '',
@@ -51,11 +51,7 @@ class CourseProgressModel {
       soBuoiNghi: json['soBuoiNghi'] ?? 0,
       soBuoiDayBu: json['soBuoiDayBu'] ?? 0,
       soBuoiConLai: json['soBuoiConLai'] ?? 0,
-      danhSachBuoiHoc: json['danhSachBuoiHoc'] != null
-          ? (json['danhSachBuoiHoc'] as List)
-              .map((e) => BuoiHocDetail.fromJson(e))
-              .toList()
-          : null,
+      danhSachBuoiHoc: json['danhSachBuoiHoc'],
     );
   }
 
@@ -74,9 +70,7 @@ class CourseProgressModel {
       'soBuoiNghi': soBuoiNghi,
       'soBuoiDayBu': soBuoiDayBu,
       'soBuoiConLai': soBuoiConLai,
-      if (danhSachBuoiHoc != null)
-        'danhSachBuoiHoc':
-            danhSachBuoiHoc!.map((e) => e.toJson()).toList(),
+      'danhSachBuoiHoc': danhSachBuoiHoc,
     };
   }
 
@@ -90,47 +84,3 @@ class CourseProgressModel {
   /// Tính tỷ lệ dạy bù
   double get tiLeDayBu => soBuoiNghi == 0 ? 0 : (soBuoiDayBu / soBuoiNghi);
 }
-
-/// Model cho chi tiết từng buổi học
-class BuoiHocDetail {
-  final int buoiSo; // Buổi số (1, 2, 3...)
-  final DateTime ngayHoc;
-  final String caHoc;
-  final String phongHoc;
-  final String trangThai; // "Hoàn thành", "Nghỉ", "Dạy bù", "Chưa dạy"
-  final DateTime? ngayDayBu; // Nếu là buổi nghỉ và đã dạy bù
-
-  BuoiHocDetail({
-    required this.buoiSo,
-    required this.ngayHoc,
-    required this.caHoc,
-    required this.phongHoc,
-    required this.trangThai,
-    this.ngayDayBu,
-  });
-
-  factory BuoiHocDetail.fromJson(Map<String, dynamic> json) {
-    return BuoiHocDetail(
-      buoiSo: json['buoiSo'] ?? 0,
-      ngayHoc: DateTime.parse(json['ngayHoc']),
-      caHoc: json['caHoc'] ?? '',
-      phongHoc: json['phongHoc'] ?? '',
-      trangThai: json['trangThai'] ?? 'Chưa dạy',
-      ngayDayBu: json['ngayDayBu'] != null
-          ? DateTime.tryParse(json['ngayDayBu'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'buoiSo': buoiSo,
-      'ngayHoc': ngayHoc.toIso8601String(),
-      'caHoc': caHoc,
-      'phongHoc': phongHoc,
-      'trangThai': trangThai,
-      if (ngayDayBu != null) 'ngayDayBu': ngayDayBu!.toIso8601String(),
-    };
-  }
-}
-

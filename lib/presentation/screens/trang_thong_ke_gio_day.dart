@@ -4,7 +4,6 @@ import '../../data/models/mo_hinh_tien_do_hoc_phan.dart';
 import '../../data/services/dich_vu_thong_ke.dart';
 import '../widgets/the_thong_ke_giang_day.dart';
 import '../widgets/the_tien_do_hoc_phan.dart';
-import 'trang_bao_cao_thanh_toan.dart';
 
 class TrangThongKeGioDay extends StatefulWidget {
   const TrangThongKeGioDay({super.key});
@@ -19,8 +18,8 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
   final DichVuThongKe _statisticsService = DichVuThongKe();
 
   // Data
-  List<TeachingStatisticsModel> _teachingStatistics = [];
-  List<CourseProgressModel> _courseProgress = [];
+  List<MoHinhThongKeGiangDay> _teachingStatistics = [];
+  List<MoHinhTienDoHocPhan> _courseProgress = [];
   Map<String, dynamic> _overallStats = {};
 
   // Loading state
@@ -34,7 +33,7 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabChange);
     _loadData();
   }
@@ -262,7 +261,6 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
                     tabs: const [
                       Tab(text: 'Thống kê theo GV'),
                       Tab(text: 'Tiến độ học phần'),
-                      Tab(text: 'Báo cáo thanh toán'),
                     ],
                   ),
                 ),
@@ -275,7 +273,6 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
             children: [
               _buildTeachingStatisticsTab(),
               _buildCourseProgressTab(),
-              _buildPaymentReportTab(),
             ],
           ),
         ),
@@ -413,8 +410,8 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 15),
-            child: CardTeachingStatistics(
-              statistics: _teachingStatistics[index],
+                        child: TheThongKeGiangDay(
+              teachingStatistics: _teachingStatistics[index],
             ),
           );
         },
@@ -441,7 +438,7 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 15),
-            child: CardCourseProgress(
+                        child: TheTienDoHocPhan(
               courseProgress: _courseProgress[index],
             ),
           );
@@ -450,50 +447,6 @@ class _TrangThongKeGioDayState extends State<TrangThongKeGioDay>
     );
   }
 
-  Widget _buildPaymentReportTab() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.account_balance_wallet,
-            size: 80,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Báo cáo thanh toán chi tiết',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Xem báo cáo thanh toán giờ giảng cho từng giảng viên',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
-                ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 30),
-          ElevatedButton.icon(
-            onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const TrangBaoCaoThanhToan(),
-                    ),
-                  );
-            },
-            icon: const Icon(Icons.arrow_forward),
-            label: const Text('Xem báo cáo thanh toán'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // Custom SliverPersistentHeaderDelegate for sticky TabBar

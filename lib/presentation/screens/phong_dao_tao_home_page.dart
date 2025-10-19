@@ -6,6 +6,7 @@ import 'ds_giang_vien_page.dart';
 import 'ds_hoc_phan_page.dart';
 import 'ds_don_xin_page.dart';
 import 'trang_thong_ke_gio_day.dart';
+import 'trang_bao_cao_thong_ke.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});
@@ -77,6 +78,12 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const TrangThongKeGioDay()));
+  }
+
+  void onPressed_baoCao() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const TrangBaoCaoThongKe()));
   }
 
   @override
@@ -181,6 +188,13 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
                           'Đơn dạy bù cần duyệt',
                           _donXinDayBu.toString(),
                           'assets/images/icons/form_icon.png',
+                        ),
+                        buildShortStat1(
+                          context,
+                          'Báo cáo thống kê',
+                          'Xem báo cáo',
+                          'assets/images/icons/stats_icon.png',
+                          onPressed_baoCao,
                         ),
                       ],
                     ),
@@ -343,9 +357,10 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
     BuildContext context,
     String label,
     String value,
-    String pathIcon,
-  ) {
-    return Container(
+    String pathIcon, [
+    VoidCallback? onPressed,
+  ]) {
+    Widget container = Container(
       height: 60,
       padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
       decoration: BoxDecoration(
@@ -376,6 +391,14 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
         ),
       ),
     );
+
+    if (onPressed != null) {
+      return GestureDetector(
+        onTap: onPressed,
+        child: container,
+      );
+    }
+    return container;
   }
 
   Widget buildShortStat2(

@@ -21,6 +21,8 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
   Set<String> _selectedLecturerIds = {};
   bool _isLoading = true;
   String? _errorMessage;
+  String _searchQuery = '';
+  List<LecturerModel> _filteredLecturers = [];
 
   @override
   void initState() {
@@ -39,9 +41,20 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
       _isLoading = false;
       if (response['statusCode'] == 200) {
         _listLecturer = response['data'] as List<LecturerModel>;
+        _filteredLecturers = _listLecturer;
       } else {
         _errorMessage = response['message'];
       }
+    });
+  }
+
+  void _filterLecturers() {
+    setState(() {
+      _filteredLecturers = _listLecturer.where((lecturer) {
+        return lecturer.hoVaTen.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+               lecturer.maGiangVien.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+               lecturer.email.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
     });
   }
 
@@ -80,7 +93,16 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                           horizontal: 16.0,
                           vertical: 8.0,
                         ),
-                        child: TextfieldSearch(focusNode: _searchFocusNode),
+                        child: TextfieldSearch(
+                          hintText: 'Tìm kiếm giảng viên...',
+                          focusNode: _searchFocusNode,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                              _filterLecturers();
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -92,7 +114,7 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                           : _errorMessage != null
                           ? Center(child: Text(_errorMessage!))
                           : Column(
-                              children: _listLecturer.map((item) {
+                              children: _filteredLecturers.map((item) {
                                 final isSelected = _selectedLecturerIds
                                     .contains(item.maGiangVien);
                                 return CardLecturer(

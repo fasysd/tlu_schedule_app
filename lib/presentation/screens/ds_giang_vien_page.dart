@@ -17,8 +17,10 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
   final FocusNode _searchFocusNode = FocusNode();
 
   List<LecturerModel> _listLecturer = [];
+  List<LecturerModel> _filteredLecturers = [];
   bool _isLoading = true;
   String? _errorMessage;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
       _isLoading = false;
       if (response['statusCode'] == 200) {
         _listLecturer = response['data'];
+        _filteredLecturers = response['data'];
       } else {
         _errorMessage = response['message'];
       }
@@ -50,6 +53,16 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
   void onPressedQuayLai() => Navigator.pop(context);
 
   void _unfocusTextField() => FocusScope.of(context).unfocus();
+
+  void _filterLecturers() {
+    setState(() {
+      _filteredLecturers = _listLecturer.where((lecturer) {
+        return lecturer.hoVaTen.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+               lecturer.maGiangVien.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+               lecturer.email.toLowerCase().contains(_searchQuery.toLowerCase());
+      }).toList();
+    });
+  }
 
   @override
   void dispose() {
@@ -84,7 +97,16 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: TextfieldSearch(focusNode: _searchFocusNode),
+                    child: TextfieldSearch(
+                      hintText: 'Tìm kiếm giảng viên...',
+                      focusNode: _searchFocusNode,
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                          _filterLecturers();
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,4 @@
-class TeachingStatisticsModel {
+class MoHinhThongKeGiangDay {
   // Thông tin giảng viên
   final String maGiangVien;
   final String hoVaTen;
@@ -19,9 +19,10 @@ class TeachingStatisticsModel {
   // Thống kê tài chính (nếu có)
   final double gioGiangTheoChuanDinh; // Giờ giảng theo chuẩn định mức
   final double gioGiangVuotChuanDinh; // Giờ giảng vượt chuẩn
+  final double gioTangCa; // Giờ tăng ca
   final double tongGioThanhToan; // Tổng giờ cần thanh toán
 
-  TeachingStatisticsModel({
+  MoHinhThongKeGiangDay({
     required this.maGiangVien,
     required this.hoVaTen,
     required this.email,
@@ -35,12 +36,13 @@ class TeachingStatisticsModel {
     required this.namHoc,
     required this.gioGiangTheoChuanDinh,
     required this.gioGiangVuotChuanDinh,
+    required this.gioTangCa,
     required this.tongGioThanhToan,
   });
 
   /// Từ JSON → Object
-  factory TeachingStatisticsModel.fromJson(Map<String, dynamic> json) {
-    return TeachingStatisticsModel(
+  factory MoHinhThongKeGiangDay.fromJson(Map<String, dynamic> json) {
+    return MoHinhThongKeGiangDay(
       maGiangVien: json['maGiangVien'] ?? '',
       hoVaTen: json['hoVaTen'] ?? '',
       email: json['email'] ?? '',
@@ -56,6 +58,7 @@ class TeachingStatisticsModel {
       gioGiangTheoChuanDinh:
           (json['gioGiangTheoChuanDinh'] ?? 0).toDouble(),
       gioGiangVuotChuanDinh: (json['gioGiangVuotChuanDinh'] ?? 0).toDouble(),
+      gioTangCa: (json['gioTangCa'] ?? 0).toDouble(),
       tongGioThanhToan: (json['tongGioThanhToan'] ?? 0).toDouble(),
     );
   }
@@ -76,6 +79,7 @@ class TeachingStatisticsModel {
       'namHoc': namHoc,
       'gioGiangTheoChuanDinh': gioGiangTheoChuanDinh,
       'gioGiangVuotChuanDinh': gioGiangVuotChuanDinh,
+      'gioTangCa': gioTangCa,
       'tongGioThanhToan': tongGioThanhToan,
     };
   }

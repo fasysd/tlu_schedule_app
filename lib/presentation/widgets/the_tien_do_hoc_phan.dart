@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../data/models/course_progress_model.dart';
+import '../../data/models/mo_hinh_tien_do_hoc_phan.dart';
 
-class CardCourseProgress extends StatelessWidget {
-  final CourseProgressModel courseProgress;
+class TheTienDoHocPhan extends StatelessWidget {
+  final MoHinhTienDoHocPhan courseProgress;
 
-  const CardCourseProgress({
+  const TheTienDoHocPhan({
     super.key,
     required this.courseProgress,
   });

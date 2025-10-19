@@ -22,6 +22,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
   List<TeachingRequestModel> _listTeachingRequests = []; // khởi tạo rỗng
   late TeachingRequestFilterModel filterModel;
   List<TeachingRequestModel> _filteredRequests = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -51,6 +52,19 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
           return filterModel.matches(request);
         }).toList();
       }
+    });
+  }
+
+  void _filterRequests() {
+    setState(() {
+      _filteredRequests = _listTeachingRequests.where((request) {
+        final matchesFilter = filterModel.matches(request);
+        final matchesSearch = _searchQuery.isEmpty ||
+            request.maHocPhan.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            request.tenHocPhan.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            request.tenGiangVien.toLowerCase().contains(_searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+      }).toList();
     });
   }
 
@@ -100,7 +114,16 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: TextfieldSearch(focusNode: _searchFocusNode),
+                          child: TextfieldSearch(
+                            hintText: 'Tìm kiếm đơn xin...',
+                            focusNode: _searchFocusNode,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                                _filterRequests();
+                              });
+                            },
+                          ),
                         ),
                         SizedBox(
                           width: 50,
