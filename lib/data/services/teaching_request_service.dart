@@ -20,12 +20,9 @@ class TeachingRequestService {
       final ngayHocDayBu = ngayHoc.add(Duration(days: (i % 5) + 1));
 
       final List<String> attachedImages = [
-        'http://thichtrangtri.com/wp-content/uploads/2025/05/anh-nga-xe-1.jpg',
-        'https://top10tphcm.com/wp-content/uploads/2024/03/hinh-anh-te-xe-tray-xuoc-tay-chan-nam-nu-07.jpg',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAlwTxfmMwTktb3R3BnWRyH1VSQd4QXu8fLQ&s',
-        'https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2025/2/4/cho-can-tiem-vac-xin-17386559460781323603876.jpg',
-        'https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/3/4/1020052/Vu-No-Lop-Xe-Oto.jpg',
-        'https://media.vov.vn/sites/default/files/styles/large/public/2021-06/cut_4.jpg',
+        'https://cdn-media.sforum.vn/storage/app/media/anh-dep-82.jpg',
+        'https://cdn-media.sforum.vn/storage/app/media/anh-dep-83.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_NrLmx2ubTubTGlsf79l-gvcJE_5A1y3Maw&s',
       ];
 
       list.add(
@@ -40,7 +37,7 @@ class TeachingRequestService {
           hocKy: '1_2023_2024',
 
           // Giảng viên
-          idGiangVien: lecturer.id,
+          maGiangVien: lecturer.maGiangVien,
           tenGiangVien: lecturer.hoVaTen,
           tenTaiKhoan: lecturer.tenTaiKhoan,
 
@@ -55,7 +52,7 @@ class TeachingRequestService {
           ngayGui: DateTime(2025, 7, (i % 28) + 1),
           lyDo: _generateLyDo(i),
           anhMinhChung: List.generate(
-            i % 2,
+            i % 4,
             (_) => attachedImages[i % attachedImages.length],
           ),
 
@@ -110,54 +107,74 @@ class TeachingRequestService {
   List<LecturerModel> _generateFixedLecturers() {
     return [
       LecturerModel(
-        id: 'GV001',
+        maGiangVien: 'GV001',
         tenTaiKhoan: 'nguyenvana',
         hoVaTen: 'Nguyễn Văn A',
         email: 'nguyenvana@university.edu.vn',
         ngaySinh: DateTime(1980, 5, 12),
         soDienThoai: '0901234567',
         soHocPhanDangDay: 3,
-        soDonCanDuyet: 1,
+        soDonNghiDayCanDuyet: 1,
+        soDonDayBuCanDuyet: 2,
+        tongSoBuoiDay: 100,
+        soBuoiNghi: 5,
+        soBuoiDayBu: 5,
       ),
       LecturerModel(
-        id: 'GV002',
+        maGiangVien: 'GV002',
         tenTaiKhoan: 'tranthib',
         hoVaTen: 'Trần Thị B',
         email: 'tranthib@university.edu.vn',
         ngaySinh: DateTime(1985, 7, 8),
         soDienThoai: '0912345678',
         soHocPhanDangDay: 2,
-        soDonCanDuyet: 2,
+        soDonNghiDayCanDuyet: 2,
+        soDonDayBuCanDuyet: 3,
+        tongSoBuoiDay: 90,
+        soBuoiNghi: 3,
+        soBuoiDayBu: 2,
       ),
       LecturerModel(
-        id: 'GV003',
+        maGiangVien: 'GV003',
         tenTaiKhoan: 'lehuuc',
         hoVaTen: 'Lê Hữu C',
         email: 'lehuuc@university.edu.vn',
         ngaySinh: DateTime(1978, 10, 20),
         soDienThoai: '0987654321',
         soHocPhanDangDay: 4,
-        soDonCanDuyet: 0,
+        soDonNghiDayCanDuyet: 0,
+        soDonDayBuCanDuyet: 1,
+        tongSoBuoiDay: 120,
+        soBuoiNghi: 4,
+        soBuoiDayBu: 4,
       ),
       LecturerModel(
-        id: 'GV004',
+        maGiangVien: 'GV004',
         tenTaiKhoan: 'phamthid',
         hoVaTen: 'Phạm Thị D',
         email: 'phamthid@university.edu.vn',
         ngaySinh: DateTime(1990, 3, 15),
         soDienThoai: '0331234567',
         soHocPhanDangDay: 1,
-        soDonCanDuyet: 1,
+        soDonNghiDayCanDuyet: 1,
+        soDonDayBuCanDuyet: 0,
+        tongSoBuoiDay: 60,
+        soBuoiNghi: 2,
+        soBuoiDayBu: 1,
       ),
       LecturerModel(
-        id: 'GV005',
+        maGiangVien: 'GV005',
         tenTaiKhoan: 'hoangvanh',
         hoVaTen: 'Hoàng Văn H',
         email: 'hoangvanh@university.edu.vn',
         ngaySinh: DateTime(1988, 9, 9),
         soDienThoai: '0709876543',
         soHocPhanDangDay: 5,
-        soDonCanDuyet: 3,
+        soDonNghiDayCanDuyet: 3,
+        soDonDayBuCanDuyet: 2,
+        tongSoBuoiDay: 110,
+        soBuoiNghi: 6,
+        soBuoiDayBu: 5,
       ),
     ];
   }

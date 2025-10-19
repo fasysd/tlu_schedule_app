@@ -37,7 +37,7 @@ class CardRequest extends StatelessWidget {
             ),
             Text(
               'Người gửi: ' +
-                  teachingRequest.idGiangVien +
+                  teachingRequest.maGiangVien +
                   ' - ' +
                   teachingRequest.tenGiangVien,
               style: Theme.of(context).textTheme.bodyMedium,
