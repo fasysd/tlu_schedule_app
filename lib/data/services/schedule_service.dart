@@ -25,6 +25,20 @@ class ScheduleService {
     return _cachedSchedules!;
   }
 
+  // --- THÊM HÀM NÀY VÀO ---
+  Future<void> updateScheduleEntry(ScheduleEntry updatedEntry) async {
+    // Đảm bảo cache đã được khởi tạo
+    if (_cachedSchedules == null) {
+      await getAllSchedules();
+    }
+    // Tìm và thay thế entry cũ bằng entry mới
+    final index = _cachedSchedules!.indexWhere((s) => s.id == updatedEntry.id);
+    if (index != -1) {
+      _cachedSchedules![index] = updatedEntry;
+    }
+  }
+  // --- KẾT THÚC THÊM HÀM ---
+
   List<ScheduleEntry> _initializeAllSchedules() {
     return [
       ..._generateSchedulesForCourse(
@@ -79,7 +93,6 @@ class ScheduleService {
     ];
   }
 
-  // SỬA ĐỔI HÀM NÀY
   List<ScheduleEntry> _generateSchedulesForCourse({
     required String courseId,
     required String semesterId,
@@ -93,9 +106,9 @@ class ScheduleService {
     int scheduleIdCounter = 0;
 
     for (
-      DateTime day = semesterStart;
-      day.isBefore(semesterEnd.add(const Duration(days: 1)));
-      day = day.add(const Duration(days: 1))
+    DateTime day = semesterStart;
+    day.isBefore(semesterEnd.add(const Duration(days: 1)));
+    day = day.add(const Duration(days: 1))
     ) {
       for (final session in sessions) {
         if (day.weekday == session.dayOfWeek) {

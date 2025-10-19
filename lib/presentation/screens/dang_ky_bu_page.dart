@@ -3,11 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 import 'package:tlu_schedule_app/data/models/schedule_model.dart';
 import 'package:tlu_schedule_app/data/models/user_model.dart';
-import '../../data/services/schedule_service.dart';
-import '../../data/services/static_data.dart';
+import 'package:tlu_schedule_app/data/services/schedule_service.dart';
+import 'package:tlu_schedule_app/data/services/static_data.dart';
 
-
-final scheduleService = ScheduleService();
+final ScheduleService scheduleService = ScheduleService();
 
 class DangKyBuPage extends StatefulWidget {
   final ScheduleEntry schedule;
@@ -258,7 +257,6 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       allSchedules[index].makeupRoomId = _selectedRoomId;
       allSchedules[index].makeupStatus = 'pending_makeup';
       allSchedules[index].status = 'missed';
-      allSchedules[index].requestCreationTime = DateTime.now();
     }
 
     ScaffoldMessenger.of(context).showSnackBar(

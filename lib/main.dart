@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'TLU Schedule',
         theme: AppTheme.light,
-        home: SplashPage(),
-        //home: HomeGiangVien(user: staticUsers.firstWhere((u) => u.id == 'gv01'))
+        //home: SplashPage(),
+        home: HomeGiangVien(user: staticUsers.firstWhere((u) => u.id == 'gv01'))
     );
   }
 }
