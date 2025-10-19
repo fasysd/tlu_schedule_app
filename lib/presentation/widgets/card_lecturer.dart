@@ -5,89 +5,99 @@ import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 class CardLecturer extends StatelessWidget {
   final LecturerModel lecturerModel;
   final VoidCallback? onPressed;
-  final bool selected; // bắt buộc, default false nếu muốn
+  final bool selected;
 
   const CardLecturer({
     super.key,
     required this.lecturerModel,
-    required this.onPressed,
+    this.onPressed,
     this.selected = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: double.infinity,
-        height: 120,
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: selected
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-              : Colors.transparent,
-          border: const Border(
-            bottom: BorderSide(
-              width: 2,
-              color: Color.fromRGBO(89, 141, 192, 1),
+              ? theme.colorScheme.primary.withOpacity(0.08)
+              : theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
             ),
+          ],
+          border: Border.all(
+            color: const Color.fromRGBO(89, 141, 192, 1),
+            width: selected ? 1.5 : 1,
           ),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: 90,
-              child: Stack(
-                children: [
-                  BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar),
-                  if (selected)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Icon(
-                        Icons.check_circle,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+            // Ảnh đại diện
+            Stack(
+              children: [
+                BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar, size: 90),
+                if (selected)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Icon(
+                      Icons.check_circle,
+                      color: theme.colorScheme.primary,
+                      size: 22,
                     ),
+                  ),
+              ],
+            ),
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    lecturerModel.hoVaTen,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    'Mã: ${lecturerModel.maGiangVien}',
+                    style: theme.textTheme.labelMedium,
+                  ),
+                  Text(
+                    'Học phần đang dạy: ${lecturerModel.soHocPhanDangDay}',
+                    style: theme.textTheme.labelMedium,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.article_outlined,
+                        size: 16,
+                        color: Colors.blueGrey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Đơn cần duyệt: ${lecturerModel.soDonNghiDayCanDuyet + lecturerModel.soDonDayBuCanDuyet}',
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(width: 9),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Mã giảng viên: ${lecturerModel.maGiangVien}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Tên: ${lecturerModel.hoVaTen}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Học phần đang dạy: ${lecturerModel.soHocPhanDangDay}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Số đơn cần duyệt: ${lecturerModel.soDonDayBuCanDuyet + lecturerModel.soDonNghiDayCanDuyet}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-              ],
             ),
           ],
         ),

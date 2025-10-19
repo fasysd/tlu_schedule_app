@@ -15,20 +15,14 @@ class ThongTinGiangVienPage extends StatefulWidget {
 class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
   bool _kieuThongKe = false;
   late LecturerModel lecturerInformation;
+
   @override
   void initState() {
-    setState(() {
-      lecturerInformation = widget.lecturerModel;
-    });
+    super.initState();
+    lecturerInformation = widget.lecturerModel;
   }
 
-  void onPressedQuayLai() {
-    Navigator.pop(context);
-  }
-
-  void onPressedXemTatCaDonPheDuyet() {}
-
-  void onPressedXemTatCaHocPhan() {}
+  void onPressedQuayLai() => Navigator.pop(context);
 
   @override
   Widget build(BuildContext context) {
@@ -37,97 +31,99 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
         body: CustomScrollView(
           slivers: [
             SliverAppbarBackpage(
-              textTittle: 'Thông tin chi tiết',
+              textTittle: 'Thông tin giảng viên',
               onPressedBack: onPressedQuayLai,
             ),
             SliverToBoxAdapter(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      height: 160,
-                      padding: EdgeInsets.all(10),
-                      // color: Colors.black,
-                      child: Center(
-                        child: BoxAvatar(
-                          pathAvatar: 'assets/images/defaultAvatar.png',
-                        ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            child: BoxAvatar(
+                              size: 120,
+                              pathAvatar:
+                                  lecturerInformation.duongDanAvatar ??
+                                  'assets/images/defaultAvatar.png',
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            lecturerInformation.hoVaTen,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            lecturerInformation.maGiangVien,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
                       ),
                     ),
 
-                    SizedBox(height: 10),
-                    Text(
+                    const SizedBox(height: 10),
+
+                    // --- THÔNG TIN CÁ NHÂN ---
+                    buildSectionTitle(
+                      context,
                       'Thông tin cá nhân',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      Icons.person_outline,
                     ),
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mã giảng viên: ' +
-                                lecturerInformation.maGiangVien.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Họ và tên: ' +
-                                lecturerInformation.hoVaTen.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Ngày sinh: ' +
-                                DateFormat(
-                                  'dd/MM/yyyy',
-                                ).format(lecturerInformation.ngaySinh),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Email: ' + lecturerInformation.email,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'SDT: ' + lecturerInformation.soDienThoai,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                    buildInfoCard([
+                      _buildInfoRow1(
+                        'Ngày sinh:',
+                        DateFormat(
+                          'dd/MM/yyyy',
+                        ).format(lecturerInformation.ngaySinh),
                       ),
-                    ),
-
-                    SizedBox(height: 10),
-                    Text(
-                      'Thông tin khác',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Số đơn nghỉ dạy cần duyệt: ' + 1.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Số đơn dạy bù cần duyệt: ' + 3.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Số học phần đang dạy: ' + 30.toString(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                      _buildInfoRow1('Email:', lecturerInformation.email),
+                      _buildInfoRow1(
+                        'Số điện thoại:',
+                        lecturerInformation.soDienThoai,
                       ),
-                    ),
+                    ], context),
 
-                    SizedBox(height: 10),
+                    const SizedBox(height: 20),
+
+                    // --- THÔNG TIN KHÁC ---
+                    buildSectionTitle(
+                      context,
+                      'Thông tin giảng dạy',
+                      Icons.school_outlined,
+                    ),
+                    buildInfoCard([
+                      _buildInfoRow2(
+                        'Học phần đang dạy:',
+                        lecturerInformation.soHocPhanDangDay.toString(),
+                      ),
+                      _buildInfoRow2(
+                        'Đơn nghỉ dạy cần duyệt:',
+                        lecturerInformation.soDonNghiDayCanDuyet.toString(),
+                      ),
+                      _buildInfoRow2(
+                        'Đơn dạy bù cần duyệt:',
+                        lecturerInformation.soDonDayBuCanDuyet.toString(),
+                      ),
+                    ], context),
+
+                    const SizedBox(height: 20),
+
+                    // --- THỐNG KÊ ---
                     Row(
                       children: [
-                        Text(
+                        buildSectionTitle(
+                          context,
                           'Thống kê tổng quát',
-                          style: Theme.of(context).textTheme.headlineLarge,
+                          Icons.bar_chart_outlined,
                         ),
                         const Spacer(),
                         IconButton(
@@ -136,45 +132,14 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
                               _kieuThongKe = !_kieuThongKe;
                             });
                           },
-                          icon: Image.asset(
-                            'assets/images/icons/change_icon.png',
-                            height: 23,
+                          icon: const Icon(
+                            Icons.swap_horiz,
+                            color: Colors.blueAccent,
                           ),
                         ),
                       ],
                     ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildShortStat2(
-                            context,
-                            'Tỉ lệ hoàn thành',
-                            30,
-                            100,
-                            Colors.blue,
-                          ),
-                          SizedBox(height: 15),
-                          buildShortStat2(
-                            context,
-                            'Tỉ lệ nghỉ dạy',
-                            30,
-                            100,
-                            Colors.red,
-                          ),
-                          SizedBox(height: 15),
-                          buildShortStat2(
-                            context,
-                            'Tỉ lệ dạy bù',
-                            30,
-                            100,
-                            Colors.green,
-                          ),
-                          SizedBox(height: 15),
-                        ],
-                      ),
-                    ),
+                    buildStatisticCard(context),
                   ],
                 ),
               ),
@@ -185,61 +150,168 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
     );
   }
 
-  Widget buildShortStat2(
+  Widget buildSectionTitle(BuildContext context, String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 6),
+          Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildInfoCard(List<Widget> children, BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromRGBO(89, 141, 192, 1),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildInfoRow1(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(flex: 6, child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow2(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 4, right: 7),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          Text(value),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStatisticCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromRGBO(89, 141, 192, 1),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          buildShortStat(
+            context,
+            'Tỉ lệ hoàn thành',
+            lecturerInformation.tongSoBuoiDay,
+            lecturerInformation.tongSoBuoiDay,
+            Colors.blue,
+          ),
+          const SizedBox(height: 14),
+          buildShortStat(
+            context,
+            'Tỉ lệ nghỉ dạy',
+            lecturerInformation.soBuoiNghi,
+            lecturerInformation.tongSoBuoiDay,
+            Colors.redAccent,
+          ),
+          const SizedBox(height: 14),
+          buildShortStat(
+            context,
+            'Tỉ lệ dạy bù',
+            lecturerInformation.soBuoiDayBu,
+            lecturerInformation.soBuoiNghi,
+            Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildShortStat(
     BuildContext context,
     String label,
     int value1,
     int value2,
     Color color,
   ) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: Theme.of(context).textTheme.labelMedium),
-              Text(
-                _kieuThongKe
-                    ? value1.toString() + '/' + value2.toString()
-                    : (100 * value1 / value2).floor().toString() + '%',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-            ],
-          ),
-          Container(
-            width: double.infinity,
-            height: 15,
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              border: Border.all(
-                color: Colors.grey, // màu viền
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25), // màu bóng (và độ mờ)
-                  spreadRadius: 0, // độ lan bóng
-                  blurRadius: 4, // độ mờ bóng (càng lớn càng mịn)
-                  offset: Offset(0, 4), // hướng đổ bóng (x, y)
-                ),
-              ],
-            ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: value1 / value2,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+    if (value2 == 0) value2 = 1;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.labelLarge),
+            Text(
+              _kieuThongKe
+                  ? '$value1 / $value2'
+                  : '${(100 * value1 / value2).floor()}%',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: value1 / value2,
+            backgroundColor: Colors.grey.shade300,
+            color: color,
+            minHeight: 10,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

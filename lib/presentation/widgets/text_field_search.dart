@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
-// Khuyến nghị: Tạo một StatelessWidget mới
 class TextfieldSearch extends StatelessWidget {
-  // Các tham số tùy chỉnh của TextfieldSearch
   final String hintText;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
 
-  // ✨ Thêm các tham số phổ biến của TextField vào constructor
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -39,15 +36,15 @@ class TextfieldSearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: 46,
+      margin: const EdgeInsets.only(left: 8, right: 8),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
         onChanged: onChanged,
         keyboardType: keyboardType,
         obscureText: obscureText,
-        style: style,
+        style: style ?? Theme.of(context).textTheme.bodyMedium,
         readOnly: readOnly,
         onTap: onTap,
         maxLines: maxLines,
@@ -56,21 +53,24 @@ class TextfieldSearch extends StatelessWidget {
         textInputAction: textInputAction,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: Theme.of(context).textTheme.bodyLarge,
-          prefixIcon: SizedBox(
-            width: 16.0,
-            height: 16.0,
-            child: Center(
-              child: Image.asset(
-                'assets/images/icons/search_icon.png',
-                width: 16.0,
-                height: 16.0,
-                fit: BoxFit.contain,
-              ),
+          hintStyle: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 6),
+            child: Image.asset(
+              'assets/images/icons/search_icon.png',
+              width: 20,
+              height: 20,
+              color: Colors.blueGrey[600],
             ),
           ),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 32,
+            minHeight: 32,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
     );
