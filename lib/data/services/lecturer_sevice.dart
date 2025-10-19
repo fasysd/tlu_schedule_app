@@ -1,78 +1,84 @@
 import 'dart:math';
 import '../models/lecturer_model.dart';
 
-//Sevice test thử
-
+/// Service mô phỏng lấy dữ liệu giảng viên từ API (cố định, không random mỗi lần)
 class LecturerService {
-  Future<List<LecturerModel>> fetchLecturersFromApi() async {
-    return generateSampleLecturers();
-  }
-
   final Random _random = Random();
-  final List<String> _firstNames = [
-    'Nguyễn',
-    'Trần',
-    'Lê',
-    'Phạm',
-    'Hoàng',
-    'Huỳnh',
-  ];
-  final List<String> _lastNames = [
-    'Văn A',
-    'Thị B',
-    'Văn C',
-    'Thị D',
-    'Hữu E',
-    'Thị F',
-  ];
 
-  // Hàm tạo ra một ngày sinh ngẫu nhiên
-  DateTime _generateRandomDateOfBirth() {
-    final now = DateTime.now();
-    // Giảng viên từ 25 đến 60 tuổi
-    final minAge = 25;
-    final maxAge = 60;
+  /// Mô phỏng API call (delay + xác suất lỗi)
+  Future<Map<String, dynamic>> fetchLecturers() async {
+    // Giả lập độ trễ mạng 1–2 giây
+    await Future.delayed(Duration(milliseconds: 1000 + _random.nextInt(1000)));
 
-    // Ngày sinh ngẫu nhiên trong khoảng tuổi
-    final year = now.year - _random.nextInt(maxAge - minAge) - minAge;
-    final month = _random.nextInt(12) + 1;
-    final day = _random.nextInt(28) + 1; // Chọn 28 để tránh lỗi tháng 2
-
-    return DateTime(year, month, day);
-  }
-
-  // Hàm tạo ra một số điện thoại ngẫu nhiên
-  String _generateRandomPhoneNumber() {
-    final prefix = ['090', '091', '098', '033', '070'][_random.nextInt(5)];
-    final suffix = _random.nextInt(9000000) + 1000000; // 7 số ngẫu nhiên
-    return '$prefix$suffix';
-  }
-
-  /// Tạo ra 50 bản mẫu LecturerModel
-  List<LecturerModel> generateSampleLecturers({int count = 50}) {
-    final List<LecturerModel> lecturers = [];
-
-    for (int i = 1; i <= count; i++) {
-      final firstName = _firstNames[_random.nextInt(_firstNames.length)];
-      final lastName = _lastNames[_random.nextInt(_lastNames.length)];
-      final fullName = '$firstName $lastName'; // Thêm số để tên duy nhất
-      final id = 'GV${i.toString().padLeft(3, '0')}';
-
-      final lecturer = LecturerModel(
-        id: id,
-        tenTaiKhoan: 'gv_${fullName.replaceAll(' ', '').toLowerCase()}',
-        hoVaTen: fullName,
-        email:
-            'gv_${fullName.replaceAll(' ', '').toLowerCase()}@university.edu.vn',
-        ngaySinh: _generateRandomDateOfBirth(),
-        soDienThoai: _generateRandomPhoneNumber(),
-        soHocPhanDangDay: _random.nextInt(5) + 1, // Từ 1 đến 5 học phần
-        soDonCanDuyet: _random.nextInt(3), // Từ 0 đến 2 đơn cần duyệt
-      );
-
-      lecturers.add(lecturer);
+    // Giả lập 10% xác suất lỗi
+    final isError = _random.nextInt(10) == 0;
+    if (isError) {
+      return {
+        'statusCode': 500,
+        'message': 'Internal Server Error (Fake API)',
+        'data': null,
+      };
     }
 
-    return lecturers;
+    // Nếu không lỗi → trả dữ liệu cố định
+    final lecturers = _generateFixedLecturers();
+
+    return {'statusCode': 200, 'message': 'Success', 'data': lecturers};
+  }
+
+  /// Dữ liệu giảng viên cố định
+  List<LecturerModel> _generateFixedLecturers() {
+    return [
+      LecturerModel(
+        id: 'GV001',
+        tenTaiKhoan: 'nguyenvana',
+        hoVaTen: 'Nguyễn Văn A',
+        email: 'nguyenvana@university.edu.vn',
+        ngaySinh: DateTime(1980, 5, 12),
+        soDienThoai: '0901234567',
+        soHocPhanDangDay: 3,
+        soDonCanDuyet: 1,
+      ),
+      LecturerModel(
+        id: 'GV002',
+        tenTaiKhoan: 'tranthib',
+        hoVaTen: 'Trần Thị B',
+        email: 'tranthib@university.edu.vn',
+        ngaySinh: DateTime(1985, 7, 8),
+        soDienThoai: '0912345678',
+        soHocPhanDangDay: 2,
+        soDonCanDuyet: 2,
+      ),
+      LecturerModel(
+        id: 'GV003',
+        tenTaiKhoan: 'lehuuc',
+        hoVaTen: 'Lê Hữu C',
+        email: 'lehuuc@university.edu.vn',
+        ngaySinh: DateTime(1978, 10, 20),
+        soDienThoai: '0987654321',
+        soHocPhanDangDay: 4,
+        soDonCanDuyet: 0,
+      ),
+      LecturerModel(
+        id: 'GV004',
+        tenTaiKhoan: 'phamthid',
+        hoVaTen: 'Phạm Thị D',
+        email: 'phamthid@university.edu.vn',
+        ngaySinh: DateTime(1990, 3, 15),
+        soDienThoai: '0331234567',
+        soHocPhanDangDay: 1,
+        soDonCanDuyet: 1,
+      ),
+      LecturerModel(
+        id: 'GV005',
+        tenTaiKhoan: 'hoangvanh',
+        hoVaTen: 'Hoàng Văn H',
+        email: 'hoangvanh@university.edu.vn',
+        ngaySinh: DateTime(1988, 9, 9),
+        soDienThoai: '0709876543',
+        soHocPhanDangDay: 5,
+        soDonCanDuyet: 3,
+      ),
+    ];
   }
 }
