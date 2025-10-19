@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:tlu_schedule_app/presentation/screens/login_page.dart';
 import 'core/themes/app_theme.dart';
 import 'presentation/screens/splash_page.dart';
 import 'package:tlu_schedule_app/data/services/static_data.dart';
@@ -17,11 +18,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'TLU Schedule',
-        theme: AppTheme.light,
-        //home: SplashPage(),
-        home: HomeGiangVien(user: staticUsers.firstWhere((u) => u.id == 'gv01'))
+      debugShowCheckedModeBanner: false,
+      title: 'TLU Schedule',
+      theme: AppTheme.light,
+      //home: SplashPage(),
+      home: LoginPage(),
     );
   }
 }

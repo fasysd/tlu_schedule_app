@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/tlu_schedule_app.iml" filepath="$PROJECT_DIR$/tlu_schedule_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/tlu_schedule_app_android.iml" filepath="$PROJECT_DIR$/android/tlu_schedule_app_android.iml" />
     </modules>
   </component>
 </project>
