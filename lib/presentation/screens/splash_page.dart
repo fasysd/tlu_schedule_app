@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tlu_schedule_app/data/services/auth_service.dart';
 import 'login_page.dart';
+import 'phong_dao_tao_home_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -12,11 +14,25 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1400), () {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
-    });
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    await Future.delayed(const Duration(milliseconds: 1400));
+    
+    if (mounted) {
+      final isLoggedIn = await AuthService.isLoggedIn();
+      
+      if (isLoggedIn) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      }
+    }
   }
 
   @override

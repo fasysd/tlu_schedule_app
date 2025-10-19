@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:tlu_schedule_app/data/services/auth_service.dart';
 import 'phong_dao_tao_home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -68,11 +69,36 @@ class _LoginPageState extends State<LoginPage> {
 
   void _showVerifyDialog() {}
 
-  void _submitForm() {
-    // _formKey.currentState!.validate();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
-    );
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Authenticate
+      final success = await AuthService.login(_userName, _password);
+      
+      // Hide loading
+      Navigator.of(context).pop();
+
+      if (success) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override

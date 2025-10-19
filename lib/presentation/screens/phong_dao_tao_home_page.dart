@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tlu_schedule_app/data/models/activity_log_model.dart';
 import 'package:tlu_schedule_app/data/services/activity_log_sevice.dart';
+import 'package:tlu_schedule_app/data/services/auth_service.dart';
 import 'ds_giang_vien_page.dart';
 import 'ds_hoc_phan_page.dart';
 import 'ds_don_xin_page.dart';
 import 'trang_thong_ke_gio_day.dart';
 import 'trang_bao_cao_thong_ke.dart';
+import 'login_page.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});
@@ -86,6 +88,37 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
     ).push(MaterialPageRoute(builder: (_) => const TrangBaoCaoThongKe()));
   }
 
+  void _logout() async {
+    // Show confirmation dialog
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Đăng xuất'),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Đăng xuất'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await AuthService.logout();
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -97,6 +130,16 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
               floating: false,
               pinned: false,
               snap: false,
+              actions: [
+                IconButton(
+                  onPressed: _logout,
+                  icon: const Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ),
+                  tooltip: 'Đăng xuất',
+                ),
+              ],
               flexibleSpace: FlexibleSpaceBar(
                 background: Center(
                   child: Row(
