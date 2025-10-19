@@ -6,6 +6,8 @@ class UserAccount {
   final String role;
   final String fullName;
   final String avatarPath;
+  final String? phone;
+  final DateTime? dateOfBirth;
   final String? departmentId;
   final String warningStatus;
 
@@ -17,6 +19,8 @@ class UserAccount {
     required this.role,
     required this.fullName,
     required this.avatarPath,
+    required this.dateOfBirth,
+    this.phone,
     this.departmentId,
     this.warningStatus = 'none',
   });

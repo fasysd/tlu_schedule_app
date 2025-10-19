@@ -77,7 +77,6 @@ class CourseDetailPage extends StatelessWidget {
     }
     schedules.sort((a,b) => a.date.compareTo(b.date));
 
-    // Tính toán thông tin từ danh sách buổi học
     final taughtPeriods = schedules.where((s) => s.status != 'missed').fold<int>(0, (prev, e) => prev + e.numberOfPeriods);
     final missedPeriods = schedules.where((s) => s.status == 'missed').fold<int>(0, (prev, e) => prev + e.numberOfPeriods);
     final makeupPeriods = schedules.where((s) => s.makeupStatus != null).fold<int>(0, (prev, e) => prev + (e.makeupPeriods?.length ?? 0));
@@ -97,6 +96,25 @@ class CourseDetailPage extends StatelessWidget {
         };
       }
     }
+
+    ScheduleEntry? firstEligibleMissedSchedule;
+    bool isButtonEnabled = false;
+
+    if (missedPeriods > 0) {
+      try {
+        final firstMissedSchedule = schedules.firstWhere((s) => s.status == 'missed');
+        final now = DateTime.now();
+        final isWithin7Days = now.difference(firstMissedSchedule.date).inDays <= 7;
+
+        if (isWithin7Days) {
+          firstEligibleMissedSchedule = firstMissedSchedule;
+          isButtonEnabled = true;
+        }
+      } catch (e) {
+        // Không tìm thấy buổi nghỉ, không làm gì cả, isButtonEnabled sẽ vẫn là false.
+      }
+    }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -167,23 +185,26 @@ class CourseDetailPage extends StatelessWidget {
             _buildInfoRow(context, label: 'Số tiết đã bù:', value: '$makeupPeriods'),
             _buildInfoRow(context, label: 'Tỉ lệ chuyên cần:', value: '$attendanceRate%'),
             const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  final missedSchedule = schedules.firstWhere((s) => s.status == 'missed', orElse: () => schedules.first);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DangKyBuPage(schedule: missedSchedule, user: user)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(89, 141, 192, 1),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+            if (missedPeriods > 0)
+              Center(
+                child: ElevatedButton(
+                  onPressed: isButtonEnabled
+                      ? () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DangKyBuPage(schedule: firstEligibleMissedSchedule!, user: user)),
+                    );
+                  }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(89, 141, 192, 1),
+                      disabledBackgroundColor: Colors.grey.shade400,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                  ),
+                  child: const Text('Đăng ký bù', style: TextStyle(color: Colors.white)),
                 ),
-                child: const Text('Đăng ký bù', style: TextStyle(color: Colors.white)),
               ),
-            ),
           ],
         ),
       ),

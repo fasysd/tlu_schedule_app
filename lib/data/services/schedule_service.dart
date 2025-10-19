@@ -25,7 +25,6 @@ class ScheduleService {
     return _cachedSchedules!;
   }
 
-  // SỬA ĐỔI HÀM NÀY
   List<ScheduleEntry> _initializeAllSchedules() {
     return [
       ..._generateSchedulesForCourse(
@@ -42,7 +41,6 @@ class ScheduleService {
             periods: [1, 2],
             roomId: '325-A2',
           ),
-          // <-- Phòng học khác
         ],
       ),
       ..._generateSchedulesForCourse(
@@ -94,7 +92,6 @@ class ScheduleService {
     final List<ScheduleEntry> schedules = [];
     int scheduleIdCounter = 0;
 
-    // Lặp qua từng ngày trong khoảng thời gian của học kỳ
     for (
       DateTime day = semesterStart;
       day.isBefore(semesterEnd.add(const Duration(days: 1)));

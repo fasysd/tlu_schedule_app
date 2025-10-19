@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
-import '../../data/mock_data.dart';
+// --- THAY ĐỔI IMPORT ---
+import '../../data/services/static_data.dart';
+import '../../data/services/schedule_service.dart';
+// --- KẾT THÚC THAY ĐỔI ---
 import 'ds_lich_day_tuan.dart';
 import '../widgets/schedule_status_widget.dart';
 import 'chi_tiet_buoi_hoc_page.dart';
 import '../widgets/info_item_widget.dart';
 import 'ds_hoc_phan_gv.dart';
-import '../widgets/warning_helper.dart';
+import 'don_phe_duyet_page.dart';
+import 'ho_so_page.dart';
+import '../widgets/common_header.dart';
+
+// --- THAY ĐỔI: Tạo instance cho service ---
+final scheduleService = ScheduleService();
+// --- KẾT THÚC THAY ĐỔI ---
 
 class ScheduleData {
   final Map<String, List<ScheduleEntry>> groupedSchedules;
@@ -45,10 +54,12 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
   Future<ScheduleData> _loadAndGroupSchedules(String instructorId) async {
     final allSchedules = await scheduleService.getAllSchedules();
 
-    final instructorCourseIds = mockCourses
+    // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
+    final instructorCourseIds = staticCourses
         .where((c) => c.instructorId == instructorId)
         .map((c) => c.id)
         .toSet();
+    // --- KẾT THÚC THAY ĐỔI ---
 
     final userSchedules = allSchedules
         .where((s) => instructorCourseIds.contains(s.courseId))
@@ -60,8 +71,8 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
 
     userSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    String? featuredId = userSchedules.isNotEmpty ? userSchedules.first.id : null;
-
+    String? featuredId =
+    userSchedules.isNotEmpty ? userSchedules.first.id : null;
 
     final Map<String, List<ScheduleEntry>> grouped = {};
     final DateFormat formatter = DateFormat("EEEE, 'Ngày' dd/MM/y", 'vi_VN');
@@ -87,8 +98,15 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
         onGoBack: _refreshSchedules,
       ),
       CourseListPage(user: widget.user),
-      const Center(child: Text("Đơn phê duyệt")),
-      const Center(child: Text("Hồ sơ")),
+      DonPheDuyetPage(user: widget.user),
+      ProfilePage(
+        user: widget.user,
+        onNavigate: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
     ];
 
     return Scaffold(
@@ -128,72 +146,21 @@ class _HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final warningDetails = getWarningDetails(user.warningStatus);
-    final warningText = warningDetails['text'];
-    final warningColor = warningDetails['color'];
-
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          color: const Color.fromRGBO(89, 141, 192, 1),
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
-            bottom: 16,
-            left: 16,
-            right: 16,
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundImage: AssetImage(user.avatarPath),
-                backgroundColor: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Giảng viên",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.white70)),
-                    Text(user.fullName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.circle, color: warningColor, size: 12),
-                        const SizedBox(width: 4),
-                        Text(warningText,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: Colors.white)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.grid_on_rounded,
-                    color: Colors.white, size: 28),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => WeeklySchedulePage(user: user)));
-                },
-                tooltip: 'Xem lịch theo tuần',
-              ),
-            ],
+        CommonHeader(
+          user: user,
+          trailing: IconButton(
+            icon:
+            const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WeeklySchedulePage(user: user)),
+              );
+            },
+            tooltip: 'Xem lịch theo tuần',
           ),
         ),
         Expanded(
@@ -293,14 +260,22 @@ class _DetailedScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sửa lỗi: Tìm học phần tương ứng với buổi học
-    final course = mockCourses.firstWhere((c) => c.id == schedule.courseId,
+    // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
+    final course = staticCourses.firstWhere((c) => c.id == schedule.courseId,
         orElse: () => Course(
-          id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
-          className: 'N/A', instructorId: '', semesterId: '', courseType: '',
-          totalPeriods: 0, credits: 0, studentCount: 0,
+          id: 'error',
+          courseCode: 'N/A',
+          subjectName: 'Không tìm thấy học phần',
+          className: 'N/A',
+          instructorId: '',
+          semesterId: '',
+          courseType: '',
+          totalPeriods: 0,
+          credits: 0,
+          studentCount: 0,
           numberOfPeriods: 0,
         ));
+    // --- KẾT THÚC THAY ĐỔI ---
 
     final List<List<Widget>> infoRows = [
       [
@@ -320,7 +295,6 @@ class _DetailedScheduleCard extends StatelessWidget {
       ],
       [
         InfoItemWidget(icon: Icons.person_outline, text: user.fullName),
-        // Sửa lỗi: Lấy sĩ số từ course
         InfoItemWidget(
             icon: Icons.school_outlined, text: "${course.studentCount}"),
       ],
@@ -348,7 +322,6 @@ class _DetailedScheduleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sửa lỗi: Lấy tên học phần và lớp từ course
               Text(
                 "${course.subjectName} (${course.className})",
                 style:
@@ -394,14 +367,22 @@ class _SimpleScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sửa lỗi: Tìm học phần tương ứng với buổi học
-    final course = mockCourses.firstWhere((c) => c.id == schedule.courseId,
+    // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
+    final course = staticCourses.firstWhere((c) => c.id == schedule.courseId,
         orElse: () => Course(
-          id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
-          className: 'N/A', instructorId: '', semesterId: '', courseType: '',
-          totalPeriods: 0, credits: 0, studentCount: 0,
+          id: 'error',
+          courseCode: 'N/A',
+          subjectName: 'Không tìm thấy học phần',
+          className: 'N/A',
+          instructorId: '',
+          semesterId: '',
+          courseType: '',
+          totalPeriods: 0,
+          credits: 0,
+          studentCount: 0,
           numberOfPeriods: 0,
         ));
+    // --- KẾT THÚC THAY ĐỔI ---
 
     return InkWell(
       onTap: () async {
@@ -446,7 +427,6 @@ class _SimpleScheduleCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Sửa lỗi: Lấy tên học phần và lớp từ course
                         Text(
                           "${course.subjectName} (${course.className})",
                           style: const TextStyle(
@@ -457,19 +437,12 @@ class _SimpleScheduleCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           "${schedule.roomId}   Tiết ${schedule.periods.join('-')}",
-                          style: const TextStyle(color: Colors.black87),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              const Center(
-                child: Text(
-                  "Bấm để xem chi tiết",
-                  style: TextStyle(fontSize: 11, color: Colors.black54),
-                ),
               ),
             ],
           ),

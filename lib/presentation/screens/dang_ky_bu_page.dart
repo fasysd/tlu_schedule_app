@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:collection/collection.dart';import 'package:tlu_schedule_app/data/mock_data.dart';
+import 'package:collection/collection.dart';
 import 'package:tlu_schedule_app/data/models/schedule_model.dart';
 import 'package:tlu_schedule_app/data/models/user_model.dart';
+import '../../data/services/schedule_service.dart';
+import '../../data/services/static_data.dart';
+
+
+final scheduleService = ScheduleService();
 
 class DangKyBuPage extends StatefulWidget {
   final ScheduleEntry schedule;
@@ -15,7 +20,6 @@ class DangKyBuPage extends StatefulWidget {
 }
 
 class _DangKyBuPageState extends State<DangKyBuPage> {
-  // --- Thêm vào để lấy dữ liệu Course ---
   late Course _course;
   late Future<List<ScheduleEntry>> _allSchedulesFuture;
 
@@ -24,6 +28,11 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   DateTime? _selectedDate;
   List<int>? _selectedPeriods;
   String? _selectedRoomId;
+
+  String _getVietnameseDayOfWeek(DateTime date) {
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    return days[date.weekday - 1];
+  }
 
   List<List<int>> _availablePeriodOptions = [];
   final List<String> _allRoomOptions = [
@@ -44,7 +53,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
 
     // Tìm thông tin học phần tương ứng
     try {
-      _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+      _course = staticCourses.firstWhere((c) => c.id == widget.schedule.courseId);
     } catch (e) {
       // Fallback nếu không tìm thấy
       _course = Course(
@@ -242,15 +251,14 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
       return;
     }
 
-    // Cập nhật trạng thái của buổi học trong danh sách
-    // Lưu ý: Đây là thay đổi trên bộ nhớ, không phải DB thật
     final index = allSchedules.indexWhere((s) => s.id == widget.schedule.id);
     if (index != -1) {
       allSchedules[index].makeupDate = _selectedDate;
       allSchedules[index].makeupPeriods = _selectedPeriods;
       allSchedules[index].makeupRoomId = _selectedRoomId;
       allSchedules[index].makeupStatus = 'pending_makeup';
-      allSchedules[index].status = 'missed'; // Buổi học nghỉ giờ là 'missed'
+      allSchedules[index].status = 'missed';
+      allSchedules[index].requestCreationTime = DateTime.now();
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -328,9 +336,32 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                     const SizedBox(height: 16),
                     _buildInfoRow(
                       context,
+                      icon: Icons.access_time,
+                      label: 'Thời gian:',
+                      child: Text(
+                        ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
+                        style: const TextStyle(color: Colors.red, fontSize: 21),
+                      ),
+                    ),
+                    _buildInfoRow(
+                      context,
+                      icon: Icons.location_on_outlined,
+                      label: 'Phòng học:',
+                      child: Text(' ${widget.schedule.roomId}'),
+                    ),
+                    _buildInfoRow(
+                      context,
                       icon: Icons.calendar_today_outlined,
                       child: Text(
-                        'Buổi nghỉ: Tiết ${widget.schedule.periods.join('-')}, ${DateFormat('dd/MM/yyyy').format(widget.schedule.date)}',
+                        'Tiết ${widget.schedule.periods.join('-')}, ${_getVietnameseDayOfWeek(widget.schedule.date)}, Ngày ${DateFormat('dd/MM/yyyy').format(widget.schedule.date)}',
+                      ),
+                    ),
+                    _buildInfoRow(
+                      context,
+                      icon: Icons.person_outline,
+                      label: 'Giảng viên:',
+                      child: Text(
+                        ' ${widget.user.fullName} - ${widget.user.id.toUpperCase()}',
                       ),
                     ),
                     const Divider(height: 32, thickness: 1),
@@ -524,8 +555,12 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     );
   }
 
-  // --- TIỆN ÍCH ---
-  Widget _buildInfoRow(BuildContext context, {required IconData icon, Widget? child, String? label}) {
+  Widget _buildInfoRow(
+      BuildContext context, {
+        required IconData icon,
+        String? label,
+        Widget? child,
+      }) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -537,7 +572,8 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
             child: Icon(icon, size: 25, color: textTheme.bodySmall?.color),
           ),
           const SizedBox(width: 12),
-          if (label != null) Text(label, style: textTheme.bodyMedium?.copyWith(fontSize: 20)),
+          if (label != null)
+            Text(label, style: textTheme.bodyMedium?.copyWith(fontSize: 20)),
           if (child != null)
             Expanded(
               child: DefaultTextStyle(

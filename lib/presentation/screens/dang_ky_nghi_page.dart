@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// --- THAY ĐỔI IMPORT ---
 import '../../data/models/schedule_model.dart';
 import '../../data/models/user_model.dart';
-import '../../data/mock_data.dart';
+import '../../data/services/static_data.dart';
+// --- KẾT THÚC THAY ĐỔI ---
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 
@@ -17,7 +19,6 @@ class DangKyNghiPage extends StatefulWidget {
 }
 
 class _DangKyNghiPageState extends State<DangKyNghiPage> {
-  // --- THÊM MỚI: Biến để lưu thông tin học phần ---
   late Course _course;
   final _reasonController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -28,7 +29,8 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     super.initState();
 
     try {
-      _course = mockCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+      // --- THAY ĐỔI: Sử dụng staticCourses ---
+      _course = staticCourses.firstWhere((c) => c.id == widget.schedule.courseId);
     } catch (e) {
       _course = Course(
         id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
@@ -37,6 +39,7 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
         numberOfPeriods: 0,
       );
     }
+    // --- KẾT THÚC THAY ĐỔI ---
 
     _reasonController.text = widget.schedule.leaveReason ?? '';
     if (widget.schedule.leaveDocuments != null) {
@@ -57,7 +60,6 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     return days[date.weekday - 1];
   }
 
-  // --- CÁC HÀM XỬ LÝ FILE ---
   Future<void> _pickFile() async {
     FocusScope.of(context).unfocus();
     try {
@@ -160,15 +162,13 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
-      // NOTE: Đây là nơi bạn sẽ gọi service để cập nhật dữ liệu trên server (Firebase)
-      // Tạm thời, chúng ta chỉ cập nhật trên đối tượng widget.schedule
-      // để UI trang trước đó có thể cập nhật khi pop về.
       setState(() {
         widget.schedule.status = 'pending_leave';
         widget.schedule.leaveReason = _reasonController.text;
         widget.schedule.leaveDocuments = _selectedFiles
             .map((file) => file.path.split(Platform.pathSeparator).last)
             .toList();
+        widget.schedule.requestCreationTime = DateTime.now();
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -197,7 +197,6 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- THAY ĐỔI: Lấy thông tin từ _course ---
               Text(
                 'Học phần: ${_course.subjectName} (${_course.className})',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -277,10 +276,8 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Phần đính kèm file
               _buildAttachmentSection(),
               const SizedBox(height: 32),
-              // Nút bấm luôn hiển thị
               Center(
                 child: ElevatedButton.icon(
                   onPressed: _submitLeaveRequest,

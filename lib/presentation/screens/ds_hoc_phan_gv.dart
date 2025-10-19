@@ -1,12 +1,19 @@
-// E:/Apps/Flutter/project/tlu_schedule_app/lib/presentation/screens/ds_hoc_phan_gv.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tlu_schedule_app/data/mock_data.dart';
-import 'package:tlu_schedule_app/data/models/schedule_model.dart';
-import 'package:tlu_schedule_app/data/models/user_model.dart';
-import '../widgets/warning_helper.dart';
+
+// --- THAY ĐỔI IMPORT ---
+import '../../data/models/schedule_model.dart';
+import '../../data/models/user_model.dart';
+import '../../data/services/schedule_service.dart';
+import '../../data/services/static_data.dart';
+
+// --- KẾT THÚC THAY ĐỔI ---
+import 'package:tlu_schedule_app/presentation/widgets/common_header.dart';
 import 'chi_tiet_hoc_phan_page.dart';
+
+// --- THAY ĐỔI: Tạo instance cho service ---
+final scheduleService = ScheduleService();
+// --- KẾT THÚC THAY ĐỔI ---
 
 class CourseListPage extends StatefulWidget {
   final UserAccount user;
@@ -46,14 +53,16 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 
   void _initialize() {
-    if (mockSemesters.isEmpty) return;
-    mockSemesters.sort((a, b) => b.startDate.compareTo(a.startDate));
+    // --- THAY ĐỔI: Sử dụng staticSemesters trực tiếp ---
+    if (staticSemesters.isEmpty) return;
+    staticSemesters.sort((a, b) => b.startDate.compareTo(a.startDate));
     final now = DateTime.now();
 
-    _selectedSemester = mockSemesters.firstWhere(
+    _selectedSemester = staticSemesters.firstWhere(
       (s) => now.isAfter(s.startDate) && now.isBefore(s.endDate),
-      orElse: () => mockSemesters.first,
+      orElse: () => staticSemesters.first,
     );
+    // --- KẾT THÚC THAY ĐỔI ---
     _loadCoursesForSemester();
   }
 
@@ -68,14 +77,15 @@ class _CourseListPageState extends State<CourseListPage> {
       return;
     }
 
-    // LẤY HỌC PHẦN DỰA TRÊN instructorId và semesterId
-    final semesterCourses = mockCourses
+    // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
+    final semesterCourses = staticCourses
         .where(
           (course) =>
               course.instructorId == widget.user.id &&
               course.semesterId == _selectedSemester!.id,
         )
         .toList();
+    // --- KẾT THÚC THAY ĐỔI ---
 
     if (mounted) {
       setState(() {
@@ -120,7 +130,7 @@ class _CourseListPageState extends State<CourseListPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
         children: [
-          _buildHeader(),
+          CommonHeader(user: widget.user),
           _buildSearchBar(),
           _buildSemesterFilterBar(),
           Expanded(
@@ -136,70 +146,9 @@ class _CourseListPageState extends State<CourseListPage> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                     itemCount: _filteredCourses.length,
                     itemBuilder: (context, index) {
-                      // TRUYỀN COURSE THAY VÌ GROUPEDCOURSE
                       return _buildCourseCard(_filteredCourses[index]);
                     },
                   ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final warningDetails = getWarningDetails(widget.user.warningStatus);
-    final warningText = warningDetails['text'];
-    final warningColor = warningDetails['color'];
-
-    return Container(
-      width: double.infinity,
-      color: const Color.fromRGBO(89, 141, 192, 1),
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-        bottom: 16,
-        left: 16,
-        right: 16,
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: AssetImage(widget.user.avatarPath),
-            backgroundColor: Colors.white,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Giảng viên",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.white70),
-                ),
-                Text(
-                  widget.user.fullName,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.circle, color: warningColor, size: 12),
-                    const SizedBox(width: 4),
-                    Text(
-                      warningText,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -264,7 +213,8 @@ class _CourseListPageState extends State<CourseListPage> {
                 child: DropdownButton<Semester>(
                   value: _selectedSemester,
                   isExpanded: true,
-                  items: mockSemesters.map((Semester semester) {
+                  // --- THAY ĐỔI: Sử dụng staticSemesters trực tiếp ---
+                  items: staticSemesters.map((Semester semester) {
                     return DropdownMenuItem<Semester>(
                       value: semester,
                       child: Text(
@@ -273,6 +223,7 @@ class _CourseListPageState extends State<CourseListPage> {
                       ),
                     );
                   }).toList(),
+                  // --- KẾT THÚC THAY ĐỔI ---
                   onChanged: (Semester? newValue) {
                     setState(() {
                       _selectedSemester = newValue;
@@ -292,7 +243,6 @@ class _CourseListPageState extends State<CourseListPage> {
     return FutureBuilder<List<ScheduleEntry>>(
       future: scheduleService.getAllSchedules(),
       builder: (context, snapshot) {
-        // Trong khi chờ dữ liệu, hiển thị một card loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(
             margin: EdgeInsets.only(bottom: 16.0),
@@ -303,7 +253,6 @@ class _CourseListPageState extends State<CourseListPage> {
           );
         }
 
-        // Nếu có lỗi, hiển thị card lỗi
         if (snapshot.hasError) {
           return Card(
             margin: const EdgeInsets.only(bottom: 16.0),
@@ -314,12 +263,10 @@ class _CourseListPageState extends State<CourseListPage> {
           );
         }
 
-        // Lấy tất cả buổi học của học phần này từ dữ liệu đã nhận được
         final schedules =
             snapshot.data?.where((s) => s.courseId == course.id).toList() ?? [];
 
         if (schedules.isEmpty) {
-          // Xử lý trường hợp học phần không có lịch học nào
           return Card(
             margin: const EdgeInsets.only(bottom: 16.0),
             child: ListTile(
@@ -440,7 +387,13 @@ class _CourseListPageState extends State<CourseListPage> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
+                  const Center(
+                    child: Text(
+                      'Bấm để xem chi tiết',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ),
                 ],
               ),
             ),

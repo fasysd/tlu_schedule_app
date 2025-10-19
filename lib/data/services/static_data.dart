@@ -42,19 +42,6 @@ final List<Course> staticCourses = [
     studentCount: 40,
     numberOfPeriods: 3,
   ),
-  Course(
-    id: 'course_ctdl_01',
-    courseCode: 'CSE202',
-    subjectName: 'Cấu trúc dữ liệu',
-    className: '64KTPM4',
-    instructorId: 'gv01',
-    semesterId: '2_2024_2025',
-    courseType: 'Lý thuyết + Thực hành',
-    totalPeriods: 60,
-    credits: 4,
-    studentCount: 55,
-    numberOfPeriods: 2,
-  ),
 ];
 
 final List<Semester> staticSemesters = [
@@ -73,7 +60,7 @@ final List<Semester> staticSemesters = [
   Semester(
     id: '1_2025_2026',
     name: 'Học kỳ 1 năm học 2025-2026',
-    startDate: DateTime(2025, 12, 8),
+    startDate: DateTime(2025, 10, 8),
     endDate: DateTime(2026, 9, 20),
   ),
 ];
@@ -87,6 +74,8 @@ final List<UserAccount> staticUsers = [
     role: 'giangvien',
     fullName: 'Nguyễn Thị A',
     avatarPath: 'assets/images/teacher_logo.jpg',
+    dateOfBirth: DateTime(1985, 5, 20),
+    phone: '0947589365',
     departmentId: 'dept_cs',
     warningStatus: 'none',
   ),
@@ -98,6 +87,7 @@ final List<UserAccount> staticUsers = [
     role: 'phongdaotao',
     fullName: 'Phòng đào tạo TLU',
     avatarPath: 'assets/images/defaultAvatar.png',
+    dateOfBirth: null,
   ),
 ];
 

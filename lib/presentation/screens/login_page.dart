@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../data/mock_data.dart';
+// --- THAY ĐỔI IMPORT ---
+import '../../data/services/static_data.dart';
+// --- KẾT THÚC THAY ĐỔI ---
 import 'home_giangvien.dart';
 import 'phong_dao_tao_home_page.dart';
 
@@ -85,9 +87,11 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final user = userAccounts.firstWhere(
+      // --- THAY ĐỔI: Sử dụng staticUsers trực tiếp ---
+      final user = staticUsers.firstWhere(
             (acc) => acc.username == _userName && acc.password == _password,
       );
+      // --- KẾT THÚC THAY ĐỔI ---
 
       if (user.role == 'giangvien') {
         Navigator.pushReplacement(

@@ -45,6 +45,7 @@ class ScheduleEntry {
   List<int>? makeupPeriods;
   String? makeupRoomId;
   String? makeupStatus;
+  DateTime? requestCreationTime;
 
   ScheduleEntry({
     required this.id,
@@ -64,6 +65,7 @@ class ScheduleEntry {
     this.makeupPeriods,
     this.makeupRoomId,
     this.makeupStatus,
+    this.requestCreationTime,
   });
 }
 
