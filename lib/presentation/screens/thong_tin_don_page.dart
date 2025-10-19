@@ -3,11 +3,27 @@ import 'package:intl/intl.dart';
 import 'package:tlu_schedule_app/data/models/teaching_request_model.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
 
-class ThongTinDonPage extends StatelessWidget {
-  final TeachingRequestModel teachingRequest;
-  late final List<String> attachedImages = teachingRequest.anhMinhChung ?? [];
+class ThongTinDonPage extends StatefulWidget {
+  final TeachingRequestModel initTeachingRequest;
+  const ThongTinDonPage({super.key, required this.initTeachingRequest});
 
-  ThongTinDonPage({super.key, required this.teachingRequest});
+  @override
+  State<ThongTinDonPage> createState() => _ThongTinDonPageState();
+}
+
+class _ThongTinDonPageState extends State<ThongTinDonPage> {
+  late TeachingRequestModel teachingRequest;
+  late List<String> attachedImages;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      teachingRequest = widget.initTeachingRequest;
+      attachedImages = teachingRequest.anhMinhChung ?? [];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +61,14 @@ class ThongTinDonPage extends StatelessWidget {
                           backgroundColor: Colors.redAccent,
                         ),
                         onPressed: () {
-                          print('Đơn bị từ chối');
+                          setState(() {
+                            Map<String, dynamic> json = teachingRequest
+                                .toJson();
+                            json['trangThai'] = 'Từ chối';
+                            teachingRequest = TeachingRequestModel.fromJson(
+                              json,
+                            );
+                          });
                         },
                         child: const Text('Từ chối'),
                       ),
@@ -57,7 +80,14 @@ class ThongTinDonPage extends StatelessWidget {
                           backgroundColor: Colors.green,
                         ),
                         onPressed: () {
-                          print('Đơn được xác nhận');
+                          setState(() {
+                            Map<String, dynamic> json = teachingRequest
+                                .toJson();
+                            json['trangThai'] = 'Đã xác nhận';
+                            teachingRequest = TeachingRequestModel.fromJson(
+                              json,
+                            );
+                          });
                         },
                         child: const Text('Xác nhận'),
                       ),

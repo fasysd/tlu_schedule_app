@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:tlu_schedule_app/presentation/screens/login_page.dart';
 import 'core/themes/app_theme.dart';
 import 'presentation/screens/splash_page.dart';
+import 'package:tlu_schedule_app/data/services/static_data.dart';
+import 'presentation/screens/home_giangvien.dart';
 
 void main() {
-  runApp(const MyApp());
+  initializeDateFormatting('vi_VN', null).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -13,9 +19,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'TLU Schedule',
       theme: AppTheme.light,
-      home: const SplashPage(),
+      //home: SplashPage(),
+      home: LoginPage(),
     );
   }
 }

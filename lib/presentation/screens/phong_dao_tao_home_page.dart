@@ -8,6 +8,7 @@ import 'ds_hoc_phan_page.dart';
 import 'ds_don_xin_page.dart';
 import 'trang_thong_ke_gio_day.dart';
 import 'trang_bao_cao_thong_ke.dart';
+import 'thong_ke_gio_day_page.dart';
 import 'login_page.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
@@ -79,6 +80,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   void onPressed_thongKe() {
     Navigator.of(
       context,
+<<<<<<< HEAD
     ).push(MaterialPageRoute(builder: (_) => const TrangThongKeGioDay()));
   }
 
@@ -117,6 +119,9 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
         );
       }
     }
+=======
+    ).push(MaterialPageRoute(builder: (_) => const ThongkegdiodayPage()));
+>>>>>>> cf3af183301f2678f100efe86ea6f821154dbb29
   }
 
   @override

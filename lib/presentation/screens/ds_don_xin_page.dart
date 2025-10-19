@@ -81,7 +81,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
   void onPressedXemDonXinDuyet(TeachingRequestModel teachingRequest) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ThongTinDonPage(teachingRequest: teachingRequest),
+        builder: (_) => ThongTinDonPage(initTeachingRequest: teachingRequest),
       ),
     );
   }
