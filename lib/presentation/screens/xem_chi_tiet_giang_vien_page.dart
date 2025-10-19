@@ -18,7 +18,6 @@ class _XemChiTietGiangVienPageState extends State<XemChiTietGiangVienPage> {
   late LecturerModel lecturerInformation;
   @override
   void initState() {
-    super.initState();
     setState(() {
       lecturerInformation = widget.lecturerModel;
     });
@@ -54,7 +53,7 @@ class _XemChiTietGiangVienPageState extends State<XemChiTietGiangVienPage> {
                       // color: Colors.black,
                       child: Center(
                         child: BoxAvatar(
-                          pathAvatar: 'assets/images/defaultAvatar.png',
+                          pathAvatar: 'assets/images/defaultAvatar.png', size: 6,
                         ),
                       ),
                     ),

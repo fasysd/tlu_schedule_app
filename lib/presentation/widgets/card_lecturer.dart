@@ -5,70 +5,99 @@ import 'package:tlu_schedule_app/presentation/widgets/box_avatar.dart';
 class CardLecturer extends StatelessWidget {
   final LecturerModel lecturerModel;
   final VoidCallback? onPressed;
+  final bool selected;
+
   const CardLecturer({
     super.key,
     required this.lecturerModel,
-    required this.onPressed,
+    this.onPressed,
+    this.selected = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: double.infinity,
-        height: 120,
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              width: 2,
-              color: Color.fromRGBO(89, 141, 192, 1),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected
+              ? theme.colorScheme.primary.withOpacity(0.08)
+              : theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
             ),
+          ],
+          border: Border.all(
+            color: const Color.fromRGBO(89, 141, 192, 1),
+            width: selected ? 1.5 : 1,
           ),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: 90,
-              child: BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar),
-            ),
-            const SizedBox(width: 9),
-            Column(
-              spacing: 0,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Ảnh đại diện
+            Stack(
               children: [
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Tài khoản: ${lecturerModel.tenTaiKhoan}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis, // 👈 tránh text tràn
+                BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar, size: 90),
+                if (selected)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Icon(
+                      Icons.check_circle,
+                      color: theme.colorScheme.primary,
+                      size: 22,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Tên: ${lecturerModel.hoVaTen}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+              ],
+            ),
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    lecturerModel.hoVaTen,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
+                  Text(
+                    'Mã: ${lecturerModel.maGiangVien}',
+                    style: theme.textTheme.labelMedium,
+                  ),
+                  Text(
                     'Học phần đang dạy: ${lecturerModel.soHocPhanDangDay}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: theme.textTheme.labelMedium,
                   ),
-                ),
-                SizedBox(
-                  height: 27,
-                  child: Text(
-                    'Số đơn cần duyệt: ${lecturerModel.soDonCanDuyet}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.article_outlined,
+                        size: 16,
+                        color: Colors.blueGrey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Đơn cần duyệt: ${lecturerModel.soDonNghiDayCanDuyet + lecturerModel.soDonDayBuCanDuyet}',
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

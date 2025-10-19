@@ -425,23 +425,26 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.attach_file,
+                  Icons.folder_open_outlined,
                   size: 28,
                   color: Theme.of(context).primaryColor,
                 ),
                 onPressed: _pickFile,
                 tooltip: 'Đính kèm tài liệu',
               ),
+              const SizedBox(width: 8),
               if (_selectedFiles.isEmpty)
                 const Expanded(
                   child: Text(
-                    'Đính kèm tài liệu...',
+                    'Đính kèm tài liệu buổi học...',
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
                       color: Colors.grey,
                     ),
                   ),
                 ),
+              if (_selectedFiles.isNotEmpty)
+                Expanded(child: _buildFileChip(_selectedFiles.first)),
             ],
           ),
           if (_selectedFiles.isNotEmpty)
@@ -497,58 +500,33 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   }
 
   Widget _buildStudentInfo(BuildContext context) {
-    return Column(
+    final ButtonStyle smallButtonStyle = ElevatedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+      textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 15),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    );
+
+    return Row(
       children: [
-        _buildInfoRow(
-          context,
-          icon: Icons.group_outlined,
-          label: 'Sĩ số:',
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Text(' ${_course.studentCount}'),
+        const Icon(Icons.school_outlined),
+        const SizedBox(width: 8),
+        Text(
+          'Sinh viên: ${_presentStudentIds.length}/${_course.studentCount}',
+        ),
+        const Spacer(),
+        ElevatedButton(
+          onPressed: _navigateToAttendancePage,
+          style: smallButtonStyle,
+          child: const Text('Điểm danh'),
+        ),
+        const SizedBox(width: 8),
+        ElevatedButton(
+          onPressed: _navigateToAbsentListPage,
+          style: smallButtonStyle.copyWith(
+            backgroundColor: MaterialStateProperty.all(Colors.orange),
           ),
+          child: const Text('Vắng'),
         ),
-        _buildInfoRow(
-          context,
-          icon: Icons.person_pin_circle_outlined,
-          label: 'Hiện diện:',
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Text(' ${_presentStudentIds.length}'),
-          ),
-        ),
-        _buildInfoRow(
-          context,
-          icon: Icons.no_accounts_outlined,
-          label: 'Vắng:',
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Text(' ${_course.studentCount - _presentStudentIds.length}'),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton.icon(
-              onPressed: _navigateToAttendancePage,
-              icon: const Icon(Icons.checklist),
-              label: const Text('Điểm danh'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-              ),
-            ),
-            ElevatedButton.icon(
-              onPressed: _navigateToAbsentListPage,
-              icon: const Icon(Icons.person_off_outlined),
-              label: const Text('DS Vắng'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange.shade700,
-              ),
-            ),
-          ],
-        ),
-        const Divider(height: 32, thickness: 1),
       ],
     );
   }
