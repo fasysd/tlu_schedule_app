@@ -66,13 +66,70 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState!.reset();
   }
 
-  void _showVerifyDialog() {}
+  void _showVerifyDialog() async {
+    final code = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        String enteredCode = '';
 
-  void _submitForm() {
-    // _formKey.currentState!.validate();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+        return AlertDialog(
+          title: const Text('Nhập mã xác nhận'),
+          content: TextFormField(
+            maxLength: 6,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(
+              counterText: '',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              enteredCode = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // đóng dialog
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (enteredCode.length == 6) {
+                  Navigator.pop(context, enteredCode);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Vui lòng nhập đủ 6 ký tự')),
+                  );
+                }
+              },
+              child: const Text('Xác nhận'),
+            ),
+          ],
+        );
+      },
     );
+
+    if (code != null && code.length == 6) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Mã xác nhận: $code')));
+
+      // xử lý logic gửi mã / xác thực tài khoản...
+
+      setState(() {
+        _forgotPasswordMode = false;
+      });
+    }
+  }
+
+  void _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (!_forgotPasswordMode) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+      );
+    } else {
+      _showVerifyDialog();
+    }
   }
 
   @override
@@ -120,6 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 3),
                         TextFormField(
                           style: Theme.of(context).textTheme.titleMedium,
+                          obscuringCharacter: '*',
+                          obscureText: !_forgotPasswordMode,
                           onChanged: _forgotPasswordMode
                               ? _setEmail
                               : _setPassword,
