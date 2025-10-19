@@ -27,7 +27,7 @@ class CardLecturer extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? theme.colorScheme.primary.withOpacity(0.08)
-              : theme.cardColor,
+              : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -36,15 +36,11 @@ class CardLecturer extends StatelessWidget {
               offset: const Offset(0, 3),
             ),
           ],
-          border: Border.all(
-            color: const Color.fromRGBO(89, 141, 192, 1),
-            width: selected ? 1.5 : 1,
-          ),
+          border: Border.all(width: selected ? 1.5 : 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Ảnh đại diện
             Stack(
               children: [
                 BoxAvatar(pathAvatar: lecturerModel.duongDanAvatar, size: 90),

@@ -173,12 +173,9 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color.fromRGBO(89, 141, 192, 1),
-          width: 1.2,
-        ),
+        border: Border.all(width: 1.2),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,

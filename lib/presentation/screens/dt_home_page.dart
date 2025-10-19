@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tlu_schedule_app/data/models/activity_log_model.dart';
 import 'package:tlu_schedule_app/data/services/activity_log_sevice.dart';
-import 'ds_giang_vien_page.dart';
-import 'ds_hoc_phan_page.dart';
-import 'ds_don_xin_page.dart';
+import 'package:tlu_schedule_app/presentation/screens/dt_thong_ke_page.dart';
+import 'dt_ds_giang_vien_page.dart';
+import 'dt_ds_hoc_phan_page.dart';
+import 'dt_ds_don_xin_page.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});
@@ -75,7 +76,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   void onPressed_thongKe() {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => const DshocphanPage()));
+    ).push(MaterialPageRoute(builder: (_) => const ThongKePage()));
   }
 
   @override
@@ -253,62 +254,6 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
                             Colors.green,
                           ),
                           SizedBox(height: 15),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        border: Border.all(
-                          color: Colors.grey, // màu viền
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(
-                              0.25,
-                            ), // màu bóng (và độ mờ)
-                            spreadRadius: 0, // độ lan bóng
-                            blurRadius: 4, // độ mờ bóng (càng lớn càng mịn)
-                            offset: Offset(0, 4), // hướng đổ bóng (x, y)
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
-                            decoration: const BoxDecoration(
-                              border: Border(bottom: BorderSide(width: 2)),
-                            ),
-                            child: Text(
-                              'Hoạt động gần đây',
-                              style: Theme.of(context).textTheme.headlineLarge,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: 400.0, // Chiều cao tối đa là 200
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                spacing: 10,
-                                children: _listActivityLog.map((item) {
-                                  return buildActivityLog(
-                                    context,
-                                    item.time,
-                                    item.content,
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

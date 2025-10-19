@@ -32,7 +32,7 @@ class CardRequest extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -41,10 +41,7 @@ class CardRequest extends StatelessWidget {
               offset: const Offset(0, 2),
             ),
           ],
-          border: Border.all(
-            color: const Color.fromRGBO(89, 141, 192, 1),
-            width: 1.5,
-          ),
+          border: Border.all(width: 1.5),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
