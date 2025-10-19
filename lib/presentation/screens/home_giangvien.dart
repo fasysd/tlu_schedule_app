@@ -5,6 +5,7 @@ import '../../data/models/user_model.dart';
 // --- THAY ĐỔI IMPORT ---
 import '../../data/services/static_data.dart';
 import '../../data/services/schedule_service.dart';
+import '../../data/services/auth_service.dart';
 // --- KẾT THÚC THAY ĐỔI ---
 import 'ds_lich_day_tuan.dart';
 import '../widgets/schedule_status_widget.dart';
@@ -14,6 +15,7 @@ import 'ds_hoc_phan_gv.dart';
 import 'don_phe_duyet_page.dart';
 import 'ho_so_page.dart';
 import '../widgets/common_header.dart';
+import 'login_page.dart';
 
 // --- THAY ĐỔI: Tạo instance cho service ---
 final scheduleService = ScheduleService();
@@ -43,6 +45,37 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
     setState(() {
       _scheduleDataFuture = _loadAndGroupSchedules(widget.user.id);
     });
+  }
+
+  void _logout() async {
+    // Show confirmation dialog
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Đăng xuất'),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Đăng xuất'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await AuthService.logout();
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
   }
 
   @override
@@ -96,6 +129,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
         user: widget.user,
         scheduleDataFuture: _scheduleDataFuture,
         onGoBack: _refreshSchedules,
+        onLogout: _logout,
       ),
       CourseListPage(user: widget.user),
       DonPheDuyetPage(user: widget.user),
@@ -137,11 +171,13 @@ class _HomeContent extends StatelessWidget {
   final UserAccount user;
   final Future<ScheduleData> scheduleDataFuture;
   final VoidCallback onGoBack;
+  final VoidCallback onLogout;
 
   const _HomeContent({
     required this.user,
     required this.scheduleDataFuture,
     required this.onGoBack,
+    required this.onLogout,
   });
 
   @override
@@ -150,6 +186,7 @@ class _HomeContent extends StatelessWidget {
       children: [
         CommonHeader(
           user: user,
+          onLogout: onLogout,
           trailing: IconButton(
             icon:
             const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),

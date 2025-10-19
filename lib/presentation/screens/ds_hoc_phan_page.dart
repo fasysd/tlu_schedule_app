@@ -188,13 +188,13 @@ class _DshocphanPageState extends State<DshocphanPage>
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
-              SliverAppBar(
+            SliverAppBar(
                 automaticallyImplyLeading: true,
                 expandedHeight: 80,
-                flexibleSpace: FlexibleSpaceBar(
+              flexibleSpace: FlexibleSpaceBar(
                   background: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
+                  child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
@@ -217,8 +217,8 @@ class _DshocphanPageState extends State<DshocphanPage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
+                    children: [
+                      Text(
                                 'Quản lý học phần',
                                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                                   color: Colors.white,
@@ -233,11 +233,11 @@ class _DshocphanPageState extends State<DshocphanPage>
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
                 actions: [
                   IconButton(
                     icon: Image.asset(
@@ -247,8 +247,8 @@ class _DshocphanPageState extends State<DshocphanPage>
                     onPressed: _showFilterDialog,
                   ),
                 ],
-              ),
-              SliverToBoxAdapter(
+            ),
+            SliverToBoxAdapter(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                   child: Column(

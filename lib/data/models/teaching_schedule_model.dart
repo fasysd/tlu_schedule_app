@@ -287,6 +287,6 @@ class BuoiHocModel {
   double get tiLeChuyenCanTinhToan =>
       tongSoSinhVien == null || tongSoSinhVien == 0 
           ? 0 
-          : (soSinhVienCoMat ?? 0) / tongSoSinhVien;
+          : (soSinhVienCoMat ?? 0) / (tongSoSinhVien ?? 1);
 }
 

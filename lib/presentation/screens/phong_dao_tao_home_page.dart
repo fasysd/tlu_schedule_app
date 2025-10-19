@@ -80,7 +80,6 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   void onPressed_thongKe() {
     Navigator.of(
       context,
-<<<<<<< HEAD
     ).push(MaterialPageRoute(builder: (_) => const TrangThongKeGioDay()));
   }
 
@@ -119,9 +118,6 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
         );
       }
     }
-=======
-    ).push(MaterialPageRoute(builder: (_) => const ThongkegdiodayPage()));
->>>>>>> cf3af183301f2678f100efe86ea6f821154dbb29
   }
 
   @override
@@ -133,8 +129,9 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
             SliverAppBar(
               expandedHeight: 100,
               floating: false,
-              pinned: false,
+              pinned: true,
               snap: false,
+              backgroundColor: Theme.of(context).primaryColor,
               actions: [
                 IconButton(
                   onPressed: _logout,

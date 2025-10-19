@@ -5,11 +5,13 @@ import 'package:tlu_schedule_app/presentation/widgets/warning_helper.dart';
 class CommonHeader extends StatelessWidget {
   final UserAccount user;
   final Widget? trailing;
+  final VoidCallback? onLogout;
 
   const CommonHeader({
     super.key,
     required this.user,
     this.trailing,
+    this.onLogout,
   });
 
   @override
@@ -71,6 +73,17 @@ class CommonHeader extends StatelessWidget {
             ),
           ),
           if (trailing != null) trailing!,
+          if (onLogout != null) ...[
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: onLogout,
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+              tooltip: 'Đăng xuất',
+            ),
+          ],
         ],
       ),
     );
