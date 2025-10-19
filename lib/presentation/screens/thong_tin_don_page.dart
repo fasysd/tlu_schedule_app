@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tlu_schedule_app/data/models/teaching_request_model.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
 
@@ -111,7 +112,9 @@ class ThongTinDonPage extends StatelessWidget {
             context,
             icon: Icons.calendar_today_outlined,
             label: 'Ngày',
-            value: teachingRequest.ngayBuoiHocNghi.toString(),
+            value: DateFormat(
+              'dd/MM/yyyy',
+            ).format(teachingRequest.ngayBuoiHocNghi),
           ),
           _buildInfoRowUniversal(
             context,
@@ -143,7 +146,7 @@ class ThongTinDonPage extends StatelessWidget {
             context,
             icon: Icons.calendar_today,
             label: 'Ngày gửi',
-            value: teachingRequest.ngayGui.toString(),
+            value: DateFormat('dd/MM/yyyy').format(teachingRequest.ngayGui),
           ),
           _buildInfoRowUniversal(
             context,
@@ -243,7 +246,9 @@ class ThongTinDonPage extends StatelessWidget {
             context,
             icon: Icons.calendar_today_outlined,
             label: 'Ngày',
-            value: teachingRequest.ngayBuoiHocDayBu.toString(),
+            value: DateFormat(
+              'dd/MM/yyyy',
+            ).format(teachingRequest.ngayBuoiHocDayBu ?? DateTime.now()),
           ),
           _buildInfoRowUniversal(
             context,
@@ -266,7 +271,9 @@ class ThongTinDonPage extends StatelessWidget {
             context,
             icon: Icons.calendar_today_outlined,
             label: 'Ngày',
-            value: teachingRequest.ngayBuoiHocNghi.toString(),
+            value: DateFormat(
+              'dd/MM/yyyy',
+            ).format(teachingRequest.ngayBuoiHocNghi),
           ),
           _buildInfoRowUniversal(
             context,
@@ -298,7 +305,7 @@ class ThongTinDonPage extends StatelessWidget {
             context,
             icon: Icons.calendar_today,
             label: 'Ngày gửi',
-            value: teachingRequest.ngayGui.toString(),
+            value: DateFormat('dd/MM/yyyy').format(teachingRequest.ngayGui),
           ),
           _buildInfoRowUniversal(
             context,
