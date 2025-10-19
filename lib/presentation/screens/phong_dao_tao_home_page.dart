@@ -5,6 +5,7 @@ import 'package:tlu_schedule_app/data/services/activity_log_sevice.dart';
 import 'ds_giang_vien_page.dart';
 import 'ds_hoc_phan_page.dart';
 import 'ds_don_xin_page.dart';
+import 'thong_ke_gio_day_page.dart';
 
 class PhongdaotaoHomePage extends StatefulWidget {
   const PhongdaotaoHomePage({super.key});
@@ -75,7 +76,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
   void onPressed_thongKe() {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => const DshocphanPage()));
+    ).push(MaterialPageRoute(builder: (_) => const ThongkegdiodayPage()));
   }
 
   @override
