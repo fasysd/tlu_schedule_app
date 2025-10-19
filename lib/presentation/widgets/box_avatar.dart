@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class BoxAvatar extends StatelessWidget {
   final String pathAvatar;
-  const BoxAvatar({super.key, required this.pathAvatar});
+  final double size;
+  const BoxAvatar({super.key, required this.pathAvatar, required this.size});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: size,
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(195, 217, 233, 1),

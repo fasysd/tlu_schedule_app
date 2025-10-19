@@ -109,7 +109,7 @@ class _DsgiangvienPageState extends State<DsgiangvienPage> {
                         ),
                       )
                     : Container(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),
                         child: Column(
                           children: _listLecturer.map((item) {
                             return CardLecturer(
