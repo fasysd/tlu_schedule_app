@@ -42,12 +42,12 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
             ),
             SliverToBoxAdapter(
               child: Container(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 140,
+                      height: 160,
                       padding: EdgeInsets.all(10),
                       // color: Colors.black,
                       child: Center(
@@ -57,283 +57,97 @@ class _ThongTinGiangVienPageState extends State<ThongTinGiangVienPage> {
                       ),
                     ),
 
+                    SizedBox(height: 10),
+                    Text(
+                      'Thông tin cá nhân',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                     Container(
+                      padding: EdgeInsets.only(left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Thông tin cá nhân',
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            'Mã giảng viên: ' +
+                                lecturerInformation.maGiangVien.toString(),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           Text(
                             'Họ và tên: ' +
                                 lecturerInformation.hoVaTen.toString(),
-                            style: Theme.of(context).textTheme.labelMedium,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           Text(
                             'Ngày sinh: ' +
                                 DateFormat(
                                   'dd/MM/yyyy',
                                 ).format(lecturerInformation.ngaySinh),
-                            style: Theme.of(context).textTheme.labelMedium,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           Text(
                             'Email: ' + lecturerInformation.email,
-                            style: Theme.of(context).textTheme.labelMedium,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           Text(
                             'SDT: ' + lecturerInformation.soDienThoai,
-                            style: Theme.of(context).textTheme.labelMedium,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
                     ),
 
+                    SizedBox(height: 10),
+                    Text(
+                      'Thông tin khác',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                     Container(
+                      padding: EdgeInsets.only(left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Đơn xin phê duyệt',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              TextButton(
-                                onPressed: onPressedXemTatCaDonPheDuyet,
-                                child: Text(
-                                  'Xem tất cả',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.labelMedium,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            'Số đơn nghỉ dạy cần duyệt: ' + 1.toString(),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          Container(
-                            height: 90,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  width: 2,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 3,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 12),
-                              itemBuilder: (context, index) => Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    left: BorderSide(
-                                      width: 2,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Phát triển ứng dụng di động',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelLarge,
-                                    ),
-                                    Text(
-                                      'Loại: đơn xin nghỉ',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Ngày: 19/07/2025',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Trạng thái: Chưa xác nhận',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          Text(
+                            'Số đơn dạy bù cần duyệt: ' + 3.toString(),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          SizedBox(height: 15),
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  width: 2,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            height: 90,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 3,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 12),
-                              itemBuilder: (context, index) => Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    left: BorderSide(
-                                      width: 2,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Phát triển ứng dụng di động',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelLarge,
-                                    ),
-                                    Text(
-                                      'Loại: đơn xin dạy bù',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Ngày: 19/07/2025',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Trạng thái: Chưa xác nhận',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          Text(
+                            'Số học phần đang dạy: ' + 30.toString(),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
                     ),
 
+                    SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Học phần đang dạy',
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          'Thống kê tổng quát',
+                          style: Theme.of(context).textTheme.headlineLarge,
                         ),
-                        TextButton(
-                          onPressed: onPressedXemTatCaHocPhan,
-                          child: Text(
-                            'Xem tất cả',
-                            style: Theme.of(context).textTheme.labelMedium,
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _kieuThongKe = !_kieuThongKe;
+                            });
+                          },
+                          icon: Image.asset(
+                            'assets/images/icons/change_icon.png',
+                            height: 23,
                           ),
                         ),
                       ],
                     ),
                     Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(width: 2, color: Colors.black),
-                        ),
-                      ),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 300.0),
-                        child: ListView(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            ...List.generate(
-                              10,
-                              (index) => Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(bottom: 0),
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(
-                                      width: 2,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Phát triển ứng dụng di động',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelLarge,
-                                    ),
-                                    Text(
-                                      'Thời gian: 12/09/2025 - 12/12/2025',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Học kì: 1_2024_2025',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                    Text(
-                                      'Số tín chỉ: 3',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Thống kê tổng quát',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.headlineLarge,
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _kieuThongKe = !_kieuThongKe;
-                                  });
-                                },
-                                icon: Image.asset(
-                                  'assets/images/icons/change_icon.png',
-                                  height: 23,
-                                ),
-                              ),
-                            ],
-                          ),
                           buildShortStat2(
                             context,
                             'Tỉ lệ hoàn thành',

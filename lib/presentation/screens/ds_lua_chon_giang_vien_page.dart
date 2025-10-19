@@ -26,7 +26,9 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
   void initState() {
     super.initState();
     // ✅ Khởi tạo danh sách chọn ban đầu
-    _selectedLecturerIds = widget.selectedLecturers.map((e) => e.id).toSet();
+    _selectedLecturerIds = widget.selectedLecturers
+        .map((e) => e.maGiangVien)
+        .toSet();
     loadLecturers();
   }
 
@@ -92,16 +94,20 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                           : Column(
                               children: _listLecturer.map((item) {
                                 final isSelected = _selectedLecturerIds
-                                    .contains(item.id);
+                                    .contains(item.maGiangVien);
                                 return CardLecturer(
                                   lecturerModel: item,
                                   selected: isSelected,
                                   onPressed: () {
                                     setState(() {
                                       if (isSelected) {
-                                        _selectedLecturerIds.remove(item.id);
+                                        _selectedLecturerIds.remove(
+                                          item.maGiangVien,
+                                        );
                                       } else {
-                                        _selectedLecturerIds.add(item.id);
+                                        _selectedLecturerIds.add(
+                                          item.maGiangVien,
+                                        );
                                       }
                                     });
                                   },
@@ -122,7 +128,11 @@ class _DsLuaChonGiangVienPageState extends State<DsLuaChonGiangVienPage> {
                       : () => Navigator.pop(
                           context,
                           _listLecturer
-                              .where((l) => _selectedLecturerIds.contains(l.id))
+                              .where(
+                                (l) => _selectedLecturerIds.contains(
+                                  l.maGiangVien,
+                                ),
+                              )
                               .toList(),
                         ),
                   child: const Text('Xác nhận'),

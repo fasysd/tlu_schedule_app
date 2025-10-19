@@ -59,7 +59,8 @@ class TeachingRequestFilterModel {
 
   bool matches(TeachingRequestModel request) {
     final matchLecturer =
-        lecturers.isEmpty || lecturers.any((l) => l.id == request.idGiangVien);
+        lecturers.isEmpty ||
+        lecturers.any((l) => l.maGiangVien == request.maGiangVien);
     final matchCourse =
         courses.isEmpty || courses.any((c) => c.maHocPhan == request.maHocPhan);
     final matchStatus =

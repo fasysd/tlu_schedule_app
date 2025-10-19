@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/data/models/teaching_request_filter_model.dart';
 import 'package:tlu_schedule_app/data/models/teaching_request_model.dart';
 import 'package:tlu_schedule_app/data/services/teaching_request_service.dart';
-import 'package:tlu_schedule_app/presentation/screens/thong_tin_don.dart';
+import 'package:tlu_schedule_app/presentation/screens/thong_tin_don_page.dart';
 import 'package:tlu_schedule_app/presentation/widgets/bottom_sheet_teaching_request_filter.dart';
 import 'package:tlu_schedule_app/presentation/widgets/card_request.dart';
 import 'package:tlu_schedule_app/presentation/widgets/sliver_appBar_backPage.dart';
@@ -67,7 +67,7 @@ class _DsdonxinPageState extends State<DsdonxinPage> {
   void onPressedXemDonXinDuyet(TeachingRequestModel teachingRequest) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ThongTinDon(teachingRequest: teachingRequest),
+        builder: (_) => ThongTinDonPage(teachingRequest: teachingRequest),
       ),
     );
   }

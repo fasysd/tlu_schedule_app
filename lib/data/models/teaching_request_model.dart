@@ -12,7 +12,7 @@ class TeachingRequestModel {
 
   // Thông tin giảng viên (mới thêm)
   final String tenTaiKhoan; // tài khoản đăng nhập
-  final String idGiangVien; // id giảng viên
+  final String maGiangVien; // id giảng viên
 
   // Thông tin buổi học gốc
   final DateTime ngayBuoiHocNghi;
@@ -40,7 +40,7 @@ class TeachingRequestModel {
     required this.tenGiangVien,
     required this.hocKy,
     required this.tenTaiKhoan,
-    required this.idGiangVien,
+    required this.maGiangVien,
     required this.ngayBuoiHocNghi,
     required this.caHocNghi,
     required this.phongHocNghi,
@@ -65,7 +65,7 @@ class TeachingRequestModel {
       tenGiangVien: json['tenGiangVien'] ?? '',
       hocKy: json['hocKy'] ?? '',
       tenTaiKhoan: json['tenTaiKhoan'] ?? '',
-      idGiangVien: json['idGiangVien'] ?? '',
+      maGiangVien: json['idGiangVien'] ?? '',
       ngayBuoiHocNghi: DateTime.parse(json['ngayBuoiHoc']),
       caHocNghi: json['caHoc'] ?? '',
       phongHocNghi: json['phongHoc'] ?? '',
@@ -95,7 +95,7 @@ class TeachingRequestModel {
       'tenGiangVien': tenGiangVien,
       'hocKy': hocKy,
       'tenTaiKhoan': tenTaiKhoan,
-      'idGiangVien': idGiangVien,
+      'idGiangVien': maGiangVien,
       'ngayBuoiHoc': ngayBuoiHocNghi.toIso8601String(),
       'caHoc': caHocNghi,
       'phongHoc': phongHocNghi,
