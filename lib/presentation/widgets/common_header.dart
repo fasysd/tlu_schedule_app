@@ -20,6 +20,12 @@ class CommonHeader extends StatelessWidget {
     final warningText = warningDetails['text'];
     final warningColor = warningDetails['color'];
 
+    // Xác định vai trò hiển thị
+    String roleText = "Giảng viên";
+    if (user.role == 'phongdaotao') {
+      roleText = "Phòng đào tạo";
+    }
+
     return Container(
       width: double.infinity,
       color: const Color.fromRGBO(89, 141, 192, 1),
@@ -42,7 +48,7 @@ class CommonHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Giảng viên",
+                  roleText,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
