@@ -5,11 +5,18 @@ import 'core/themes/app_theme.dart';
 import 'presentation/screens/splash_page.dart';
 import 'package:tlu_schedule_app/data/services/static_data.dart';
 import 'presentation/screens/home_giangvien.dart';
+// import 'core/config/firebase_config.dart'; // Tắt Firebase
 
-void main() {
-  initializeDateFormatting('vi_VN', null).then((_) {
-    runApp(const MyApp());
-  });
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase - Tạm thời tắt để test giao diện
+  // await FirebaseConfig.initialize();
+  
+  // Initialize Vietnamese date formatting
+  await initializeDateFormatting('vi_VN', null);
+  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
