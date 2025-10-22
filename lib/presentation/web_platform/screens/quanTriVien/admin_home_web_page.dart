@@ -114,15 +114,13 @@ class AdminHomeWebPage extends StatelessWidget {
                                   title: 'Danh sách lỗi',
                                   height: 320,
                                   children: [
-                                    Expanded(
-                                      child: Center(
-                                        child: Text(
-                                          'Không có lỗi nào được ghi nhận',
-                                          style: textTheme.labelLarge?.copyWith(
-                                            color: Colors.black54,
-                                          ),
-                                          textAlign: TextAlign.center,
+                                    Center(
+                                      child: Text(
+                                        'Không có lỗi nào được ghi nhận',
+                                        style: textTheme.labelLarge?.copyWith(
+                                          color: Colors.black54,
                                         ),
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ],
@@ -170,6 +168,7 @@ class AdminHomeWebPage extends StatelessWidget {
     required BuildContext context,
     required String title,
     double? height,
+    List<Widget>? actions,
     required List<Widget> children,
   }) {
     final accent = context.appColor('xanhDuongNhat') ?? const Color(0xFFC3D9E9);
@@ -197,10 +196,24 @@ class AdminHomeWebPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(title, style: textTheme.titleLarge),
+              if (actions != null && actions.isNotEmpty) Row(children: actions),
             ],
           ),
           const SizedBox(height: 16),
-          ...children,
+          if (height != null)
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: children,
+                ),
+              ),
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            ),
         ],
       ),
     );
