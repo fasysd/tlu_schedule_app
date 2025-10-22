@@ -67,7 +67,7 @@ class _LoginWebPageState extends State<LoginWebPage> {
       ),
     );
     if (_userName == 'admin' && _password == '123') {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => AdminHomeWebPage()),
       );
