@@ -16,7 +16,7 @@ final scheduleService = ScheduleService();
 // --- KẾT THÚC THAY ĐỔI ---
 
 class CourseListPage extends StatefulWidget {
-  final UserAccount user;
+  final UserModel user;
 
   const CourseListPage({super.key, required this.user});
 

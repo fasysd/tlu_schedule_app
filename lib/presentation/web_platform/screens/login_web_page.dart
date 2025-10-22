@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/core/themes/theme_utils.dart';
+import 'package:tlu_schedule_app/data/models/user_model.dart';
 import 'package:tlu_schedule_app/data/services/auth_service.dart';
 import 'package:tlu_schedule_app/presentation/web_platform/screens/quanTriVien/admin_home_web_page.dart';
 
@@ -56,49 +57,36 @@ class _LoginWebPageState extends State<LoginWebPage> {
       return;
     }
 
-    // showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (_) => const Center(child: CircularProgressIndicator()),
-    // );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đăng nhập!!! TK: ${_userName} - MK: ${_password}'),
-      ),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
-    if (_userName == 'admin' && _password == '123') {
-      Navigator.push(
+
+    final response = await AuthService.login(_userName, _password);
+    if (response['status'] == 200) {
+      final user = UserModel.fromJson(response['user']);
+
+      if (user.role == 'Giảng viên') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập tài khoản giảng viên')),
+        );
+      } else if (user.role == 'Phòng đào tạo') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập tài khoản giảng viên')),
+        );
+      } else if (user.role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => AdminHomeWebPage()),
+        );
+      }
+    } else if (response['status'] == 401) {
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (_) => AdminHomeWebPage()),
-      );
+      ).showSnackBar(SnackBar(content: Text(response['message'])));
+      Navigator.of(context).pop();
     }
-    // try {
-    //   final user = staticUsers.firstWhere(
-    //     (acc) => acc.username == _userName && acc.password == _password,
-    //   );
-    //   Navigator.of(context).pop();
-    //   await AuthService.login(_userName, _password);
-    //
-    //   if (user.role == 'giangvien') {
-    //     // Navigator.pushReplacement(
-    //     //   context,
-    //     //   MaterialPageRoute(builder: (_) => HomeGiangVien(user: user)),
-    //     // );
-    //   } else if (user.role == 'phongdaotao') {
-    //     // Navigator.pushReplacement(
-    //     //   context,
-    //     //   MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
-    //     // );
-    //   }
-    // } catch (e) {
-    //   Navigator.of(context).pop();
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Sai tên đăng nhập hoặc mật khẩu.'),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
   }
 
   @override

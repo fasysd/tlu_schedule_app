@@ -9,7 +9,7 @@ import 'package:tlu_schedule_app/presentation/widgets/common_header.dart';
 final scheduleService = ScheduleService();
 
 class ProfilePage extends StatefulWidget {
-  final UserAccount user;
+  final UserModel user;
   final Function(int) onNavigate;
 
   const ProfilePage({super.key, required this.user, required this.onNavigate});
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildPersonalInfo(BuildContext context, UserAccount user) {
+  Widget _buildPersonalInfo(BuildContext context, UserModel user) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

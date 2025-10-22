@@ -12,7 +12,7 @@ import 'ds_sinh_vien_page.dart';
 
 class ChiTietBuoiHocPage extends StatefulWidget {
   final ScheduleEntry schedule;
-  final UserAccount user;
+  final UserModel user;
 
   const ChiTietBuoiHocPage({
     super.key,
@@ -38,12 +38,21 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   void initState() {
     super.initState();
     try {
-      _course = staticCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+      _course = staticCourses.firstWhere(
+        (c) => c.id == widget.schedule.courseId,
+      );
     } catch (e) {
       _course = Course(
-        id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
-        className: 'N/A', instructorId: '', semesterId: '', courseType: '',
-        totalPeriods: 0, credits: 0, studentCount: 0,
+        id: 'error',
+        courseCode: 'N/A',
+        subjectName: 'Không tìm thấy học phần',
+        className: 'N/A',
+        instructorId: '',
+        semesterId: '',
+        courseType: '',
+        totalPeriods: 0,
+        credits: 0,
+        studentCount: 0,
         numberOfPeriods: 0,
       );
     }
@@ -59,7 +68,15 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   }
 
   String _getVietnameseDayOfWeek(DateTime date) {
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    const days = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ Nhật',
+    ];
     return days[date.weekday - 1];
   }
 
@@ -128,8 +145,9 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Lỗi khi chọn file: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Lỗi khi chọn file: $e')));
     }
   }
 
@@ -161,7 +179,8 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
       final isPendingMakeup = widget.schedule.makeupStatus == 'pending_makeup';
 
       final now = DateTime.now();
-      final bool isWithin7Days = now.difference(widget.schedule.date).inDays <= 7;
+      final bool isWithin7Days =
+          now.difference(widget.schedule.date).inDays <= 7;
 
       final bool isButtonEnabled = isWithin7Days || isPendingMakeup;
 
@@ -218,10 +237,9 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
             children: [
               Text(
                 'Học phần: ${_course.subjectName} (${_course.className})',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
@@ -232,14 +250,13 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                   padding: const EdgeInsets.only(left: 4.0),
                   child: RichText(
                     text: TextSpan(
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(fontSize: 21),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 21),
                       children: <TextSpan>[
                         TextSpan(
                           text:
-                          ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
+                              ' ${DateFormat('HH:mm').format(widget.schedule.startTime)} - ${DateFormat('HH:mm').format(widget.schedule.endTime)}',
                           style: const TextStyle(color: Colors.red),
                         ),
                       ],
@@ -328,10 +345,9 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                     ),
                   ),
                 ),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontSize: 16, height: 1.4),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.4),
               ),
               _buildAttachmentSection(),
               if (_isContentChanged)
@@ -344,8 +360,13 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
                       icon: const Icon(Icons.save, size: 20),
                       label: const Text('Lưu nội dung'),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
                   ),
@@ -360,11 +381,11 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
   }
 
   Widget _buildInfoRow(
-      BuildContext context, {
-        required IconData icon,
-        String? label,
-        Widget? child,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    String? label,
+    Widget? child,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -390,11 +411,7 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
     );
   }
 
-  Widget _buildSectionTitle(
-      BuildContext context,
-      String title,
-      IconData icon,
-      ) {
+  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -406,10 +423,9 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(fontWeight: FontWeight.normal),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
         ),
       ],
     );
@@ -472,8 +488,7 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.insert_drive_file,
-              color: Colors.blue.shade700, size: 16),
+          Icon(Icons.insert_drive_file, color: Colors.blue.shade700, size: 16),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
@@ -510,9 +525,7 @@ class _ChiTietBuoiHocPageState extends State<ChiTietBuoiHocPage> {
       children: [
         const Icon(Icons.school_outlined),
         const SizedBox(width: 8),
-        Text(
-          'Sinh viên: ${_presentStudentIds.length}/${_course.studentCount}',
-        ),
+        Text('Sinh viên: ${_presentStudentIds.length}/${_course.studentCount}'),
         const Spacer(),
         ElevatedButton(
           onPressed: _navigateToAttendancePage,

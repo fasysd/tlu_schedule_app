@@ -10,7 +10,7 @@ import 'package:file_picker/file_picker.dart';
 
 class DangKyNghiPage extends StatefulWidget {
   final ScheduleEntry schedule;
-  final UserAccount user;
+  final UserModel user;
 
   const DangKyNghiPage({super.key, required this.schedule, required this.user});
 
@@ -30,12 +30,21 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
 
     try {
       // --- THAY ĐỔI: Sử dụng staticCourses ---
-      _course = staticCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+      _course = staticCourses.firstWhere(
+        (c) => c.id == widget.schedule.courseId,
+      );
     } catch (e) {
       _course = Course(
-        id: 'error', courseCode: 'N/A', subjectName: 'Không tìm thấy học phần',
-        className: 'N/A', instructorId: '', semesterId: '', courseType: '',
-        totalPeriods: 0, credits: 0, studentCount: 0,
+        id: 'error',
+        courseCode: 'N/A',
+        subjectName: 'Không tìm thấy học phần',
+        className: 'N/A',
+        instructorId: '',
+        semesterId: '',
+        courseType: '',
+        totalPeriods: 0,
+        credits: 0,
+        studentCount: 0,
         numberOfPeriods: 0,
       );
     }
@@ -56,24 +65,33 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
   }
 
   String _getVietnameseDayOfWeek(DateTime date) {
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    const days = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ Nhật',
+    ];
     return days[date.weekday - 1];
   }
 
   Future<void> _pickFile() async {
     FocusScope.of(context).unfocus();
     try {
-      FilePickerResult? result =
-      await FilePicker.platform.pickFiles(allowMultiple: true);
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+      );
       if (result != null) {
         setState(() {
           _selectedFiles.addAll(result.paths.map((path) => File(path!)));
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi khi chọn file: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Lỗi khi chọn file: $e')));
     }
   }
 
@@ -133,13 +151,14 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
               const Expanded(
                 child: Text(
                   'Đính kèm minh chứng...',
-                  style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             if (_selectedFiles.isNotEmpty)
-              Expanded(
-                child: _buildFileChip(_selectedFiles.first),
-              ),
+              Expanded(child: _buildFileChip(_selectedFiles.first)),
           ],
         ),
         if (_selectedFiles.length > 1)
@@ -182,7 +201,6 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final bool isUpdate = widget.schedule.status == 'pending_leave';
@@ -199,7 +217,9 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
             children: [
               Text(
                 'Học phần: ${_course.subjectName} (${_course.className})',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
@@ -233,11 +253,7 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                 ),
               ),
               const Divider(height: 32, thickness: 1),
-              _buildSectionTitle(
-                context,
-                'Lý do xin nghỉ:',
-                Icons.edit_note,
-              ),
+              _buildSectionTitle(context, 'Lý do xin nghỉ:', Icons.edit_note),
               const SizedBox(height: 8),
               Form(
                 key: _formKey,
@@ -249,7 +265,10 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                     filled: true,
                     fillColor: Colors.grey[100],
                     hintText: 'Nhập lý do xin nghỉ của bạn...',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: Colors.grey.shade300),
@@ -266,7 +285,9 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                       ),
                     ),
                   ),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.4),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.4),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Vui lòng nhập lý do xin nghỉ.';
@@ -284,7 +305,10 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
                   icon: const Icon(Icons.send),
                   label: Text(buttonLabel),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
@@ -296,11 +320,11 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
   }
 
   Widget _buildInfoRow(
-      BuildContext context, {
-        required IconData icon,
-        String? label,
-        Widget? child,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    String? label,
+    Widget? child,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -338,7 +362,9 @@ class _DangKyNghiPageState extends State<DangKyNghiPage> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
         ),
       ],
     );

@@ -25,10 +25,10 @@ class ScheduleCell {
   });
 
   factory ScheduleCell.fromScheduleEntry(
-      ScheduleEntry entry,
-      Course course,
-      int period,
-      ) {
+    ScheduleEntry entry,
+    Course course,
+    int period,
+  ) {
     return ScheduleCell(
       subjectName: course.subjectName,
       room: entry.roomId,
@@ -39,7 +39,7 @@ class ScheduleCell {
 }
 
 class WeeklySchedulePage extends StatefulWidget {
-  final UserAccount user;
+  final UserModel user;
 
   const WeeklySchedulePage({super.key, required this.user});
 
@@ -73,14 +73,18 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
 
     final allSchedules = await scheduleService.getAllSchedules();
 
-    final startOfWeek = _selectedDate.subtract(Duration(days: _selectedDate.weekday - 1));
+    final startOfWeek = _selectedDate.subtract(
+      Duration(days: _selectedDate.weekday - 1),
+    );
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
 
     final userSchedulesInWeek = allSchedules
-        .where((s) =>
-    instructorCourseIds.contains(s.courseId) &&
-        s.date.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-        s.date.isBefore(endOfWeek.add(const Duration(days: 1))))
+        .where(
+          (s) =>
+              instructorCourseIds.contains(s.courseId) &&
+              s.date.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+              s.date.isBefore(endOfWeek.add(const Duration(days: 1))),
+        )
         .toList();
 
     final Map<int, Map<int, ScheduleCell>> scheduleMatrix = {};
@@ -144,7 +148,9 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
   }
 
   Widget _buildWeekSelector() {
-    final startOfWeek = _selectedDate.subtract(Duration(days: _selectedDate.weekday - 1));
+    final startOfWeek = _selectedDate.subtract(
+      Duration(days: _selectedDate.weekday - 1),
+    );
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
     final formatter = DateFormat('dd/MM/yyyy');
 
@@ -155,7 +161,11 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: _goToPreviousWeek, tooltip: 'Tuần trước'),
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: _goToPreviousWeek,
+                tooltip: 'Tuần trước',
+              ),
               Expanded(
                 child: GestureDetector(
                   onTap: () => _selectDate(context),
@@ -163,19 +173,29 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                     children: [
                       Text(
                         'Tuần từ ${formatter.format(startOfWeek)}',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       Text(
                         'đến ${formatter.format(endOfWeek)}',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
               ),
-              IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: _goToNextWeek, tooltip: 'Tuần sau'),
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios),
+                onPressed: _goToNextWeek,
+                tooltip: 'Tuần sau',
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -190,7 +210,16 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> days = ["", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"];
+    final List<String> days = [
+      "",
+      "Thứ 2",
+      "Thứ 3",
+      "Thứ 4",
+      "Thứ 5",
+      "Thứ 6",
+      "Thứ 7",
+      "CN",
+    ];
     final List<Map<String, String>> periods = [
       {"name": "Tiết 1", "time": "(7:00 - 7:50)"},
       {"name": "Tiết 2", "time": "(7:55 - 8:45)"},
@@ -222,7 +251,9 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                   return Center(child: Text("Lỗi: ${snapshot.error}"));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("Không có lịch dạy trong tuần này."));
+                  return const Center(
+                    child: Text("Không có lịch dạy trong tuần này."),
+                  );
                 }
 
                 final scheduleData = snapshot.data!;
@@ -239,13 +270,20 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                           border: TableBorder.all(width: 1),
                           columnWidths: const {
                             0: IntrinsicColumnWidth(),
-                            1: FixedColumnWidth(150.0), 2: FixedColumnWidth(150.0),
-                            3: FixedColumnWidth(150.0), 4: FixedColumnWidth(150.0),
-                            5: FixedColumnWidth(150.0), 6: FixedColumnWidth(150.0),
+                            1: FixedColumnWidth(150.0),
+                            2: FixedColumnWidth(150.0),
+                            3: FixedColumnWidth(150.0),
+                            4: FixedColumnWidth(150.0),
+                            5: FixedColumnWidth(150.0),
+                            6: FixedColumnWidth(150.0),
                             7: FixedColumnWidth(150.0),
                           },
                           children: [
-                            TableRow(children: days.map((day) => _buildHeaderCell(day)).toList()),
+                            TableRow(
+                              children: days
+                                  .map((day) => _buildHeaderCell(day))
+                                  .toList(),
+                            ),
                             ...List.generate(periods.length, (periodIndex) {
                               int currentPeriod = periodIndex + 1;
                               return TableRow(
@@ -256,7 +294,8 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                                       periods[periodIndex]['time']!,
                                     );
                                   }
-                                  final cellData = scheduleData[currentPeriod]?[dayIndex];
+                                  final cellData =
+                                      scheduleData[currentPeriod]?[dayIndex];
                                   return _buildScheduleCell(cellData);
                                 }),
                               );
@@ -279,7 +318,11 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       color: Colors.grey[200],
-      child: Text(text, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -308,14 +351,22 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
         children: [
           Text(
             cell.subjectName,
-            style: const TextStyle(fontSize: 13, color: Colors.indigo, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.indigo,
+              fontWeight: FontWeight.bold,
+            ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             cell.room,
-            style: const TextStyle(fontSize: 13, color: Colors.red, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
