@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/data/services/auth_service.dart';
-import 'login_page.dart';
-import 'phong_dao_tao_home_page.dart';
+import 'package:tlu_schedule_app/presentation/web_platform/screens/login_web_page.dart';
 
-class SplashAndroidPage extends StatefulWidget {
-  const SplashAndroidPage({super.key});
+class SplashWebPage extends StatefulWidget {
+  const SplashWebPage({super.key});
 
   @override
-  State<SplashAndroidPage> createState() => _SplashAndroidPageState();
+  State<SplashWebPage> createState() => _SplashWebPageState();
 }
 
-class _SplashAndroidPageState extends State<SplashAndroidPage> {
+class _SplashWebPageState extends State<SplashWebPage> {
   @override
   void initState() {
     super.initState();
@@ -20,19 +19,23 @@ class _SplashAndroidPageState extends State<SplashAndroidPage> {
   Future<void> _checkAuthStatus() async {
     await Future.delayed(const Duration(milliseconds: 1400));
 
-    if (mounted) {
-      final isLoggedIn = await AuthService.isLoggedIn();
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginWebPage()));
 
-      if (isLoggedIn) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LoginMobilePage()),
-        );
-      }
-    }
+    // if (mounted) {
+    //   final isLoggedIn = await AuthService.isLoggedIn();
+    //
+    //   if (isLoggedIn) {
+    //     Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (_) => const PhongdaotaoHomePage()),
+    //     );
+    //   } else {
+    //     Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (_) => const LoginMobilePage()),
+    //     );
+    //   }
+    // }
   }
 
   @override

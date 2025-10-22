@@ -113,7 +113,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
       await AuthService.logout();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginPage()),
+          MaterialPageRoute(builder: (_) => const LoginMobilePage()),
           (route) => false,
         );
       }
@@ -135,10 +135,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
               actions: [
                 IconButton(
                   onPressed: _logout,
-                  icon: const Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                  ),
+                  icon: const Icon(Icons.logout, color: Colors.white),
                   tooltip: 'Đăng xuất',
                 ),
               ],
@@ -438,10 +435,7 @@ class _PhongdaotaoHomePageState extends State<PhongdaotaoHomePage> {
     );
 
     if (onPressed != null) {
-      return GestureDetector(
-        onTap: onPressed,
-        child: container,
-      );
+      return GestureDetector(onTap: onPressed, child: container);
     }
     return container;
   }

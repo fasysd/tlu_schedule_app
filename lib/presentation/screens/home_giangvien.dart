@@ -71,7 +71,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
       await AuthService.logout();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginPage()),
+          MaterialPageRoute(builder: (_) => const LoginMobilePage()),
           (route) => false,
         );
       }
@@ -104,8 +104,9 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
 
     userSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    String? featuredId =
-    userSchedules.isNotEmpty ? userSchedules.first.id : null;
+    String? featuredId = userSchedules.isNotEmpty
+        ? userSchedules.first.id
+        : null;
 
     final Map<String, List<ScheduleEntry>> grouped = {};
     final DateFormat formatter = DateFormat("EEEE, 'Ngày' dd/MM/y", 'vi_VN');
@@ -119,7 +120,9 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
     }
 
     return ScheduleData(
-        groupedSchedules: grouped, featuredScheduleId: featuredId);
+      groupedSchedules: grouped,
+      featuredScheduleId: featuredId,
+    );
   }
 
   @override
@@ -156,11 +159,17 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month), label: 'Học phần'),
+            icon: Icon(Icons.calendar_month),
+            label: 'Học phần',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Đơn phê duyệt'),
+            icon: Icon(Icons.bar_chart),
+            label: 'Đơn phê duyệt',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Hồ sơ'),
+            icon: Icon(Icons.account_circle),
+            label: 'Hồ sơ',
+          ),
         ],
       ),
     );
@@ -188,13 +197,17 @@ class _HomeContent extends StatelessWidget {
           user: user,
           onLogout: onLogout,
           trailing: IconButton(
-            icon:
-            const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+            icon: const Icon(
+              Icons.grid_on_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => WeeklySchedulePage(user: user)),
+                  builder: (context) => WeeklySchedulePage(user: user),
+                ),
               );
             },
             tooltip: 'Xem lịch theo tuần',
@@ -209,7 +222,8 @@ class _HomeContent extends StatelessWidget {
               }
               if (snapshot.hasError) {
                 return Center(
-                    child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
+                  child: Text("Lỗi tải dữ liệu: ${snapshot.error}"),
+                );
               }
               if (!snapshot.hasData ||
                   snapshot.data!.groupedSchedules.isEmpty) {
@@ -241,17 +255,19 @@ class _HomeContent extends StatelessWidget {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
                               child: _DetailedScheduleCard(
-                                  schedule: schedule,
-                                  user: user,
-                                  onGoBack: onGoBack),
+                                schedule: schedule,
+                                user: user,
+                                onGoBack: onGoBack,
+                              ),
                             );
                           } else {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12.0),
                               child: _SimpleScheduleCard(
-                                  schedule: schedule,
-                                  user: user,
-                                  onGoBack: onGoBack),
+                                schedule: schedule,
+                                user: user,
+                                onGoBack: onGoBack,
+                              ),
                             );
                           }
                         }),
@@ -298,42 +314,47 @@ class _DetailedScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
-    final course = staticCourses.firstWhere((c) => c.id == schedule.courseId,
-        orElse: () => Course(
-          id: 'error',
-          courseCode: 'N/A',
-          subjectName: 'Không tìm thấy học phần',
-          className: 'N/A',
-          instructorId: '',
-          semesterId: '',
-          courseType: '',
-          totalPeriods: 0,
-          credits: 0,
-          studentCount: 0,
-          numberOfPeriods: 0,
-        ));
+    final course = staticCourses.firstWhere(
+      (c) => c.id == schedule.courseId,
+      orElse: () => Course(
+        id: 'error',
+        courseCode: 'N/A',
+        subjectName: 'Không tìm thấy học phần',
+        className: 'N/A',
+        instructorId: '',
+        semesterId: '',
+        courseType: '',
+        totalPeriods: 0,
+        credits: 0,
+        studentCount: 0,
+        numberOfPeriods: 0,
+      ),
+    );
     // --- KẾT THÚC THAY ĐỔI ---
 
     final List<List<Widget>> infoRows = [
       [
         InfoItemWidget(
-            icon: Icons.access_time,
-            text:
-            "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
-            color: Colors.red),
-        InfoItemWidget(
-            icon: Icons.location_on_outlined, text: schedule.roomId),
+          icon: Icons.access_time,
+          text:
+              "${DateFormat('HH:mm').format(schedule.startTime)} - ${DateFormat('HH:mm').format(schedule.endTime)}",
+          color: Colors.red,
+        ),
+        InfoItemWidget(icon: Icons.location_on_outlined, text: schedule.roomId),
       ],
       [
         InfoItemWidget(
-            icon: Icons.calendar_today_outlined,
-            text: "Tiết ${schedule.periods.join('-')}"),
+          icon: Icons.calendar_today_outlined,
+          text: "Tiết ${schedule.periods.join('-')}",
+        ),
         ScheduleStatusWidget(status: schedule.status),
       ],
       [
         InfoItemWidget(icon: Icons.person_outline, text: user.fullName),
         InfoItemWidget(
-            icon: Icons.school_outlined, text: "${course.studentCount}"),
+          icon: Icons.school_outlined,
+          text: "${course.studentCount}",
+        ),
       ],
     ];
 
@@ -342,10 +363,8 @@ class _DetailedScheduleCard extends StatelessWidget {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChiTietBuoiHocPage(
-              schedule: schedule,
-              user: user,
-            ),
+            builder: (context) =>
+                ChiTietBuoiHocPage(schedule: schedule, user: user),
           ),
         );
         onGoBack();
@@ -361,21 +380,25 @@ class _DetailedScheduleCard extends StatelessWidget {
             children: [
               Text(
                 "${course.subjectName} (${course.className})",
-                style:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
-              ...infoRows.map((rowItems) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(flex: 6, child: rowItems[0]),
-                    Expanded(flex: 4, child: rowItems[1]),
-                  ],
+              ...infoRows.map(
+                (rowItems) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 6, child: rowItems[0]),
+                      Expanded(flex: 4, child: rowItems[1]),
+                    ],
+                  ),
                 ),
-              )),
+              ),
               const SizedBox(height: 4),
               const Center(
                 child: Text(
@@ -405,20 +428,22 @@ class _SimpleScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // --- THAY ĐỔI: Sử dụng staticCourses trực tiếp ---
-    final course = staticCourses.firstWhere((c) => c.id == schedule.courseId,
-        orElse: () => Course(
-          id: 'error',
-          courseCode: 'N/A',
-          subjectName: 'Không tìm thấy học phần',
-          className: 'N/A',
-          instructorId: '',
-          semesterId: '',
-          courseType: '',
-          totalPeriods: 0,
-          credits: 0,
-          studentCount: 0,
-          numberOfPeriods: 0,
-        ));
+    final course = staticCourses.firstWhere(
+      (c) => c.id == schedule.courseId,
+      orElse: () => Course(
+        id: 'error',
+        courseCode: 'N/A',
+        subjectName: 'Không tìm thấy học phần',
+        className: 'N/A',
+        instructorId: '',
+        semesterId: '',
+        courseType: '',
+        totalPeriods: 0,
+        credits: 0,
+        studentCount: 0,
+        numberOfPeriods: 0,
+      ),
+    );
     // --- KẾT THÚC THAY ĐỔI ---
 
     return InkWell(
@@ -426,10 +451,8 @@ class _SimpleScheduleCard extends StatelessWidget {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChiTietBuoiHocPage(
-              schedule: schedule,
-              user: user,
-            ),
+            builder: (context) =>
+                ChiTietBuoiHocPage(schedule: schedule, user: user),
           ),
         );
         onGoBack();
@@ -453,9 +476,10 @@ class _SimpleScheduleCard extends StatelessWidget {
                       child: Text(
                         DateFormat('HH:mm').format(schedule.startTime),
                         style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.red,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -467,7 +491,9 @@ class _SimpleScheduleCard extends StatelessWidget {
                         Text(
                           "${course.subjectName} (${course.className})",
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),

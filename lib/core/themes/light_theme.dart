@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
-
-final Color xanhDuongDam = Color.fromRGBO(0, 55, 126, 1);
-final Color xanhDuong = Color.fromRGBO(89, 141, 192, 1);
-final Color xanhDuongNhat = Color.fromRGBO(195, 217, 233, 1);
-final Color xamDam = Color.fromRGBO(158, 158, 158, 1);
-final Color xamNhat = Color.fromRGBO(216, 216, 216, 1);
-final Color vang = Color.fromRGBO(255, 204, 0, 1);
-final Color mauDo = Color.fromRGBO(255, 85, 88, 1);
-final Color trang = Color.fromRGBO(255, 255, 255, 1);
-final Color den = Color.fromRGBO(51, 51, 51, 1);
+import 'package:tlu_schedule_app/core/themes/custom_colors.dart';
 
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
+  extensions: [
+    CustomColors(
+      colors: {
+        "xanhDuongDam": const Color.fromRGBO(0, 55, 126, 1), //xanhDuongDam
+        "xanhDuong": const Color.fromRGBO(89, 141, 192, 1), //xanhDuong
+        "xanhDuongNhat": const Color.fromRGBO(195, 217, 233, 1), //xanhDuongNhat
+        "xamDam": const Color.fromRGBO(158, 158, 158, 1), //xamDam
+        "xamNhat": const Color.fromRGBO(216, 216, 216, 1), //xamNhat
+        "vang": const Color.fromRGBO(255, 204, 0, 1), //vang
+        "do": const Color.fromRGBO(255, 85, 88, 1), //do
+        "trang": Colors.white, //trang
+        "den": const Color.fromRGBO(51, 51, 51, 1), //den
+      },
+    ),
+  ],
   colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-  scaffoldBackgroundColor: trang,
+  scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
-    backgroundColor: xanhDuong,
+    backgroundColor: const Color.fromRGBO(89, 141, 192, 1),
     foregroundColor: Colors.white,
     elevation: 2,
   ),
@@ -33,102 +39,11 @@ final ThemeData lightTheme = ThemeData(
     titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.normal),
 
     // Dành cho nội dung chính
-    bodyLarge: TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-      height: 1.5,
-    ),
-    bodyMedium: TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.normal,
-      height: 1.5,
-    ),
+    bodyLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    bodyMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
 
     // Dành cho nhãn, nút, chú thích
     labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
     labelMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-  ),
-
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: xanhDuong,
-      foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(21)),
-      ),
-      padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
-      textStyle: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w500,
-        color: trang,
-      ),
-    ),
-  ),
-  textButtonTheme: TextButtonThemeData(
-    style: ButtonStyle(
-      foregroundColor: WidgetStatePropertyAll(xanhDuongDam), // màu chữ
-      backgroundColor: WidgetStatePropertyAll(Colors.transparent), // nền
-      overlayColor: WidgetStatePropertyAll(xanhDuongNhat), // khi nhấn
-      textStyle: WidgetStatePropertyAll(
-        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-  ),
-
-  inputDecorationTheme: InputDecorationTheme(
-    // ================= TextStyle =================
-    labelStyle: TextStyle(
-      color: Colors.blueGrey,
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-    ),
-    hintStyle: TextStyle(color: den, fontSize: 16),
-    helperStyle: TextStyle(color: Colors.grey[600], fontSize: 16),
-    errorStyle: TextStyle(
-      color: Colors.red,
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-    ),
-
-    // ================= Fill & Background =================
-    filled: true,
-    fillColor: Colors.grey[1],
-
-    // ================= Border =================
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.grey, width: 1),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.grey, width: 1),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.blue, width: 2),
-    ),
-    errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.red, width: 2),
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.redAccent, width: 2),
-    ),
-    disabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(21),
-      borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
-    ),
-
-    // ================= Padding =================
-    isDense: true,
-    contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-    // ================= Icons =================
-    prefixStyle: TextStyle(color: Colors.grey[700]),
-    suffixStyle: TextStyle(color: Colors.grey[700]),
-    prefixIconColor: Colors.grey[700],
-    suffixIconColor: Colors.grey[700],
-    // ================= Floating label behavior =================
-    floatingLabelBehavior: FloatingLabelBehavior.auto, // hoặc .always
   ),
 );

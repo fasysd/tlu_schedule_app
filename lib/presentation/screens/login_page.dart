@@ -5,14 +5,14 @@ import '../../data/services/static_data.dart';
 import 'home_giangvien.dart';
 import 'phong_dao_tao_home_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginMobilePage extends StatefulWidget {
+  const LoginMobilePage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginMobilePage> createState() => _LoginMobilePageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginMobilePageState extends State<LoginMobilePage> {
   final _formKey = GlobalKey<FormState>();
   bool _forgotPasswordMode = false;
   String _userName = '';
@@ -89,9 +89,7 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
@@ -109,22 +107,18 @@ class _LoginPageState extends State<LoginPage> {
       if (user.role == 'giangvien') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => HomeGiangVien(user: user),
-          ),
+          MaterialPageRoute(builder: (context) => HomeGiangVien(user: user)),
         );
       } else if (user.role == 'phongdaotao') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const PhongdaotaoHomePage(),
-          ),
+          MaterialPageRoute(builder: (context) => const PhongdaotaoHomePage()),
         );
       }
     } catch (e) {
       // Hide loading
       Navigator.of(context).pop();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Sai tên đăng nhập hoặc mật khẩu.'),
@@ -182,8 +176,9 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: !_forgotPasswordMode,
                         decoration: const InputDecoration(),
                         style: Theme.of(context).textTheme.titleMedium,
-                        onChanged:
-                        _forgotPasswordMode ? _setEmail : _setPassword,
+                        onChanged: _forgotPasswordMode
+                            ? _setEmail
+                            : _setPassword,
                         validator: _forgotPasswordMode
                             ? _validateEmail
                             : _validatePassword,
