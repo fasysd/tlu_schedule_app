@@ -29,7 +29,7 @@ class ScheduleData {
 }
 
 class HomeGiangVien extends StatefulWidget {
-  final UserAccount user;
+  final UserModel user;
 
   const HomeGiangVien({super.key, required this.user});
 
@@ -177,7 +177,7 @@ class _HomeGiangVienState extends State<HomeGiangVien> {
 }
 
 class _HomeContent extends StatelessWidget {
-  final UserAccount user;
+  final UserModel user;
   final Future<ScheduleData> scheduleDataFuture;
   final VoidCallback onGoBack;
   final VoidCallback onLogout;
@@ -302,7 +302,7 @@ class _DateHeader extends StatelessWidget {
 
 class _DetailedScheduleCard extends StatelessWidget {
   final ScheduleEntry schedule;
-  final UserAccount user;
+  final UserModel user;
   final VoidCallback onGoBack;
 
   const _DetailedScheduleCard({
@@ -416,7 +416,7 @@ class _DetailedScheduleCard extends StatelessWidget {
 
 class _SimpleScheduleCard extends StatelessWidget {
   final ScheduleEntry schedule;
-  final UserAccount user;
+  final UserModel user;
   final VoidCallback onGoBack;
 
   const _SimpleScheduleCard({

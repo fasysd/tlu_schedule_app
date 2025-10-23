@@ -65,8 +65,19 @@ final List<Semester> staticSemesters = [
   ),
 ];
 
-final List<UserAccount> staticUsers = [
-  UserAccount(
+final List<UserModel> staticUsers = [
+  UserModel(
+    id: 'admin00',
+    username: 'admin',
+    password: '123',
+    email: 'abc@gmailc.om',
+    phone: '0956748564',
+    role: 'admin',
+    fullName: 'Nguyễn Mạnh Hùng',
+    avatarPath: 'assets/images/defaultAvatar.png',
+    dateOfBirth: DateTime.now(),
+  ),
+  UserModel(
     id: 'gv01',
     username: 'gv01',
     password: '123',
@@ -79,11 +90,12 @@ final List<UserAccount> staticUsers = [
     departmentId: 'dept_cs',
     warningStatus: 'none',
   ),
-  UserAccount(
+  UserModel(
     id: 'dt01',
     username: 'dt01',
     password: '123',
     email: 'dt@01',
+    phone: '0956748564',
     role: 'phongdaotao',
     fullName: 'Phòng đào tạo TLU',
     avatarPath: 'assets/images/defaultAvatar.png',

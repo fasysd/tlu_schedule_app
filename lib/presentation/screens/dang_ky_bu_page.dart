@@ -10,7 +10,7 @@ final ScheduleService scheduleService = ScheduleService();
 
 class DangKyBuPage extends StatefulWidget {
   final ScheduleEntry schedule;
-  final UserAccount user;
+  final UserModel user;
 
   const DangKyBuPage({super.key, required this.schedule, required this.user});
 
@@ -29,17 +29,20 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   String? _selectedRoomId;
 
   String _getVietnameseDayOfWeek(DateTime date) {
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    const days = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ Nhật',
+    ];
     return days[date.weekday - 1];
   }
 
   List<List<int>> _availablePeriodOptions = [];
-  final List<String> _allRoomOptions = [
-    '305-A2',
-    '307-A2',
-    '301-B5',
-    '404-A9'
-  ];
+  final List<String> _allRoomOptions = ['305-A2', '307-A2', '301-B5', '404-A9'];
   List<String> _availableRoomOptions = [];
 
   bool _isFindingSuggestion = false;
@@ -52,7 +55,9 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
 
     // Tìm thông tin học phần tương ứng
     try {
-      _course = staticCourses.firstWhere((c) => c.id == widget.schedule.courseId);
+      _course = staticCourses.firstWhere(
+        (c) => c.id == widget.schedule.courseId,
+      );
     } catch (e) {
       // Fallback nếu không tìm thấy
       _course = Course(
@@ -91,11 +96,13 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     }
 
     final occupiedPeriodsOnSelectedDate = allSchedules
-        .where((s) =>
-    s.courseId.startsWith('course_') && // Lọc theo gv sau này
-        s.date.year == _selectedDate!.year &&
-        s.date.month == _selectedDate!.month &&
-        s.date.day == _selectedDate!.day)
+        .where(
+          (s) =>
+              s.courseId.startsWith('course_') && // Lọc theo gv sau này
+              s.date.year == _selectedDate!.year &&
+              s.date.month == _selectedDate!.month &&
+              s.date.day == _selectedDate!.day,
+        )
         .expand((s) => s.periods)
         .toSet();
 
@@ -111,13 +118,14 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
           return true;
         }
         return !option.any(
-              (period) => occupiedPeriodsOnSelectedDate.contains(period),
+          (period) => occupiedPeriodsOnSelectedDate.contains(period),
         );
       }).toList();
 
       if (_selectedPeriods != null &&
-          !_availablePeriodOptions
-              .any((p) => const ListEquality().equals(p, _selectedPeriods))) {
+          !_availablePeriodOptions.any(
+            (p) => const ListEquality().equals(p, _selectedPeriods),
+          )) {
         _selectedPeriods = null;
       }
       _filterAvailableRooms(allSchedules);
@@ -134,11 +142,13 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     }
 
     final occupiedRooms = allSchedules
-        .where((s) =>
-    s.date.year == _selectedDate!.year &&
-        s.date.month == _selectedDate!.month &&
-        s.date.day == _selectedDate!.day &&
-        s.periods.any((p) => _selectedPeriods!.contains(p)))
+        .where(
+          (s) =>
+              s.date.year == _selectedDate!.year &&
+              s.date.month == _selectedDate!.month &&
+              s.date.day == _selectedDate!.day &&
+              s.periods.any((p) => _selectedPeriods!.contains(p)),
+        )
         .map((s) => s.roomId)
         .toSet();
 
@@ -159,7 +169,9 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   }
 
   Future<void> _selectDate(
-      BuildContext context, List<ScheduleEntry> allSchedules) async {
+    BuildContext context,
+    List<ScheduleEntry> allSchedules,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
@@ -181,38 +193,47 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     final allPossiblePeriodOptions = _generatePossiblePeriods();
 
     for (int i = 0; i < 30; i++) {
-      DateTime currentDate =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
-          .add(Duration(days: i));
+      DateTime currentDate = DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ).add(Duration(days: i));
       if (currentDate.weekday == DateTime.sunday) continue;
 
       final occupiedPeriodsOnDate = allSchedules
-          .where((s) =>
-      s.courseId.startsWith('course_') &&
-          s.date.year == currentDate.year &&
-          s.date.month == currentDate.month &&
-          s.date.day == currentDate.day)
+          .where(
+            (s) =>
+                s.courseId.startsWith('course_') &&
+                s.date.year == currentDate.year &&
+                s.date.month == currentDate.month &&
+                s.date.day == currentDate.day,
+          )
           .expand((s) => s.periods)
           .toSet();
 
       final availablePeriodsForDay = allPossiblePeriodOptions
-          .where((option) => !option.any((p) => occupiedPeriodsOnDate.contains(p)))
+          .where(
+            (option) => !option.any((p) => occupiedPeriodsOnDate.contains(p)),
+          )
           .toList();
 
       if (availablePeriodsForDay.isEmpty) continue;
 
       for (final periodOption in availablePeriodsForDay) {
         final occupiedRooms = allSchedules
-            .where((s) =>
-        s.date.year == currentDate.year &&
-            s.date.month == currentDate.month &&
-            s.date.day == currentDate.day &&
-            s.periods.any((p) => periodOption.contains(p)))
+            .where(
+              (s) =>
+                  s.date.year == currentDate.year &&
+                  s.date.month == currentDate.month &&
+                  s.date.day == currentDate.day &&
+                  s.periods.any((p) => periodOption.contains(p)),
+            )
             .map((s) => s.roomId)
             .toSet();
 
-        final availableRoomForPeriod =
-        _allRoomOptions.where((room) => !occupiedRooms.contains(room)).toList();
+        final availableRoomForPeriod = _allRoomOptions
+            .where((room) => !occupiedRooms.contains(room))
+            .toList();
 
         if (availableRoomForPeriod.isNotEmpty) {
           setState(() {
@@ -222,19 +243,26 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
             _filterAvailablePeriods(allSchedules);
             _isFindingSuggestion = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
               content: Text('Đã tìm thấy lịch trống gần nhất!'),
-              backgroundColor: Colors.blue));
+              backgroundColor: Colors.blue,
+            ),
+          );
           return;
         }
       }
     }
 
     setState(() => _isFindingSuggestion = false);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Không tìm thấy lịch dạy bù nào còn trống trong 30 ngày tới.'),
-      backgroundColor: Colors.orange,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Không tìm thấy lịch dạy bù nào còn trống trong 30 ngày tới.',
+        ),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   void _submitMakeupRequest(List<ScheduleEntry> allSchedules) {
@@ -282,7 +310,9 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   @override
   Widget build(BuildContext context) {
     final bool isPending = widget.schedule.makeupStatus == 'pending_makeup';
-    final String pageTitle = isPending ? 'Chi tiết đơn dạy bù' : 'Đăng ký dạy bù';
+    final String pageTitle = isPending
+        ? 'Chi tiết đơn dạy bù'
+        : 'Đăng ký dạy bù';
     final String buttonLabel = isPending ? 'Cập nhật đơn' : 'Gửi yêu cầu';
 
     return Scaffold(
@@ -308,7 +338,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
           // Khởi tạo bộ lọc nếu là lần đầu xem đơn đã có
           if (isPending && _availablePeriodOptions.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if(mounted) {
+              if (mounted) {
                 _filterAvailablePeriods(allSchedules);
               }
             });
@@ -326,10 +356,9 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                     // --- SỬA LỖI: Lấy tên từ _course ---
                     Text(
                       'Học phần: ${_course.subjectName} (${_course.className})',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     _buildInfoRow(
@@ -378,13 +407,17 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                               : () => _findAndSetSuggestion(allSchedules),
                           icon: _isFindingSuggestion
                               ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child:
-                            CircularProgressIndicator(strokeWidth: 2),
-                          )
-                              : const Icon(Icons.auto_awesome,
-                              size: 20, color: Colors.orange),
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.auto_awesome,
+                                  size: 20,
+                                  color: Colors.orange,
+                                ),
                           label: Text(
                             'Gợi ý',
                             style: TextStyle(
@@ -395,8 +428,7 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                             ),
                           ),
                           style: TextButton.styleFrom(
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                           ),
                         ),
                       ],
@@ -416,7 +448,9 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                         label: Text(buttonLabel),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
+                            horizontal: 40,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -436,15 +470,22 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Ngày học:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+        const Text(
+          'Ngày học:',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
         const SizedBox(height: 8),
         InkWell(
           onTap: () => _selectDate(context, allSchedules),
           child: InputDecorator(
             decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                isDense: true),
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              isDense: true,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -467,19 +508,29 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Ca học:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+        const Text(
+          'Ca học:',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
         const SizedBox(height: 8),
         if (_selectedDate == null)
-          const Text('Vui lòng chọn ngày trước', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+          const Text(
+            'Vui lòng chọn ngày trước',
+            style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+          ),
         if (_selectedDate != null && _availablePeriodOptions.isEmpty)
-          const Text('Không có ca học nào phù hợp còn trống trong ngày này.', style: TextStyle(color: Colors.red)),
+          const Text(
+            'Không có ca học nào phù hợp còn trống trong ngày này.',
+            style: TextStyle(color: Colors.red),
+          ),
         if (_selectedDate != null && _availablePeriodOptions.isNotEmpty)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             child: Row(
               children: _availablePeriodOptions.map((periodOption) {
-                final isSelected = _selectedPeriods != null &&
+                final isSelected =
+                    _selectedPeriods != null &&
                     const ListEquality().equals(_selectedPeriods, periodOption);
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
@@ -492,11 +543,20 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
+                        color: isSelected
+                            ? Colors.blue.shade100
+                            : Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300),
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.blue
+                              : Colors.grey.shade300,
+                        ),
                       ),
                       child: Text('Tiết ${periodOption.join('-')}'),
                     ),
@@ -513,12 +573,21 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Phòng học:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+        const Text(
+          'Phòng học:',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
         const SizedBox(height: 8),
         if (_selectedPeriods == null)
-          const Text('Vui lòng chọn ca học trước', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+          const Text(
+            'Vui lòng chọn ca học trước',
+            style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+          ),
         if (_selectedPeriods != null && _availableRoomOptions.isEmpty)
-          const Text('Không có phòng học nào còn trống trong ca này.', style: TextStyle(color: Colors.red)),
+          const Text(
+            'Không có phòng học nào còn trống trong ca này.',
+            style: TextStyle(color: Colors.red),
+          ),
         if (_selectedPeriods != null && _availableRoomOptions.isNotEmpty)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -536,11 +605,20 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
+                        color: isSelected
+                            ? Colors.blue.shade100
+                            : Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300),
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.blue
+                              : Colors.grey.shade300,
+                        ),
                       ),
                       child: Text(room),
                     ),
@@ -554,11 +632,11 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
   }
 
   Widget _buildInfoRow(
-      BuildContext context, {
-        required IconData icon,
-        String? label,
-        Widget? child,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    String? label,
+    Widget? child,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -588,9 +666,18 @@ class _DangKyBuPageState extends State<DangKyBuPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 25, color: Theme.of(context).textTheme.bodySmall?.color),
+        Icon(
+          icon,
+          size: 25,
+          color: Theme.of(context).textTheme.bodySmall?.color,
+        ),
         const SizedBox(width: 8),
-        Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal)),
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.normal),
+        ),
       ],
     );
   }

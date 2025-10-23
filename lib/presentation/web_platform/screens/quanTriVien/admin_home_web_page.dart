@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/core/themes/theme_utils.dart';
 import 'admin_quan_ly_nguoi_dung_web_page.dart';
-import 'admin_quan_ly_danh_muc_khac_web_page.dart';
+import 'admin_quan_ly_danh_muc_chung_web_page.dart';
 
 class AdminHomeWebPage extends StatefulWidget {
   const AdminHomeWebPage({super.key});
@@ -24,7 +24,7 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
         pageTitle = 'Người dùng';
         break;
       case 2:
-        pageTitle = 'Danh mục khác';
+        pageTitle = 'Danh mục chung';
         break;
       case 3:
         pageTitle = 'Theo dõi dữ liệu';
@@ -140,7 +140,7 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
       return const AdminQuanLyNguoiDungWebPage();
     }
     if (_selectedIndex == 2) {
-      return const AdminQuanLyDanhMucKhacWebPage();
+      return const AdminQuanLyDanhMucChungWebPage();
     }
     if (_selectedIndex == 3) {
       final textTheme = context.appTextTheme();
@@ -371,7 +371,7 @@ Widget _buildSidebarMenu(
       _sidebarNavItem(
         context,
         icon: Icons.view_list_rounded,
-        label: 'Danh mục khác',
+        label: 'Danh mục chung',
         selected: currentIndex == 2,
         onTap: () => onSelect(2),
       ),

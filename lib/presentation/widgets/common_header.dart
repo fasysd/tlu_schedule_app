@@ -3,7 +3,7 @@ import 'package:tlu_schedule_app/data/models/user_model.dart';
 import 'package:tlu_schedule_app/presentation/widgets/warning_helper.dart';
 
 class CommonHeader extends StatelessWidget {
-  final UserAccount user;
+  final UserModel user;
   final Widget? trailing;
   final VoidCallback? onLogout;
 
@@ -43,10 +43,9 @@ class CommonHeader extends StatelessWidget {
               children: [
                 Text(
                   "Giảng viên",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Colors.white70),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                 ),
                 Text(
                   user.fullName,
@@ -62,10 +61,9 @@ class CommonHeader extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       warningText,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.white),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.white),
                     ),
                   ],
                 ),
@@ -77,10 +75,7 @@ class CommonHeader extends StatelessWidget {
             const SizedBox(width: 8),
             IconButton(
               onPressed: onLogout,
-              icon: const Icon(
-                Icons.logout,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.logout, color: Colors.white),
               tooltip: 'Đăng xuất',
             ),
           ],

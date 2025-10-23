@@ -12,7 +12,7 @@ import 'dang_ky_nghi_page.dart';
 final scheduleService = ScheduleService();
 
 class DonPheDuyetPage extends StatefulWidget {
-  final UserAccount user;
+  final UserModel user;
   const DonPheDuyetPage({super.key, required this.user});
 
   @override
@@ -41,7 +41,7 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
       return s.status == 'pending_leave' || s.makeupStatus == 'pending_makeup';
     }).toList();
     requests.sort(
-          (a, b) => (b.requestCreationTime ?? b.date).compareTo(
+      (a, b) => (b.requestCreationTime ?? b.date).compareTo(
         a.requestCreationTime ?? a.date,
       ),
     );
@@ -50,7 +50,7 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
 
   Map<String, dynamic> _getInfoForSchedule(ScheduleEntry schedule) {
     final course = staticCourses.firstWhere(
-          (c) => c.id == schedule.courseId,
+      (c) => c.id == schedule.courseId,
       orElse: () => Course(
         id: 'error',
         courseCode: 'N/A',
@@ -67,12 +67,13 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
     );
 
     final lecturer = staticUsers.firstWhere(
-          (u) => u.id == course.instructorId,
-      orElse: () => UserAccount(
+      (u) => u.id == course.instructorId,
+      orElse: () => UserModel(
         id: 'error',
         username: '',
         password: '',
         email: '',
+        phone: '',
         role: '',
         fullName: 'Không tìm thấy',
         avatarPath: '',
@@ -84,10 +85,10 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
   }
 
   void _navigateToDetail(
-      BuildContext context,
-      ScheduleEntry schedule,
-      UserAccount lecturer,
-      ) {
+    BuildContext context,
+    ScheduleEntry schedule,
+    UserModel lecturer,
+  ) {
     if (schedule.status == 'pending_leave') {
       Navigator.push(
         context,
@@ -148,17 +149,17 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Text(
             'Đơn xin phê duyệt',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
           child: Listener(
             onPointerSignal: (pointerSignal) {
               if (pointerSignal is PointerScrollEvent) {
-                final newOffset = _horizontalScrollController.offset +
+                final newOffset =
+                    _horizontalScrollController.offset +
                     pointerSignal.scrollDelta.dy;
                 _horizontalScrollController.jumpTo(
                   newOffset.clamp(
@@ -180,7 +181,8 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                   }
                   if (snapshot.hasError) {
                     return Center(
-                        child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
+                      child: Text("Lỗi tải dữ liệu: ${snapshot.error}"),
+                    );
                   }
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(
@@ -197,8 +199,10 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                     fontSize: 13,
                     color: Colors.black87,
                   );
-                  const cellStyle =
-                  TextStyle(fontSize: 12, color: Colors.black54);
+                  const cellStyle = TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                  );
 
                   final List<String> headers = [
                     'Chi tiết',
@@ -218,30 +222,33 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: DataTable(
-                        headingRowColor:
-                        WidgetStateProperty.all(Colors.grey.shade200),
+                        headingRowColor: WidgetStateProperty.all(
+                          Colors.grey.shade200,
+                        ),
                         border: TableBorder.all(
-                            color: Colors.grey.shade400, width: 1),
+                          color: Colors.grey.shade400,
+                          width: 1,
+                        ),
                         columnSpacing: 24,
                         dataRowMinHeight: 70,
                         dataRowMaxHeight: 70,
                         columns: headers
                             .map(
                               (header) => DataColumn(
-                            label: Center(
-                              child: Text(
-                                header,
-                                style: headerStyle,
-                                textAlign: TextAlign.center,
+                                label: Center(
+                                  child: Text(
+                                    header,
+                                    style: headerStyle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        )
+                            )
                             .toList(),
                         rows: requests.map((schedule) {
                           final info = _getInfoForSchedule(schedule);
                           final Course course = info['course'];
-                          final UserAccount lecturer = info['lecturer'];
+                          final UserModel lecturer = info['lecturer'];
                           final bool isMakeupRequest =
                               schedule.makeupStatus == 'pending_makeup';
 
@@ -257,7 +264,10 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                                     ),
                                     tooltip: 'Xem chi tiết',
                                     onPressed: () => _navigateToDetail(
-                                        context, schedule, lecturer),
+                                      context,
+                                      schedule,
+                                      lecturer,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -319,7 +329,8 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                                 Center(
                                   child: Text(
                                     _formatDateTime(
-                                        schedule.requestCreationTime),
+                                      schedule.requestCreationTime,
+                                    ),
                                     style: cellStyle,
                                     textAlign: TextAlign.center,
                                   ),
@@ -333,15 +344,17 @@ class _DonPheDuyetPageState extends State<DonPheDuyetPage> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: _getStatusColor(schedule)
-                                          .withOpacity(0.1),
+                                      color: _getStatusColor(
+                                        schedule,
+                                      ).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       _getStatusText(schedule),
                                       style: cellStyle.copyWith(
-                                          color: _getStatusColor(schedule),
-                                          fontWeight: FontWeight.bold),
+                                        color: _getStatusColor(schedule),
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
