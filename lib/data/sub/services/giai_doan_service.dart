@@ -1,3 +1,4 @@
+// D:/Others/FlutterProjects/tlu_schedule_app/lib/data/sub/services/giai_doan_service.dart
 import 'package:tlu_schedule_app/data/sub/models/giai_doan_model.dart';
 
 class GiaiDoanService {
@@ -26,12 +27,14 @@ class GiaiDoanService {
     ),
   ];
 
-  /// Lấy tất cả giai đoạn
+  /// Lấy tất cả các giai đoạn.
+  /// Trả về một danh sách không thể thay đổi để bảo vệ dữ liệu gốc.
   List<GiaiDoanModel> getAll() {
     return List.unmodifiable(_dsGiaiDoan);
   }
 
-  /// Lấy giai đoạn theo ID
+  /// Lấy một giai đoạn cụ thể theo ID.
+  /// Trả về null nếu không tìm thấy.
   GiaiDoanModel? getById(String id) {
     try {
       return _dsGiaiDoan.firstWhere((g) => g.id == id);
@@ -40,35 +43,39 @@ class GiaiDoanService {
     }
   }
 
-  /// Thêm giai đoạn mới
+  /// Thêm một giai đoạn mới vào danh sách.
+  /// Ném ra một [Exception] nếu ID đã tồn tại.
   void add(GiaiDoanModel giaiDoan) {
-    final existed = _dsGiaiDoan.any((g) => g.id == giaiDoan.id);
+    final existed = _dsGiaiDoan.any(
+      (g) => g.id.toUpperCase() == giaiDoan.id.toUpperCase(),
+    );
     if (existed) {
-      throw Exception('ID "${giaiDoan.id}" đã tồn tại.');
+      throw Exception('ID giai đoạn "${giaiDoan.id}" đã tồn tại.');
     }
     _dsGiaiDoan.add(giaiDoan);
   }
 
-  /// Cập nhật giai đoạn theo ID
+  /// Cập nhật thông tin của một giai đoạn đã có.
+  /// Ném ra một [Exception] nếu không tìm thấy giai đoạn để cập nhật.
   void update(String id, GiaiDoanModel updated) {
     final index = _dsGiaiDoan.indexWhere((g) => g.id == id);
     if (index == -1) {
-      throw Exception('Không tìm thấy giai đoạn có id: $id');
+      throw Exception('Không tìm thấy giai đoạn có ID: "$id" để cập nhật.');
     }
     _dsGiaiDoan[index] = updated.copyWith(id: id);
   }
 
-  /// Xóa giai đoạn theo ID
+  /// Xóa một giai đoạn khỏi danh sách dựa trên ID.
   void delete(String id) {
     _dsGiaiDoan.removeWhere((g) => g.id == id);
   }
 
-  /// Lấy tất cả giai đoạn thuộc một học kỳ
+  /// Lấy tất cả các giai đoạn thuộc về một học kỳ cụ thể.
   List<GiaiDoanModel> getAllByHocKy(String idHocKy) {
     return _dsGiaiDoan.where((g) => g.idHocKy == idHocKy).toList();
   }
 
-  /// Lấy giai đoạn hiện tại (dựa theo ngày hệ thống)
+  /// (Tùy chọn) Lấy giai đoạn đang diễn ra dựa vào ngày hệ thống.
   GiaiDoanModel? getCurrent() {
     final now = DateTime.now();
     try {

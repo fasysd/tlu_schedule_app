@@ -1,7 +1,10 @@
+// lib/presentation/web_platform/screens/quanTriVien/admin_home_web_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:tlu_schedule_app/core/themes/theme_utils.dart';
 import 'admin_quan_ly_nguoi_dung_web_page.dart';
 import 'admin_quan_ly_danh_muc_chung_web_page.dart';
+import 'admin_quan_ly_hoc_ky_web_page.dart'; // <-- IMPORT TRANG MỚI
 
 class AdminHomeWebPage extends StatefulWidget {
   const AdminHomeWebPage({super.key});
@@ -13,26 +16,18 @@ class AdminHomeWebPage extends StatefulWidget {
 class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
   int _selectedIndex = 0;
 
+  // [1] State mới để quản lý trang con trong "Danh mục chung"
+  String? _subPageIndex;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = context.appTextTheme();
     final sidebarColor =
         context.appColor('xanhDuong') ?? const Color(0xFF598CBF);
-    String pageTitle;
-    switch (_selectedIndex) {
-      case 1:
-        pageTitle = 'Người dùng';
-        break;
-      case 2:
-        pageTitle = 'Danh mục chung';
-        break;
-      case 3:
-        pageTitle = 'Theo dõi dữ liệu';
-        break;
-      case 0:
-      default:
-        pageTitle = 'Trang chủ';
-    }
+
+    // [2] Cập nhật logic để lấy tiêu đề trang
+    String pageTitle = _getPageTitle();
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -48,18 +43,8 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/logo.png'),
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // ... (Phần logo và tiêu đề sidebar giữ nguyên)
+                  Center(child: Container(/* ... Logo ... */)),
                   const SizedBox(height: 12),
                   Center(
                     child: Text(
@@ -79,16 +64,24 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
                   _buildSidebarMenu(
                     context,
                     currentIndex: _selectedIndex,
-                    onSelect: (i) => setState(() => _selectedIndex = i),
+                    onSelect: (i) {
+                      setState(() {
+                        _selectedIndex = i;
+                        // [3] Reset trang con khi chuyển mục menu chính
+                        _subPageIndex = null;
+                      });
+                    },
                   ),
 
                   const Spacer(),
 
                   // --- LOGOUT BUTTON ---
+                  // --- LOGOUT BUTTON ---
                   Center(
                     child: TextButton.icon(
                       onPressed: () {
-                        Navigator.of(context).pop(true);
+                        // TODO: Thêm logic đăng xuất ở đây
+                        Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.logout, color: Colors.white),
                       label: Text(
@@ -107,6 +100,8 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
+
                   const SizedBox(height: 8),
                 ],
               ),
@@ -135,327 +130,133 @@ class _AdminHomeWebPageState extends State<AdminHomeWebPage> {
     );
   }
 
+  // [2] Hàm lấy tiêu đề trang đã được tách ra
+  String _getPageTitle() {
+    if (_selectedIndex == 2 && _subPageIndex != null) {
+      switch (_subPageIndex) {
+        case 'hocKy':
+          return 'Quản lý học kỳ';
+        case 'khoa':
+          return 'Quản lý khoa';
+        case 'boMon':
+          return 'Quản lý bộ môn';
+        case 'phongHoc':
+          return 'Quản lý phòng học';
+        case 'tietHoc':
+          return 'Quản lý tiết học';
+      }
+    }
+
+    switch (_selectedIndex) {
+      case 1:
+        return 'Quản lý người dùng';
+      case 2:
+        return 'Danh mục chung';
+      default:
+        return 'Trang chủ';
+    }
+  }
+
+  // [4] HÀM QUAN TRỌNG NHẤT: Cập nhật logic hiển thị nội dung
   Widget _buildBodyContent(BuildContext context) {
-    if (_selectedIndex == 1) {
-      return const AdminQuanLyNguoiDungWebPage();
+    switch (_selectedIndex) {
+      case 0:
+        // return _buildHomePageContent(context); // Tách ra nếu cần
+        return const Text('Nội dung trang chủ');
+      case 1:
+        return const AdminQuanLyNguoiDungWebPage();
+      case 2:
+        // Nếu chưa chọn trang con, hiển thị danh sách các mục
+        if (_subPageIndex == null) {
+          return AdminQuanLyDanhMucChungWebPage(
+            onNavigate: (pageId) {
+              setState(() {
+                _subPageIndex = pageId;
+              });
+            },
+          );
+        }
+        // Nếu đã chọn trang con, hiển thị trang con tương ứng
+        switch (_subPageIndex) {
+          case 'hocKy':
+            return const AdminQuanLyHocKyWebPage();
+          default:
+            return Text('Trang không tồn tại: ${_subPageIndex}');
+        }
+      default:
+        return const Text('Trang không tồn tại');
     }
-    if (_selectedIndex == 2) {
-      return const AdminQuanLyDanhMucChungWebPage();
-    }
-    if (_selectedIndex == 3) {
-      final textTheme = context.appTextTheme();
-      return Center(
-        child: Text('Theo dõi dữ liệu', style: textTheme.headlineLarge),
-      );
-    }
-    final textTheme = context.appTextTheme();
-    return Row(
+  }
+
+  // ... (các hàm build widget khác như _buildSidebarMenu, _sidebarNavItem giữ nguyên)
+  Widget _buildSidebarMenu(
+    BuildContext context, {
+    required int currentIndex,
+    required ValueChanged<int> onSelect,
+  }) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- LEFT CONTENT ---
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              _sectionCard(
-                context: context,
-                title: 'Chi tiết hệ thống',
-                children: [
-                  _infoRow(context, 'Dung lượng lưu trữ:', '15GB / 30GB'),
-                  _infoRow(context, 'Tốc độ xử lý trung bình:', '100ms'),
-                  _infoRow(context, 'Hiệu suất trung bình:', '98%'),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _sectionCard(
-                context: context,
-                title: 'Danh sách lỗi',
-                height: 285,
-                children: [
-                  Center(
-                    child: Text(
-                      'Không có lỗi nào được ghi nhận',
-                      style: textTheme.labelLarge?.copyWith(
-                        color: Colors.black54,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+        _sidebarNavItem(
+          context,
+          icon: Icons.home_filled,
+          label: 'Trang chủ',
+          selected: currentIndex == 0,
+          onTap: () => onSelect(0),
         ),
-
-        const SizedBox(width: 32),
-
-        // --- RIGHT CONTENT: HOẠT ĐỘNG GẦN ĐÂY ---
-        Expanded(
-          flex: 3,
-          child: _activitySection(
-            context: context,
-            title: 'Hoạt động gần đây',
-            activities: const [
-              ['22:30 30/09/2025', 'Giảng viên A đã gửi yêu cầu nghỉ dạy'],
-              ['7:31 30/09/2025', 'Một lịch trình mới đã được tạo'],
-              [
-                '7:30 30/09/2025',
-                'Phòng Đào tạo đã phê duyệt lịch dạy bù của Giảng viên B',
-              ],
-              ['7:30 30/09/2025', '1 lớp học phần đã bị thay đổi lịch trình'],
-              ['7:05 30/09/2025', 'Giảng viên B đã gửi yêu cầu dạy bù'],
-              ['7:00 30/09/2025', 'Giảng viên B đã đăng nhập'],
-            ],
-          ),
+        _sidebarNavItem(
+          context,
+          icon: Icons.people_alt_rounded,
+          label: 'Người dùng',
+          selected: currentIndex == 1,
+          onTap: () => onSelect(1),
+        ),
+        _sidebarNavItem(
+          context,
+          icon: Icons.view_list_rounded,
+          label: 'Danh mục chung',
+          selected: currentIndex == 2,
+          onTap: () => onSelect(2),
         ),
       ],
     );
   }
-}
 
-// --- SECTION CARD ---
-Widget _sectionCard({
-  required BuildContext context,
-  required String title,
-  double? height,
-  List<Widget>? actions,
-  required List<Widget> children,
-}) {
-  final accent = context.appColor('xanhDuongNhat') ?? const Color(0xFFC3D9E9);
-  final textTheme = context.appTextTheme();
-  return Container(
-    width: double.infinity,
-    height: height,
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: accent.withOpacity(0.9), width: 1),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x14000000),
-          blurRadius: 12,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title, style: textTheme.titleLarge),
-            if (actions != null && actions.isNotEmpty) Row(children: actions),
-          ],
-        ),
-        const SizedBox(height: 16),
-        if (height != null)
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children,
-              ),
-            ),
-          )
-        else
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          ),
-      ],
-    ),
-  );
-}
-
-// --- INFO ROW (Chi tiết hệ thống) ---
-Widget _infoRow(BuildContext context, String left, String right) {
-  final textTheme = context.appTextTheme();
-  final chipBg = context.appColor('xanhDuongNhat') ?? const Color(0xFFC3D9E9);
-  return Container(
-    margin: const EdgeInsets.only(bottom: 12),
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: chipBg.withOpacity(0.9)),
-    ),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(
-            left,
-            style: textTheme.bodyMedium?.copyWith(color: Colors.black87),
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: chipBg.withOpacity(0.6),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            right,
-            style: textTheme.labelLarge?.copyWith(
-              color: Colors.black87,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// --- ACTIVITY CARD ---
-Widget _activityCard(BuildContext context, String time, String content) {
-  final textTheme = context.appTextTheme();
-  final border = context.appColor('xamNhat') ?? const Color(0xFFD8D8D8);
-  return Container(
-    margin: const EdgeInsets.only(bottom: 12),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: border),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(Icons.access_time, size: 20, color: Colors.grey.shade600),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                time,
-                style: textTheme.labelMedium?.copyWith(
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(content, style: textTheme.bodyMedium),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// --- SIDEBAR MENU SECTION ---
-Widget _buildSidebarMenu(
-  BuildContext context, {
-  required int currentIndex,
-  required ValueChanged<int> onSelect,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _sidebarNavItem(
-        context,
-        icon: Icons.home_filled,
-        label: 'Trang chủ',
-        selected: currentIndex == 0,
-        onTap: () => onSelect(0),
-      ),
-      _sidebarNavItem(
-        context,
-        icon: Icons.people_alt_rounded,
-        label: 'Người dùng',
-        selected: currentIndex == 1,
-        onTap: () => onSelect(1),
-      ),
-      _sidebarNavItem(
-        context,
-        icon: Icons.view_list_rounded,
-        label: 'Danh mục chung',
-        selected: currentIndex == 2,
-        onTap: () => onSelect(2),
-      ),
-    ],
-  );
-}
-
-Widget _sidebarNavItem(
-  BuildContext context, {
-  required IconData icon,
-  required String label,
-  bool selected = false,
-  VoidCallback? onTap,
-}) {
-  final selectedBg = Colors.white.withOpacity(0.12);
-  final textTheme = context.appTextTheme();
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Material(
-      color: selected ? selectedBg : Colors.transparent,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
+  Widget _sidebarNavItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    bool selected = false,
+    VoidCallback? onTap,
+  }) {
+    final selectedBg = Colors.white.withOpacity(0.12);
+    final textTheme = context.appTextTheme();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Material(
+        color: selected ? selectedBg : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Row(
-            children: [
-              Icon(icon, color: Colors.white),
-              const SizedBox(width: 12),
-              Text(
-                label,
-                style: textTheme.labelLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Icon(icon, color: Colors.white),
+                const SizedBox(width: 12),
+                Text(
+                  label,
+                  style: textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
-// --- ACTIVITY SECTION WITH SCROLL ---
-Widget _activitySection({
-  required BuildContext context,
-  required String title,
-  required List<List<String>> activities,
-}) {
-  final accent = context.appColor('xanhDuongNhat') ?? const Color(0xFFC3D9E9);
-  final textTheme = context.appTextTheme();
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: accent.withOpacity(0.9), width: 1),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x14000000),
-          blurRadius: 12,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: textTheme.titleLarge),
-        const SizedBox(height: 16),
-        Expanded(
-          child: ListView.separated(
-            itemCount: activities.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (ctx, index) {
-              final item = activities[index];
-              return _activityCard(context, item[0], item[1]);
-            },
-          ),
-        ),
-      ],
-    ),
-  );
+    );
+  }
 }

@@ -1,3 +1,6 @@
+// lib/data/sub/models/giai_doan_model.dart
+import 'package:intl/intl.dart'; // Cần import thư viện intl
+
 class GiaiDoanModel {
   final String id;
   final String idHocKy;
@@ -12,6 +15,12 @@ class GiaiDoanModel {
     required this.batDau,
     required this.ketThuc,
   });
+
+  /// Gợi ý: Thêm getter để định dạng chuỗi thời gian, tái sử dụng ở nhiều nơi
+  String get thoiGianFormatted {
+    final format = DateFormat('dd/MM/yyyy');
+    return '${format.format(batDau)} - ${format.format(ketThuc)}';
+  }
 
   /// Tạo một đối tượng rỗng (mặc định)
   factory GiaiDoanModel.empty() {
@@ -44,15 +53,19 @@ class GiaiDoanModel {
   /// Tạo đối tượng từ JSON (Map)
   factory GiaiDoanModel.fromJson(Map<String, dynamic> json) {
     return GiaiDoanModel(
-      id: json['id'] ?? '',
-      idHocKy: json['idHocKy'] ?? '',
-      tenGiaiDoan: json['tenGiaiDoan'] ?? '',
-      batDau: DateTime.tryParse(json['batDau'] ?? '') ?? DateTime(1970, 1, 1),
-      ketThuc: DateTime.tryParse(json['ketThuc'] ?? '') ?? DateTime(1970, 1, 1),
+      id: json['id'] as String? ?? '',
+      idHocKy: json['idHocKy'] as String? ?? '',
+      tenGiaiDoan: json['tenGiaiDoan'] as String? ?? '',
+      batDau:
+          DateTime.tryParse(json['batDau'] as String? ?? '') ??
+          DateTime(1970, 1, 1),
+      ketThuc:
+          DateTime.tryParse(json['ketThuc'] as String? ?? '') ??
+          DateTime(1970, 1, 1),
     );
   }
 
-  /// (Tuỳ chọn) Chuyển đối tượng thành JSON Map
+  /// Chuyển đối tượng thành JSON Map
   Map<String, dynamic> toJson() {
     return {
       'id': id,
