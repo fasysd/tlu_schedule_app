@@ -16,6 +16,7 @@ import 'don_phe_duyet_page.dart';
 import 'ho_so_page.dart';
 import '../widgets/common_header.dart';
 import 'login_page.dart';
+import 'trang_bao_cao_thong_ke.dart';
 
 // --- THAY ĐỔI: Tạo instance cho service ---
 final scheduleService = ScheduleService();
@@ -187,17 +188,34 @@ class _HomeContent extends StatelessWidget {
         CommonHeader(
           user: user,
           onLogout: onLogout,
-          trailing: IconButton(
-            icon:
-            const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => WeeklySchedulePage(user: user)),
-              );
-            },
-            tooltip: 'Xem lịch theo tuần',
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.analytics, color: Colors.white, size: 28),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TrangBaoCaoThongKe(),
+                    ),
+                  );
+                },
+                tooltip: 'Báo cáo thống kê',
+              ),
+              IconButton(
+                icon:
+                const Icon(Icons.grid_on_rounded, color: Colors.white, size: 28),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => WeeklySchedulePage(user: user)),
+                  );
+                },
+                tooltip: 'Xem lịch theo tuần',
+              ),
+            ],
           ),
         ),
         Expanded(
