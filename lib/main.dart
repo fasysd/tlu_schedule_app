@@ -28,8 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'TLU Schedule',
       theme: AppTheme.light,
-      //home: SplashPage(),
-      home: LoginPage(),
+      home: SplashPage(),
     );
   }
 }

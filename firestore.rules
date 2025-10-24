@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection rules
+    match /users/{userId} {
+      // Allow read/write for authenticated users
+      allow read, write: if request.auth != null;
+      
+      // Allow training department to manage all users
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+    }
+    
+    // Students collection rules
+    match /students/{studentId} {
+      // Allow training department full access
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read students
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien';
+    }
+    
+    // Courses collection rules
+    match /courses/{courseId} {
+      // Allow training department full access
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read courses they teach
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.instructorId == request.auth.uid;
+    }
+    
+    // Teaching schedules collection rules
+    match /teaching_schedules/{scheduleId} {
+      // Allow training department full access
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read their own schedules
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.lecturerId == request.auth.uid;
+    }
+    
+    // Attendance reports collection rules
+    match /attendance_reports/{reportId} {
+      // Allow training department full access
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read/write their own attendance reports
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.lecturerId == request.auth.uid;
+    }
+    
+    // Payment reports collection rules
+    match /payment_reports/{reportId} {
+      // Only training department can access payment reports
+      allow read, write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+    }
+    
+    // Notifications collection rules
+    match /notifications/{notificationId} {
+      // Allow training department to send notifications
+      allow write: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read their own notifications
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.lecturerId == request.auth.uid;
+      
+      // Allow lecturers to update notification read status
+      allow update: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.lecturerId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+    }
+    
+    // Activity logs collection rules
+    match /activity_logs/{logId} {
+      // Allow training department to read all logs
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'phongdaotao';
+      
+      // Allow lecturers to read their own logs
+      allow read: if request.auth != null 
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'giangvien'
+        && resource.data.userId == request.auth.uid;
+    }
+    
+    // Default deny rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

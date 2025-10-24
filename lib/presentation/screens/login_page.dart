@@ -182,11 +182,8 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: !_forgotPasswordMode,
                         decoration: const InputDecoration(),
                         style: Theme.of(context).textTheme.titleMedium,
-                        onChanged:
-                        _forgotPasswordMode ? _setEmail : _setPassword,
-                        validator: _forgotPasswordMode
-                            ? _validateEmail
-                            : _validatePassword,
+                        onChanged: _forgotPasswordMode ? _setEmail : _setPassword,
+                        validator: _forgotPasswordMode ? _validateEmail : _validatePassword,
                       ),
                       const SizedBox(height: 20),
                       Center(
